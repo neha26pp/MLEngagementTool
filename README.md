@@ -7,7 +7,7 @@ This repo is to develop the Windows desktop application for the project "Measuri
 
 ## How to Run
 ```bash
-dotnet build
+dotnet run
 ```
 
 ## Directory Structure
@@ -68,9 +68,9 @@ MLEngagementTool/
 Steps:
 
 1. Clone the [wpf tutorial](https://github.com/SingletonSean/wpf-tutorials/tree/master) repo from GitHub
-2. To run the code examples, download the particular version of .NET required for the specific code exmaple. The required version can be found in the `/obj/project.assets.json` file
+2. To run the code examples, download the particular version of .NET required for the specific code example. The required version can be found in the `/obj/project.assets.json` file
     - [.NET Core 3.1](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-3.1.426-windows-x64-installer)
-        - This version covers most program samples
+        - This version covers most code examples
     - [.NET 5.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-5.0.408-windows-x64-installer)
         - Required for `AnimationDemo`,  `BindingShort`, `CommunicationMVVM`, `ConditionalRendering`, `ItemsControlDemo`, `NavigationMVVMEssentialsDemo`,  `WPFMVVMTemplate`
     - .NET 6.0
