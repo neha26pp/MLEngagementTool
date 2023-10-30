@@ -1,5 +1,7 @@
 # MLEngagementTool
-This is a PyQT5 application
+This is a PyQT5 application for Researchers to measure student engagement. 
+
+It uses a MVC - Model View Controller architecture. 
 
 To start the application, navigate to the controller directory `cd controller` and then
 run the command `python main.py`
