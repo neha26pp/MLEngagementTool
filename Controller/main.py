@@ -4,12 +4,13 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import emotional_analysis
-import os 
+import os
 
-view_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'View'))
+view_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "View"))
 sys.path.append(view_directory)
 
 import video
+import gui
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 from PyQt5.QtCore import Qt
@@ -19,51 +20,75 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 
 
+
 class MainWindow(QWidget):
+    ''' Main Controller class
+        Communicates with all other classes
+    '''
     def __init__(self):
         super(MainWindow, self).__init__()
 
         self.VBL = QVBoxLayout()
 
-        self.VideoWindow = video.Video()
-        self.EmotionalAnalysis = emotional_analysis.EmotionalAnalysis()
+        self.gui = gui.Gui(self)
+        
+        self.VBL.addWidget(self.gui)
 
-        # Create an HBoxLayout to arrange the video and web view side by side
+        self.setLayout(self.VBL)
+
+        
+        
+
+    def image_update_slot(self, Image):
+        '''function to display the opencv video feed (face)'''
+        self.feed_label.setPixmap(QPixmap.fromImage(Image))
+
+    def emotion_update_slot(self, emotion):
+        '''function to diplay the detected emotion'''
+        self.emotion_label.setText(f"Emotion: {emotion}")
+
+    def cancel_feed(self):
+        '''function to stop face recognition and analysis'''
+        self.emotional_analysis.stop()
+    
+    def collectDataBtn_pressed(self):
+
+        '''Start collecting data (experiment)'''
+
+        print("collecting data")
+
+        self.gui.hide()
+
+
+        self.video= video.Video()
+        self.emotional_analysis= emotional_analysis.EmotionalAnalysis()
         self.video_layout = QHBoxLayout()
 
-        self.FeedLabel = QLabel(self)
-        self.video_layout.addWidget(self.FeedLabel)
-
-        self.webview = self.VideoWindow.webview
-        self.video_layout.addWidget(self.webview)
+        self.feed_label = QLabel(self)
+        self.video_layout.addWidget(self.feed_label)
 
         self.VBL.addLayout(self.video_layout)
 
-        self.CancelBTN = QPushButton("Cancel", self)
-        self.CancelBTN.clicked.connect(self.CancelFeed)
-        self.VBL.addWidget(self.CancelBTN)
+        self.cancel_btn = QPushButton("Cancel", self)
+        self.cancel_btn.clicked.connect(self.cancel_feed)
+        self.VBL.addWidget(self.cancel_btn)
+
 
         self.emotion_label = QLabel("Emotion: ")
         self.VBL.addWidget(self.emotion_label)
 
-        self.setLayout(self.VBL)
+        self.emotional_analysis.ImageUpdate.connect(self.image_update_slot)
+        self.emotional_analysis.emotion_signal.connect(self.emotion_update_slot)
+
+
+        self.webview = self.video.webview
+        self.video_layout.addWidget(self.webview)
+        self.emotional_analysis.start()
 
     
-
-        self.EmotionalAnalysis.ImageUpdate.connect(self.ImageUpdateSlot)
-        self.EmotionalAnalysis.emotion_signal.connect(self.EmotionUpdateSlot)
-        self.EmotionalAnalysis.start()
-
-    def ImageUpdateSlot(self, Image):
-        self.FeedLabel.setPixmap(QPixmap.fromImage(Image))
-
-    def EmotionUpdateSlot(self, emotion):
-        self.emotion_label.setText(f"Emotion: {emotion}")
-
-    def CancelFeed(self):
-        self.EmotionalAnalysis.stop()
-
-
+    def analyzeDataBtn_pressed(self):
+        '''Analyze previously collected data'''
+        print("analyzing data")
 
 
 
@@ -74,70 +99,3 @@ if __name__ == "__main__":
     sys.exit(App.exec())
 
 
-# class EmotionAnalyzer(QThread):
-#     emotion_signal = pyqtSignal(str)
-#     frame_signal = pyqtSignal(QPixmap)
-
-#     def __init__(self, facial_analyzer):
-#         super().__init__()
-#         self.facial_analyzer = facial_analyzer
-
-#     def run(self):
-#         while True:
-#             emotion = self.facial_analyzer.analyze()
-#             self.emotion_signal.emit(emotion)
-
-# class VideoDisplay(QThread):
-#     frame_signal = pyqtSignal(QPixmap)
-#     def __init__(self):
-#         super().__init()
-#         self.cap = cv2.VideoCapture(0)
-
-#     def run(self):
-#         while True:
-#             ret, frame = self.cap.read()
-#             if ret:
-#                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-#                 h, w, ch = frame.shape
-#                 bytes_per_line = ch * w
-#                 q_img = QImage(frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
-#                 self.frame_signal.emit(QPixmap.fromImage(q_img))
-
-# def update_emotion(emotion):
-#     if emotion_label is not None:
-#         emotion_label.setText(f"Emotion: {emotion}")
-
-
-# def update_frame(frame):
-#     video_label.setPixmap(frame)
-
-
-# def main():
-#     app = QApplication(sys.argv)
-#     window = QMainWindow()
-#     window.setWindowTitle("Facial Emotion Analysis")
-
-#     central_widget = QWidget()
-#     window.setCentralWidget(central_widget)
-
-#     layout = QVBoxLayout(central_widget)
-
-#     global video_label
-#     video_label = QLabel()
-#     global emotion_label
-#     emotion_label = QLabel("Emotion: ")
-#     layout.addWidget(video_label)
-#     layout.addWidget(emotion_label)
-
-#     facial_analyzer = facial_analysis.FacialAnalysis()
-#     emotion_analyzer = EmotionAnalyzer(facial_analyzer)
-#     emotion_analyzer.emotion_signal.connect(update_emotion)
-#     emotion_analyzer.frame_signal.connect(update_frame)
-#     emotion_analyzer.start()
-
-#     window.show()
-#     app.exec_()
-
-
-# if __name__ == "__main__":
-#     main()

@@ -6,11 +6,25 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 class EmotionalAnalysis(QThread):
+    '''Facial Emotional Detection with DeepFace'''
+
     ImageUpdate = pyqtSignal(QImage)
     emotion_signal = pyqtSignal(str)
-   
+    detected_emotions = []
+
+    def __init__(self):
+        super(EmotionalAnalysis, self).__init__()
+        self.record_video_popup = QMessageBox()
+        self.record_video_popup.setWindowTitle("Record Video")
+        self.record_video_popup.setText("Permission to record video")
+        self.record_video_popup.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        self.record_video_popup.setDefaultButton(QMessageBox.Cancel)
+        self.record_video_popup.buttonClicked.connect(self.popup_clicked)
+
 
     def run(self):
+        '''Thread that starts face recognition and emotional analysis'''
+        
         self.ThreadActive = True
         self.face_cascade = cv2.CascadeClassifier(
             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
@@ -31,6 +45,8 @@ class EmotionalAnalysis(QThread):
                     QImage.Format_RGB888,
                 )
                 Pic = ConvertToQTFormat.scaled(640, 480, Qt.KeepAspectRatio)
+
+               
                 self.ImageUpdate.emit(Pic)
                
 
@@ -43,6 +59,7 @@ class EmotionalAnalysis(QThread):
                     emotion = result['dominant_emotion']
                     self.emotion_signal.emit(emotion)
                     print("EMOOOOOOTION" , emotion)
+                    self.detected_emotions.append(emotion)
                 self.last_emotion_detection_time = current_time
                 
                
@@ -50,31 +67,12 @@ class EmotionalAnalysis(QThread):
     def stop(self):
         self.ThreadActive = False
         self.quit()
+    
+    def popup_clicked(self, button):
+        if self.record_video_popup.isHidden():
+            return  # Ignore clicks if the popup is hidden
 
-# class FacialAnalysis:
-#     def __init__(self):
-#         self.face_cascade = cv2.CascadeClassifier(
-#             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-#         )
-#         self.cap = cv2.VideoCapture(0)
-#         self.emotion_detection_interval = 5
-#         self.last_emotion_detection_time = 0
+        if button.text() == "Yes":
+            self.record_video_popup.close()
 
-#     def analyze(self):
-#         while True:
-#             ret, frame = self.cap.read()
-#             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#             faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
-            
-#             for x, y, w, h in faces:
-#                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 3)
-            
-#             current_time = time.time()
-#             if current_time - self.last_emotion_detection_time >= self.emotion_detection_interval:
-#                 results = DeepFace.analyze(
-#                     img_path=frame, actions=["emotion"], enforce_detection=False
-#                 )
-#                 for result in results:
-#                     emotion = result['dominant_emotion']
-#                     return emotion
-#                 self.last_emotion_detection_time = current_time
+

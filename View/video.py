@@ -8,13 +8,12 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import * 
 
 class Video(QMainWindow):
+
+    '''Display the youtube video to student'''
     def __init__(self):
         super(Video, self).__init__()
-        # self.centralwid = QWidget(self)
         self.vlayout = QVBoxLayout()
         self.webview = QWebEngineView()
         self.webview.setUrl(QUrl("https://youtu.be/6AviDjR9mmo?si=hXVZi71tqf2Vm5Vm"))
         self.vlayout.addWidget(self.webview)
-        # self.centralwid.setLayout(self.vlayout)
-        # self.setCentralWidget(self.centralwid)
         self.show()
