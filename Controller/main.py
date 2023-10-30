@@ -4,40 +4,66 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import emotional_analysis
+import os 
+
+view_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'View'))
+sys.path.append(view_directory)
+
+import video
+
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+
+
 class MainWindow(QWidget):
     def __init__(self):
-        super(MainWindow, self).__init__()  # Call the superclass's __init__ method properly
+        super(MainWindow, self).__init__()
 
         self.VBL = QVBoxLayout()
 
+        self.VideoWindow = video.Video()
+        self.EmotionalAnalysis = emotional_analysis.EmotionalAnalysis()
+
+        # Create an HBoxLayout to arrange the video and web view side by side
+        self.video_layout = QHBoxLayout()
+
         self.FeedLabel = QLabel(self)
-        self.VBL.addWidget(self.FeedLabel)
+        self.video_layout.addWidget(self.FeedLabel)
+
+        self.webview = self.VideoWindow.webview
+        self.video_layout.addWidget(self.webview)
+
+        self.VBL.addLayout(self.video_layout)
 
         self.CancelBTN = QPushButton("Cancel", self)
         self.CancelBTN.clicked.connect(self.CancelFeed)
         self.VBL.addWidget(self.CancelBTN)
 
-        
-        global emotion
         self.emotion_label = QLabel("Emotion: ")
         self.VBL.addWidget(self.emotion_label)
 
         self.setLayout(self.VBL)
 
-        self.EmotionalAnalysis = emotional_analysis.EmotionalAnalysis()
+    
+
         self.EmotionalAnalysis.ImageUpdate.connect(self.ImageUpdateSlot)
         self.EmotionalAnalysis.emotion_signal.connect(self.EmotionUpdateSlot)
         self.EmotionalAnalysis.start()
 
     def ImageUpdateSlot(self, Image):
         self.FeedLabel.setPixmap(QPixmap.fromImage(Image))
-    
+
     def EmotionUpdateSlot(self, emotion):
-        if self.emotion_label is not None:
-                self.emotion_label.setText(f"Emotion: {emotion}")
+        self.emotion_label.setText(f"Emotion: {emotion}")
 
     def CancelFeed(self):
         self.EmotionalAnalysis.stop()
+
+
 
 
 

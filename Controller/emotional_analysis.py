@@ -16,7 +16,7 @@ class EmotionalAnalysis(QThread):
             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         )
         Capture = cv2.VideoCapture(0)
-        self.emotion_detection_interval = 5
+        self.emotion_detection_interval = 2
         self.last_emotion_detection_time = 0
 
         while self.ThreadActive:
