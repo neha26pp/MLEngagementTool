@@ -16,7 +16,7 @@ QWidget#headGridWidget  {
     background-color: darkblue;
     color: white;
 }
-QLabel, QLineEdit, QPushButton {
+QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
     font-size: 18px;
 }
 

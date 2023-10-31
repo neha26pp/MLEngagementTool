@@ -25,7 +25,7 @@ class PreSurveyWidget(QWidget):
 
         pre_survey_heading = QLabel("Pre Survey")
         pre_survey_heading.setObjectName("heading1")
-        pre_survey_heading.setFixedHeight(70)
+        pre_survey_heading.setFixedHeight(75)
         self.screen_layout.addWidget(pre_survey_heading)
 
         # Display personal information form
@@ -77,7 +77,7 @@ class PreSurveyWidget(QWidget):
         head_grid_widget = QWidget()
         head_grid_widget.setObjectName("headGridWidget")
         head_grid_widget.setLayout(head_grid_layout)
-        head_grid_widget.setFixedHeight(70)
+        head_grid_widget.setFixedHeight(75)
         self.screen_layout.addWidget(head_grid_widget)
         # show Likert Scale questions
         for question_i, question in enumerate(pre_survey_question):
@@ -132,6 +132,7 @@ class PostQuizWidget(QWidget):
         self.post_quiz = self.quiz_data[1]
         self.post_quiz_parts = self.post_quiz["Post-quiz"]
 
+        self.question_grid_widget = QWidget()
         self.question_grid_layout = QGridLayout()
         self.screen_layout = QVBoxLayout()
 
@@ -157,7 +158,7 @@ class PostQuizWidget(QWidget):
         # set reading text heading
         self.reading_text_heading = QLabel("Reading Text")
         self.reading_text_heading.setObjectName("heading1")
-        self.reading_text_heading.setFixedHeight(70)
+        self.reading_text_heading.setFixedHeight(75)
         self.screen_layout.addWidget(self.reading_text_heading)
         # show reading text content
         self.reading_text = QLabel(self.post_quiz_parts[0]['readingText'])
@@ -185,23 +186,22 @@ class PostQuizWidget(QWidget):
                 # add post quiz heading
                 post_quiz_heading = QLabel("Post Quiz")
                 post_quiz_heading.setObjectName("heading1")
-                post_quiz_heading.setFixedHeight(70)
+                post_quiz_heading.setFixedHeight(75)
                 self.screen_layout.addWidget(post_quiz_heading)
             else:
                 # remove post quiz widgets
                 self.screen_layout.removeWidget(self.post_quiz_widget)
                 self.post_quiz_widget.deleteLater()
-
             # initialize post quiz widget
             # this widget is for all post quiz widget excluding heading 1 and next button
             self.post_quiz_widget = QWidget()
             self.post_quiz_layout = QVBoxLayout()
             self.post_quiz_widget.setLayout(self.post_quiz_layout)
             self.screen_layout.addWidget(self.post_quiz_widget)
-            self.post_quiz_widget.setStyleSheet("background: lightblue")  # debugging
-
+            # self.post_quiz_widget.setStyleSheet("background: lightblue")  # debugging
+            # get quiz data
             headings = self.post_quiz_parts[1]['quiz']
-
+            # Display quiz
             if self.current_heading < len(headings):
                 current_part = headings[self.current_heading]
                 # show heading text
@@ -217,14 +217,19 @@ class PostQuizWidget(QWidget):
                     self.show_question()
                     # update question index
                     self.current_question += 1
-                else:
+                if self.current_question >= len(self.current_part_questions):
                     # update heading index
                     self.current_question = 0
                     self.current_heading += 1
+
                 # set next button
                 self.submit_button = QPushButton('Next')
                 self.post_quiz_layout.addWidget(self.submit_button)
                 self.submit_button.clicked.connect(self.go_to_next_question)
+            else:
+                self.screen_layout.removeWidget(self.post_quiz_widget)
+                self.post_quiz_widget.deleteLater()
+                self.show_completed_message()
         except Exception as e:
             print("An error occurred:", str(e))
 
@@ -254,15 +259,15 @@ class PostQuizWidget(QWidget):
                     head_grid_widget = QWidget()
                     head_grid_widget.setObjectName("headGridWidget")
                     head_grid_widget.setLayout(head_grid_layout)
-                    head_grid_widget.setFixedHeight(70)
+                    head_grid_widget.setFixedHeight(75)
                     self.post_quiz_layout.addWidget(head_grid_widget)
-                    # show Likert Scale questions
-                    for question_i, question in enumerate(self.current_part_questions):
-                        self.show_scale_questions(question_i, question)
                     # fix the column stretch
                     self.question_grid_layout.setColumnStretch(0, 1)
                     self.question_grid_layout.setColumnStretch(1, 2)
-                    self.post_quiz_layout.addItem(self.question_grid_layout)
+
+                    # show Likert Scale questions
+                    for question_i, question in enumerate(self.current_part_questions):
+                        self.show_scale_questions(question_i, question)
 
                 if self.question.get("text") != '':
                     # show question text
@@ -275,6 +280,7 @@ class PostQuizWidget(QWidget):
                     self.show_multiple_choice_options() # show multiple choice options
             except Exception as e:
                 print("An error occurred:", str(e))
+
     def show_single_choice_options(self):
         try:
             radio_group = QButtonGroup()
@@ -292,7 +298,7 @@ class PostQuizWidget(QWidget):
 
     def show_scale_questions(self, question_i, question):
         question_label = QLabel(question.get("text"))
-        if question_label != '':
+        if question.get("text") != '':
             question_label.setWordWrap(True)
             self.question_grid_layout.addWidget(question_label, question_i, 0)
             question_i += 1
@@ -301,9 +307,10 @@ class PostQuizWidget(QWidget):
                 question_label = QLabel(subtext)
                 question_label.setWordWrap(True)
                 self.question_grid_layout.addWidget(question_label, question_i + sub_question_i, 0)
-                self.post_quiz_layout.addLayout(self.question_grid_layout)
+                self.question_grid_widget.setLayout(self.question_grid_layout)
+                self.post_quiz_layout.addWidget(self.question_grid_widget)
                 # Show options
-                self.show_scale_options(question_i + sub_question_i)
+                self.show_scale_options(sub_question_i + question_i)
             else:
                 # Show options
                 self.show_scale_options(question_i)
@@ -334,7 +341,7 @@ class QuizApp(QWidget):
 
     def initUI(self):
         self.setWindowTitle('Quiz Application')
-        self.setGeometry(100, 100, 1200, 300)
+        self.setGeometry(100, 100, 1400, 400)
 
         # Read quiz data from YAML
         with open('quiz.yaml', 'r', encoding="utf-8") as yaml_file:
