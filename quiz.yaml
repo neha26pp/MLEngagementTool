@@ -1,31 +1,25 @@
 - Pre-survey:
   - information:
-    - "First Name"
-    - "Last Name"
-    - "Year of Birth"
-    - "Gender"
-    - "Race"
-    - "Current field of study (major):"
-    - "Current GPA"
-    - "Year standing"
-    - "Semester standing"
+    - First Name
+    - Last Name
+    - Year of Birth
+    - Gender
+    - Race
+    - Current field of study (major)
+    - Current GPA
+    - Year standing
+    - Semester standing
   - questions: 
     - text: How would you describe your knowledge of the topic of space and astrophysics?
-      options:
-        - Strongly Agree
-        - Agree
-        - Neither Agree nor Disagree
-        - Disagree
-        - Strongly Disagree
+      type: scale
+      hasSubtext: false
     - text: How would you describe your interest in the topic of space and astrophysics?
-      options:
-        - Strongly Agree
-        - Agree
-        - Neither Agree nor Disagree
-        - Disagree
-        - Strongly Disagree
+      type: scale
+      hasSubtext: false
     - text: I define myself as someone who..
-      options:
+      type: scale
+      hasSubtext: true
+      subtext:
         - Is reserved
         - Is generally trusting
         - Tends to be lazy
@@ -36,54 +30,57 @@
         - Does a thorough job
         - Gets nervous easily
         - Has an active imagination
-
 - Post-quiz:
-  - Text: "Over 150 moons combined orbit the planets of our solar system and one of those moons orbit around the Earth. The moon was formed about 4.5 billion years ago when, according to one theory, the Earth slammed into another early planet. Debris from this collision began to orbit Earth, and accumulated, forming today's moon.The moon is the fifth largest natural satellite in the solar system, with a diameter just under the width of China. It's composed of an iron rich core, plus a mantle and crust containing minerals made of magnesium, oxygen, and silicon. The moon's surface was once geologically active and covered in an ocean of magma. But today, apart from traces of water ice, the surface is completely covered in dust and rocky debris.Countless craters dot the moon's surface. Each of these craters were formed by objects such as meteoroids, comets and asteroids crashing onto the moon's surface. The largest crater, the South Pole Aitkin basin, spans across a quarter of the moon's surface, and is nearly deep enough to fit Mount Everest inside.The moon orbits our planet at an average distance of 30 Earths. It rotates at the same rate that it revolves. So, as it revolves around our planet, the same side of the moon faces the Earth at all times. From the Earth's surface, eight distinct stages of surface illumination, better known as the lunar phases, can be recognized. They have been observed for thousands of years, and even provided the basis for the earliest calendars. For most of human history, the moon could only be studied from afar. But on July 20th, 1969, humans were able to close that distance with the American spaceflight mission Apollo 11. This mission placed humans on the moon for the very first time, contributing to a better understanding of Earth's only natural satellite."
-  - questions: 
-    - text: "Based on your experience in reading the text - (strongly agree/agree/neither/disagree/strongly disagree)"
-      options:
-        - "I lost myself in reading this text"
-        - "The time I spent reading this text just slipped away"
-        - "I was absorbed in reading this text"
-        - "I felt frustrated while reading this text"
-        - "I found that reading this text was confusing to me"
-        - "Reading this text was taxing"
-        - "The presentation of this text was attractive"
-        - "The arrangement of this text was aesthetically appealing"
-        - "The text appealed to my senses"
-        - "Reading this text was worthwhile"
-        - "Reading this text was rewarding"
-        - "I felt interested in reading this text"
-    - text: "Based on the topic of the presented text"
-      options:
-        - "How was the earth’s moon formed?"
-        - "What is the main mineral that composes the moon’s core?"
-        - "If you want to study the largest crater on the moon, where would you land your astronauts?"
-        - "Select all the correct statements"
-        - "You learned about the Earth’s moon. Do you want to learn more about the largest moons in our solar system?"
-    - text: "How was the earth’s moon formed?"
-      options:
-        - "Debris from Earth’s collision with another planet"
-        - "Debris from the sun’s explosion"
-        - "Debris from earth’s collision with a comet"
-        - "It formed alongside Earth"
-    - text: "What is the main mineral that composes the moon’s core?"
-      options:
-        - "Carbon"
-        - "Magnesium"
-        - "Silicon"
-        - "Iron"
-    - text: "If you want to study the largest crater on the moon, where would you land your astronauts?"
-      options:
-        - "North pole"
-        - "South pole"
-    - text: "Select all the correct statements"
-      options:
-        - "The moon is made up of an iron-rich core, mantle, and crust containing minerals"
-        - "The phases of the moon are the basics for the earliest calendars"
-        - "Volcanic eruptions and earthquakes caused by the craters on the moon’s surface"
-        - "The moon doesn’t rotate because the same side of the moon always faces the Earth"
-    - text: "You learned about the Earth’s moon. Do you want to learn more about the largest moons in our solar system?"
-      options:
-        - "Yes"
-        - "No"
+  - readingText: "Over 150 moons combined orbit the planets of our solar system and one of those moons orbit around the Earth. The moon was formed about 4.5 billion years ago when, according to one theory, the Earth slammed into another early planet. Debris from this collision began to orbit Earth, and accumulated, forming today's moon.The moon is the fifth largest natural satellite in the solar system, with a diameter just under the width of China. It's composed of an iron rich core, plus a mantle and crust containing minerals made of magnesium, oxygen, and silicon. The moon's surface was once geologically active and covered in an ocean of magma. But today, apart from traces of water ice, the surface is completely covered in dust and rocky debris.Countless craters dot the moon's surface. Each of these craters were formed by objects such as meteoroids, comets and asteroids crashing onto the moon's surface. The largest crater, the South Pole Aitkin basin, spans across a quarter of the moon's surface, and is nearly deep enough to fit Mount Everest inside.The moon orbits our planet at an average distance of 30 Earths. It rotates at the same rate that it revolves. So, as it revolves around our planet, the same side of the moon faces the Earth at all times. From the Earth's surface, eight distinct stages of surface illumination, better known as the lunar phases, can be recognized. They have been observed for thousands of years, and even provided the basis for the earliest calendars. For most of human history, the moon could only be studied from afar. But on July 20th, 1969, humans were able to close that distance with the American spaceflight mission Apollo 11. This mission placed humans on the moon for the very first time, contributing to a better understanding of Earth's only natural satellite."
+  - quiz:
+    - heading: "Based on your experience in reading the text..."
+      questions:
+        - text: ''
+          type: scale
+          hasSubtext: true
+          subtext:
+            - "I lost myself in reading this text"
+            - "The time I spent reading this text just slipped away"
+            - "I was absorbed in reading this text"
+            - "I felt frustrated while reading this text"
+            - "I found that reading this text was confusing to me"
+            - "Reading this text was taxing"
+            - "The presentation of this text was attractive"
+            - "The arrangement of this text was aesthetically appealing"
+            - "The text appealed to my senses"
+            - "Reading this text was worthwhile"
+            - "Reading this text was rewarding"
+            - "I felt interested in reading this text"
+    - heading: "Based on the topic of the presented text"
+      questions:
+        - text: "How was the earth’s moon formed?"
+          type: single
+          options:
+            - "Debris from Earth’s collision with another planet"
+            - "Debris from the sun’s explosion"
+            - "Debris from earth’s collision with a comet"
+            - "It formed alongside Earth"
+        - text: "What is the main mineral that composes the moon’s core?"
+          type: single
+          options:
+            - "Carbon"
+            - "Magnesium"
+            - "Silicon"
+            - "Iron"
+        - text: "If you want to study the largest crater on the moon, where would you land your astronauts?"
+          type: single
+          options:
+            - "North pole"
+            - "South pole"
+        - text: "Select all the correct statements"
+          type: multiple
+          options:
+            - "The moon is made up of an iron-rich core, mantle, and crust containing minerals"
+            - "The phases of the moon are the basics for the earliest calendars"
+            - "Volcanic eruptions and earthquakes caused by the craters on the moon’s surface"
+            - "The moon doesn’t rotate because the same side of the moon always faces the Earth"
+        - text: "You learned about the Earth’s moon. Do you want to learn more about the largest moons in our solar system?"
+          type: single
+          options:
+            - "Yes"
+            - "No"
