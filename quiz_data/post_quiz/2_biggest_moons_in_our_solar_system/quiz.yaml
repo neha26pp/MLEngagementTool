@@ -1,0 +1,5 @@
+- text: "You learned about Earth’s moon. Do you want to see a fact chart showing other moons that orbit planets in our solar system?"
+  type: single
+  options:
+    - "Yes"
+    - "No"

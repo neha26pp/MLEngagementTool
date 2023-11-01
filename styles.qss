@@ -4,12 +4,13 @@ QLabel#heading1 {
     font-size: 30px;
     background-color: darkblue;
     color: white;
-    padding: 10px 0
-
+    padding: 10px 0;
 }
 
 QLabel#heading2 {
-    font-size: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: darkblue;
 }
 
 QWidget#headGridWidget  {
@@ -20,3 +21,6 @@ QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
     font-size: 18px;
 }
 
+QScrollArea {
+    padding: 0 40px;
+}
