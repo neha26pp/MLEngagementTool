@@ -3,6 +3,7 @@ This is a PyQT5 application for Researchers to measure student engagement.
 
 It uses a MVC - Model View Controller architecture. 
 
+You'll need python version 3.9
 Run your terminal or IDE as an administrator. 
 Install the following libraries:
 
