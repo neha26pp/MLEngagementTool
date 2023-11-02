@@ -2,8 +2,12 @@ import os
 import sys
 import yaml
 from pathlib import Path
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QRadioButton, QButtonGroup, \
-    QLineEdit, QFormLayout, QCheckBox, QGridLayout, QScrollArea
+
+from PyQt5.QtCore import QUrl
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWidgets import *
+from PyQt5 import QtWebEngineWidgets
+
 
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
@@ -188,7 +192,7 @@ class PostQuizWidget(QWidget):
         # Add reading material widget to screen layout
         self.screen_layout.addWidget(self.reading_text_widget)
 
-        # Set start quiz button
+        # Set watch video button
         self.video_button = QPushButton('Watch Video')
         self.screen_layout.addWidget(self.video_button)
         self.video_button.clicked.connect(self.show_video)
@@ -196,6 +200,7 @@ class PostQuizWidget(QWidget):
 
     def show_video(self):
         try:
+
             # Delete reading text widgets
             self.reading_text_widget.deleteLater()
             self.screen_layout.removeWidget(self.reading_text_heading)
@@ -205,12 +210,17 @@ class PostQuizWidget(QWidget):
             # Delete watch video button
             self.video_button.deleteLater()
             self.screen_layout.removeWidget(self.video_button)
+
+            # Get video URL
+            self.video_url = self.reading_text.get('video')
+            print(self.video_url)
             # Show video
-            print(type(video.Video()))
-            self.video = video.Video()
-            # self.videoWidget = QWidget()
-            # self.videoWidget.setLayout(self.video)
-            self.screen_layout.addWidget(self.video)
+
+            self.webview = QWebEngineView()
+            self.webview.setUrl(QUrl(self.video_url))
+            self.webview.show()
+            self.screen_layout.addWidget(self.webview)
+
             # Set start quiz button
             self.start_quiz_button = QPushButton('Start Quiz')
             self.screen_layout.addWidget(self.start_quiz_button)
@@ -221,19 +231,22 @@ class PostQuizWidget(QWidget):
     def go_to_next_question(self):
         try:
             if self.start_quiz_button:
-                #Delete video widget
-                # self.videoWidget.deleteLater()
-                # self.screen_layout.removeWidget(self.videoWidget)
-                #
+                # Delete video widget
+                # self.screen_layout.removeWidget(self.video_web_widget)
+                # self.webview.deleteLater()
+
                 # # Delete reading text widgets
                 # self.reading_text_widget.deleteLater()
                 # self.screen_layout.removeWidget(self.reading_text_heading)
                 # self.reading_text_heading.deleteLater()
-                # self.screen_layout.removeWidget(self.start_quiz_button)
-                # self.start_quiz_button.deleteLater()
                 # self.screen_layout.removeWidget(self.reading_topic)
                 # self.reading_topic.deleteLater()
+
+                # Delete start quiz button
+                self.screen_layout.removeWidget(self.start_quiz_button)
+                self.start_quiz_button.deleteLater()
                 self.start_quiz_button = None
+
                 # Add post quiz heading
                 self.post_quiz_heading = QLabel("Post Quiz")
                 self.post_quiz_heading.setObjectName("heading1")
