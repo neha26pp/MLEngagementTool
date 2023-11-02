@@ -12,7 +12,7 @@ from PyQt5 import QtWebEngineWidgets
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
 
-import View.video as video
+import video as video
 
 class PreSurveyWidget(QWidget):
     def __init__(self, pre_survey, parent=None):
@@ -218,7 +218,6 @@ class PostQuizWidget(QWidget):
 
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.video_url))
-            self.webview.show()
             self.screen_layout.addWidget(self.webview)
 
             # Set start quiz button
@@ -232,8 +231,8 @@ class PostQuizWidget(QWidget):
         try:
             if self.start_quiz_button:
                 # Delete video widget
-                # self.screen_layout.removeWidget(self.video_web_widget)
-                # self.webview.deleteLater()
+                self.screen_layout.removeWidget(self.webview)
+                self.webview.deleteLater()
 
                 # # Delete reading text widgets
                 # self.reading_text_widget.deleteLater()
