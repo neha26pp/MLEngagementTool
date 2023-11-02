@@ -21,6 +21,6 @@ QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
     font-size: 18px;
 }
 
-QScrollArea {
-    padding: 0 40px;
+QScrollArea QLabel {
+    padding: 20px 40px;
 }

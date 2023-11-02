@@ -1,11 +1,9 @@
 import os
 import sys
 import yaml
-import json
 from pathlib import Path
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QRadioButton, QButtonGroup, \
     QLineEdit, QFormLayout, QCheckBox, QGridLayout, QScrollArea
-
 
 class PreSurveyWidget(QWidget):
     def __init__(self, pre_survey, parent=None):
@@ -116,13 +114,12 @@ class PreSurveyWidget(QWidget):
 
     def get_answers(self):##########
         # Get answers from personal information widgets
-        information_answers = [info_input.text() for info_input in self.information_widgets]
+        information_answers = [info_input.text() for info_input in self.info_input]
         # Get the selected radio button option
         selected_option = self.radio_group.checkedId()
         # Combine and return the answers
         print(information_answers + [selected_option])
         return information_answers + [selected_option]
-
 
 class PostQuizWidget(QWidget):
     def __init__(self, pairs, parent=None):
@@ -175,7 +172,6 @@ class PostQuizWidget(QWidget):
 
         # Show reading topic if available
         if self.reading_topic != '':
-            print(self.reading_text.get('topic'))
             self.reading_topic.setObjectName("heading2")
             self.screen_layout.addWidget(self.reading_topic)
 
@@ -193,6 +189,7 @@ class PostQuizWidget(QWidget):
         self.start_quiz_button.clicked.connect(self.go_to_next_question)
 
     def show_video(self):
+
         pass
 
     def go_to_next_question(self):
