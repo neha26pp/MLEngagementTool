@@ -5,6 +5,11 @@ from pathlib import Path
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QRadioButton, QButtonGroup, \
     QLineEdit, QFormLayout, QCheckBox, QGridLayout, QScrollArea
 
+video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
+sys.path.append(video_directory)
+
+import View.video as video
+
 class PreSurveyWidget(QWidget):
     def __init__(self, pre_survey, parent=None):
         super().__init__(parent)
@@ -152,7 +157,7 @@ class PostQuizWidget(QWidget):
             self.post_quiz = self.pairs[self.current_material].quiz
             # show material
             self.show_reading_material()
-            self.show_video()
+
             self.current_material += 1
         else:
             self.show_completed_message()
@@ -184,25 +189,50 @@ class PostQuizWidget(QWidget):
         self.screen_layout.addWidget(self.reading_text_widget)
 
         # Set start quiz button
-        self.start_quiz_button = QPushButton('Start Quiz')
-        self.screen_layout.addWidget(self.start_quiz_button)
-        self.start_quiz_button.clicked.connect(self.go_to_next_question)
+        self.video_button = QPushButton('Watch Video')
+        self.screen_layout.addWidget(self.video_button)
+        self.video_button.clicked.connect(self.show_video)
+
 
     def show_video(self):
-
-        pass
+        try:
+            # Delete reading text widgets
+            self.reading_text_widget.deleteLater()
+            self.screen_layout.removeWidget(self.reading_text_heading)
+            self.reading_text_heading.deleteLater()
+            self.screen_layout.removeWidget(self.reading_topic)
+            self.reading_topic.deleteLater()
+            # Delete watch video button
+            self.video_button.deleteLater()
+            self.screen_layout.removeWidget(self.video_button)
+            # Show video
+            print(type(video.Video()))
+            self.video = video.Video()
+            # self.videoWidget = QWidget()
+            # self.videoWidget.setLayout(self.video)
+            self.screen_layout.addWidget(self.video)
+            # Set start quiz button
+            self.start_quiz_button = QPushButton('Start Quiz')
+            self.screen_layout.addWidget(self.start_quiz_button)
+            self.start_quiz_button.clicked.connect(self.go_to_next_question)
+        except Exception as e:
+            print("An error occurred:", str(e))
 
     def go_to_next_question(self):
         try:
             if self.start_quiz_button:
-                # Delete reading text widgets
-                self.reading_text_widget.deleteLater()
-                self.screen_layout.removeWidget(self.reading_text_heading)
-                self.reading_text_heading.deleteLater()
-                self.screen_layout.removeWidget(self.start_quiz_button)
-                self.start_quiz_button.deleteLater()
-                self.screen_layout.removeWidget(self.reading_topic)
-                self.reading_topic.deleteLater()
+                #Delete video widget
+                # self.videoWidget.deleteLater()
+                # self.screen_layout.removeWidget(self.videoWidget)
+                #
+                # # Delete reading text widgets
+                # self.reading_text_widget.deleteLater()
+                # self.screen_layout.removeWidget(self.reading_text_heading)
+                # self.reading_text_heading.deleteLater()
+                # self.screen_layout.removeWidget(self.start_quiz_button)
+                # self.start_quiz_button.deleteLater()
+                # self.screen_layout.removeWidget(self.reading_topic)
+                # self.reading_topic.deleteLater()
                 self.start_quiz_button = None
                 # Add post quiz heading
                 self.post_quiz_heading = QLabel("Post Quiz")
@@ -379,13 +409,15 @@ class QuizApp(QWidget):
         self.setGeometry(100, 100, 1400, 400)
 
         # Read pre survey data from YAML
-        with open('./quiz_data/pre_survey.yaml', 'r', encoding='utf-8') as yaml_file:
+        with open('../quiz_data/pre_survey.yaml', 'r', encoding='utf-8') as yaml_file:
             pre_survey = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
         self.loadMaterialQuizPairs()
 
         # pass data to pre survey and post quiz
         self.pre_survey_widget = PreSurveyWidget(pre_survey)
+        print(type(self.pre_survey_widget))
+
         self.post_quiz_widget = PostQuizWidget(self.pairs)
 
         # show pre-survey
@@ -412,7 +444,7 @@ class QuizApp(QWidget):
 
     def loadMaterialQuizPairs(self):
         # Directory where subdirectories containing material and quiz files are located
-        directory = "./quiz_data/post_quiz"  # Update to your directory path
+        directory = "../quiz_data/post_quiz"  # Update to your directory path
 
         # Initialize an empty list to store MaterialQuizPair instances
         pairs = []
@@ -447,7 +479,7 @@ class MaterialQuizPair:
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    app.setStyleSheet(Path('styles.qss').read_text())
+    app.setStyleSheet(Path('../styles.qss').read_text())
     ex = QuizApp()
     ex.show()
     sys.exit(app.exec_())
