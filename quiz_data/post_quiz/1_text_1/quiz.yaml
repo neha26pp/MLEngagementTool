@@ -1,0 +1,47 @@
+- text: ''
+  type: scale
+  hasSubtext: true
+  subtext:
+    - "I lost myself in reading this text"
+    - "The time I spent reading this text just slipped away"
+    - "I was absorbed in reading this text"
+    - "I felt frustrated while reading this text"
+    - "I found that reading this text was confusing to me"
+    - "Reading this text was taxing"
+    - "The presentation of this text was attractive"
+    - "The arrangement of this text was aesthetically appealing"
+    - "The text appealed to my senses"
+    - "Reading this text was worthwhile"
+    - "Reading this text was rewarding"
+    - "I felt interested in reading this text"
+- text: "How was the earth’s moon formed?"
+  type: single
+  options:
+    - "Debris from Earth’s collision with another planet"
+    - "Debris from the sun’s explosion"
+    - "Debris from earth’s collision with a comet"
+    - "It formed alongside Earth"
+- text: "What is the main mineral that composes the moon’s core?"
+  type: single
+  options:
+    - "Carbon"
+    - "Magnesium"
+    - "Silicon"
+    - "Iron"
+- text: "If you want to study the largest crater on the moon, where would you land your astronauts?"
+  type: single
+  options:
+    - "North pole"
+    - "South pole"
+- text: "Select all the correct statements"
+  type: multiple
+  options:
+    - "The moon is made up of an iron-rich core, mantle, and crust containing minerals"
+    - "The phases of the moon are the basics for the earliest calendars"
+    - "Volcanic eruptions and earthquakes caused by the craters on the moon’s surface"
+    - "The moon doesn’t rotate because the same side of the moon always faces the Earth"
+- text: "You learned about the Earth’s moon. Do you want to learn more about the largest moons in our solar system?"
+  type: single
+  options:
+    - "Yes"
+    - "No"
