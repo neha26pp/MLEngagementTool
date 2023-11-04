@@ -14,7 +14,7 @@ video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
 
 import video as video
-
+import emotional_analysis as emotional_analysis
 
 class PreSurveyWidget(QWidget):
     def __init__(self, pre_survey, parent=None):
@@ -146,6 +146,7 @@ class PreSurveyWidget(QWidget):
         super().__init__(parent)
         self.pre_survey = pre_survey
         self.screen_layout = QVBoxLayout()
+        self.emotional_analysis = emotional_analysis
         # radio button
         self.buttonGroups = []  # for radio button groups
         self.question_grid_layout = QGridLayout()
@@ -267,10 +268,10 @@ class PreSurveyWidget(QWidget):
 
 
 class PostQuizWidget(QWidget):
-    def __init__(self, display_content, parent=None):
+    def __init__(self, display_content, emotional_analysis, parent=None):
         super().__init__(parent)
         # read data
-
+        self.emotional_analysis = emotional_analysis
         self.display_content = display_content
 
         # initialize layouts
@@ -590,11 +591,18 @@ class PostQuizWidget(QWidget):
         )  # Append the button group to a list for later access
 
     def show_completed_message(self):
+        # stop recording subject and performing emotional analysis
+        self.emotional_analysis.stop() 
+        print("Emotions detected throughout session: " ,self.emotional_analysis.detected_emotions)
+
+
         for i in reversed(range(self.post_quiz_layout.count())):
             self.post_quiz_layout.itemAt(i).widget().deleteLater()
 
         self.completed_label = QLabel("Post Quiz Completed!")
         self.screen_layout.addWidget(self.completed_label)
+
+       
 
 
 class QuizApp(QWidget):
@@ -616,11 +624,14 @@ class QuizApp(QWidget):
 
         self.loadMaterialQuizPairs()
 
+        # create an instance of EmotionalAnalysis
+        self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
+
         # pass data to pre survey and post quiz
         self.pre_survey_widget = PreSurveyWidget(pre_survey)
         print(type(self.pre_survey_widget))
 
-        self.post_quiz_widget = PostQuizWidget(self.display_content)
+        self.post_quiz_widget = PostQuizWidget(self.display_content, self.emotional_analysis)
 
         # show pre-survey
         self.screen_layout.addWidget(self.pre_survey_widget)
@@ -638,6 +649,10 @@ class QuizApp(QWidget):
         # remove next button
         self.screen_layout.removeWidget(self.submit_button)
         self.submit_button.deleteLater()
+
+        # start recording subject and performing emotional analysis
+        print("starting emotional analysis")
+        self.emotional_analysis.start()
 
         # add post_quiz widgets
         self.screen_layout.addWidget(self.post_quiz_widget)
@@ -718,9 +733,9 @@ class VideoQuizPair:
         self.quiz = quiz
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setStyleSheet(Path("../styles.qss").read_text())
-    ex = QuizApp()
-    ex.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     app.setStyleSheet(Path("../styles.qss").read_text())
+#     ex = QuizApp()
+#     ex.show()
+#     sys.exit(app.exec_())

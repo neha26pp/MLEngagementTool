@@ -8,8 +8,8 @@ from PyQt5.QtCore import *
 class EmotionalAnalysis(QThread):
     '''Facial Emotional Detection with DeepFace'''
 
-    ImageUpdate = pyqtSignal(QImage)
-    emotion_signal = pyqtSignal(str)
+    # ImageUpdate = pyqtSignal(QImage)
+    # emotion_signal = pyqtSignal(str)
     detected_emotions = []
 
     def __init__(self):
@@ -47,7 +47,7 @@ class EmotionalAnalysis(QThread):
                 Pic = ConvertToQTFormat.scaled(640, 480, Qt.KeepAspectRatio)
 
                
-                self.ImageUpdate.emit(Pic)
+                # self.ImageUpdate.emit(Pic) # show opencv face feed
                
 
                 current_time = time.time()
@@ -57,7 +57,7 @@ class EmotionalAnalysis(QThread):
                 )
                 for result in results:
                     emotion = result['dominant_emotion']
-                    self.emotion_signal.emit(emotion)
+                    # self.emotion_signal.emit(emotion)
                     print("EMOOOOOOTION" , emotion)
                     self.detected_emotions.append(emotion)
                 self.last_emotion_detection_time = current_time
