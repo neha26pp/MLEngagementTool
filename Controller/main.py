@@ -5,6 +5,10 @@ from pathlib import Path
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QRadioButton, QButtonGroup, \
     QLineEdit, QFormLayout, QCheckBox, QGridLayout, QScrollArea
 import quiz
+import emotional_analysis
+
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
