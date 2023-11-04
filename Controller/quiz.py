@@ -2,8 +2,19 @@ import os
 import sys
 import yaml
 from pathlib import Path
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QRadioButton, QButtonGroup, \
-    QLineEdit, QFormLayout, QCheckBox, QGridLayout, QScrollArea
+import random
+
+from PyQt5.QtCore import QUrl
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWidgets import *
+from PyQt5 import QtWebEngineWidgets
+
+
+video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
+sys.path.append(video_directory)
+
+import video as video
+
 
 class PreSurveyWidget(QWidget):
     def __init__(self, pre_survey, parent=None):
@@ -11,7 +22,7 @@ class PreSurveyWidget(QWidget):
         self.pre_survey = pre_survey
         self.screen_layout = QVBoxLayout()
         # radio button
-        self.buttonGroups = [] # for radio button groups
+        self.buttonGroups = []  # for radio button groups
         self.question_grid_layout = QGridLayout()
         self.radio_group = QButtonGroup(self)
 
@@ -53,7 +64,13 @@ class PreSurveyWidget(QWidget):
 
         # Create a grid layout for scale ratings
         scale_rating_grid_layout = QGridLayout()
-        option_list = ["strongly agree", "agree", "neither", "disagree", "strongly disagree"]
+        option_list = [
+            "strongly agree",
+            "agree",
+            "neither",
+            "disagree",
+            "strongly disagree",
+        ]
         for i, option in enumerate(option_list):
             option_label = QLabel(option)
             option_label.setObjectName("headGridWidget")
@@ -90,7 +107,9 @@ class PreSurveyWidget(QWidget):
                 # Create QLabel for subtext, set it to word wrap, and add it to the layout
                 question_label = QLabel(text)
                 question_label.setWordWrap(True)
-                self.question_grid_layout.addWidget(question_label, question_i + sub_question_i + 1, 0)
+                self.question_grid_layout.addWidget(
+                    question_label, question_i + sub_question_i + 1, 0
+                )
                 # Show scale options for subtext questions
                 self.show_scale_options(question_i + sub_question_i + 1)
         # Check if it's a regular scale question
@@ -112,7 +131,7 @@ class PreSurveyWidget(QWidget):
         # Append the radio button group to a list for future reference
         self.buttonGroups.append(radio_group)
 
-    def get_answers(self):##########
+    def get_answers(self):  ##########
         # Get answers from personal information widgets
         information_answers = [info_input.text() for info_input in self.info_input]
         # Get the selected radio button option
@@ -121,11 +140,138 @@ class PreSurveyWidget(QWidget):
         print(information_answers + [selected_option])
         return information_answers + [selected_option]
 
+
+class PreSurveyWidget(QWidget):
+    def __init__(self, pre_survey, parent=None):
+        super().__init__(parent)
+        self.pre_survey = pre_survey
+        self.screen_layout = QVBoxLayout()
+        # radio button
+        self.buttonGroups = []  # for radio button groups
+        self.question_grid_layout = QGridLayout()
+        self.radio_group = QButtonGroup(self)
+
+        self.initUI()
+
+    def initUI(self):
+        # Create a label for "Pre Survey" heading
+        pre_survey_heading = QLabel("Pre Survey")
+        pre_survey_heading.setObjectName("heading1")
+        pre_survey_heading.setFixedHeight(75)
+        self.screen_layout.addWidget(pre_survey_heading)
+
+        # Create a grid layout for personal information form
+        info_grid_layout = QGridLayout()
+        for i, info in enumerate(self.pre_survey.get("information_form")):
+            info_form_layout = QFormLayout()
+            info_label = QLabel(info)
+            info_input = QLineEdit()
+            info_label.setFixedWidth(120 if i % 3 < 2 else 250)
+            info_input.setFixedWidth(125)
+            info_form_layout.addRow(info_label, info_input)
+            info_grid_layout.addItem(info_form_layout, int(i / 3), i % 3)
+        info_grid_layout.setColumnStretch(0, 1)
+        info_grid_layout.setColumnStretch(1, 1)
+        info_grid_layout.setColumnStretch(2, 2)
+        info_grid_widget = QWidget()
+        info_grid_widget.setLayout(info_grid_layout)
+        info_grid_widget.setFixedHeight(100)
+        self.screen_layout.addWidget(info_grid_widget)
+
+        # Create a grid layout for personal information question table
+        head_grid_layout = QGridLayout()
+        head_grid_layout.setColumnStretch(0, 1)
+        head_grid_layout.setColumnStretch(1, 2)
+        for i, label_text in enumerate(["Questions", "Scale Ratings"]):
+            head_question_label = QLabel(label_text)
+            head_question_label.setObjectName("headGridWidget")
+            head_grid_layout.addWidget(head_question_label, 0, i)
+
+        # Create a grid layout for scale ratings
+        scale_rating_grid_layout = QGridLayout()
+        option_list = [
+            "strongly agree",
+            "agree",
+            "neither",
+            "disagree",
+            "strongly disagree",
+        ]
+        for i, option in enumerate(option_list):
+            option_label = QLabel(option)
+            option_label.setObjectName("headGridWidget")
+            scale_rating_grid_layout.addWidget(option_label, 0, i)
+
+        # Add scale ratings to head grid layout
+        head_grid_layout.addItem(scale_rating_grid_layout, 1, 1)
+        head_grid_widget = QWidget()
+        head_grid_widget.setObjectName("headGridWidget")
+        head_grid_widget.setLayout(head_grid_layout)
+        head_grid_widget.setFixedHeight(75)
+        self.screen_layout.addWidget(head_grid_widget)
+
+        # Show Likert Scale questions
+        for question_i, question in enumerate(self.pre_survey.get("questions")):
+            self.show_scale_questions(question_i, question)
+
+        # Fix column stretch
+        self.question_grid_layout.setColumnStretch(0, 1)
+        self.question_grid_layout.setColumnStretch(1, 2)
+
+        # Set layouts
+        self.screen_layout.addItem(self.question_grid_layout)
+        self.setLayout(self.screen_layout)
+
+    def show_scale_questions(self, question_i, question):
+        # Create a QLabel for the question text and set it to word wrap
+        question_label = QLabel(question.get("text"))
+        question_label.setWordWrap(True)
+        self.question_grid_layout.addWidget(question_label, question_i, 0)
+        # Check if it's a scale question with subtext
+        if question.get("type") == "scale" and question.get("hasSubtext"):
+            for sub_question_i, text in enumerate(question.get("subtext")):
+                # Create QLabel for subtext, set it to word wrap, and add it to the layout
+                question_label = QLabel(text)
+                question_label.setWordWrap(True)
+                self.question_grid_layout.addWidget(
+                    question_label, question_i + sub_question_i + 1, 0
+                )
+                # Show scale options for subtext questions
+                self.show_scale_options(question_i + sub_question_i + 1)
+        # Check if it's a regular scale question
+        elif question.get("type") == "scale":
+            # Show scale options for the question
+            self.show_scale_options(question_i)
+
+    def show_scale_options(self, question_i):
+        # Create a button group for radio buttons
+        radio_group = QButtonGroup(self)
+        layout_scale_option = QGridLayout()
+        # Create radio buttons
+        for radio_button_i in range(5):
+            radio_button = QRadioButton()
+            radio_group.addButton(radio_button, radio_button_i)
+            layout_scale_option.addWidget(radio_button, 0, radio_button_i)
+        # Add the layout with radio buttons to the main question grid layout
+        self.question_grid_layout.addLayout(layout_scale_option, question_i, 1)
+        # Append the radio button group to a list for future reference
+        self.buttonGroups.append(radio_group)
+
+    def get_answers(self):  ##########
+        # Get answers from personal information widgets
+        information_answers = [info_input.text() for info_input in self.info_input]
+        # Get the selected radio button option
+        selected_option = self.radio_group.checkedId()
+        # Combine and return the answers
+        print(information_answers + [selected_option])
+        return information_answers + [selected_option]
+
+
 class PostQuizWidget(QWidget):
-    def __init__(self, pairs, parent=None):
+    def __init__(self, display_content, parent=None):
         super().__init__(parent)
         # read data
-        self.pairs = pairs
+
+        self.display_content = display_content
 
         # initialize layouts
         self.question_grid_widget = QWidget()
@@ -147,13 +293,29 @@ class PostQuizWidget(QWidget):
             print("An error occurred:", str(e))
 
     def go_to_next_material(self):
-        if self.current_material < len(self.pairs):
-            self.reading_text = self.pairs[self.current_material].material.get("reading-text")
-            self.post_quiz = self.pairs[self.current_material].quiz
-            # show material
-            self.show_reading_material()
-            self.show_video()
+        if self.current_material < len(self.display_content):
+            # display content has either [video, text] or [text, video]
+
+            if type(self.display_content[self.current_material]) is TextQuizPair:
+                self.reading_text = self.display_content[
+                    self.current_material
+                ].material.get("reading-text")
+                self.post_quiz = self.display_content[self.current_material].quiz
+                self.show_reading_material()
+            else:
+                self.video_button = QPushButton("Watch Video")
+                self.screen_layout.addWidget(self.video_button)
+                self.video_button.clicked.connect(self.show_video)
+                self.reading_text =  self.display_content[self.current_material].material.get("reading-text")
+                self.video_url = (
+                    self.display_content[self.current_material]
+                    .material.get("reading-text")
+                    .get("video")
+                )
+                self.post_quiz = self.display_content[self.current_material].quiz
+
             self.current_material += 1
+
         else:
             self.show_completed_message()
 
@@ -168,42 +330,86 @@ class PostQuizWidget(QWidget):
         self.reading_text_heading.setFixedHeight(75)
         self.screen_layout.addWidget(self.reading_text_heading)
 
-        self.reading_topic = QLabel(self.reading_text.get('topic'))
+        self.reading_topic = QLabel(self.reading_text.get("topic"))
 
         # Show reading topic if available
-        if self.reading_topic != '':
+        if self.reading_topic != "":
             self.reading_topic.setObjectName("heading2")
             self.screen_layout.addWidget(self.reading_topic)
 
         # Show reading text content
-        self.reading_text_label = QLabel(' '.join(self.reading_text.get('text')))
+        self.reading_text_label = QLabel(" ".join(self.reading_text.get("text")))
         self.reading_text_label.setWordWrap(True)
         self.reading_text_widget.setWidget(self.reading_text_label)
 
         # Add reading material widget to screen layout
         self.screen_layout.addWidget(self.reading_text_widget)
+        self.webview = None
 
         # Set start quiz button
-        self.start_quiz_button = QPushButton('Start Quiz')
+        self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
         self.start_quiz_button.clicked.connect(self.go_to_next_question)
 
     def show_video(self):
+        try:
+            print("in video function")
+            # Get video URL
 
-        pass
+            if self.video_button:
+                self.video_button.deleteLater()
+                self.screen_layout.removeWidget(self.video_button)
+
+            self.reading_text_widget = QScrollArea()
+            # self.reading_text_widget.setStyleSheet("background: lightblue") # Debugging
+            self.reading_text_widget.setWidgetResizable(True)
+            # Set reading text heading
+            self.reading_text_heading = QLabel("Video")
+            self.reading_text_heading.setObjectName("heading1")
+            self.reading_text_heading.setFixedHeight(75)
+            self.screen_layout.addWidget(self.reading_text_heading)
+
+            self.reading_topic = QLabel(self.reading_text.get("topic"))
+
+            # Show reading topic if available
+            # if self.reading_topic != "":
+            # self.reading_topic.setObjectName("heading2")
+            # self.screen_layout.addWidget(self.reading_topic)
+            self.webview = QWebEngineView()
+            self.webview.setUrl(QUrl(self.video_url))
+            self.screen_layout.addWidget(self.webview)
+            # Set start quiz button
+            self.start_quiz_button = QPushButton("Start Quiz")
+            self.screen_layout.addWidget(self.start_quiz_button)
+            self.start_quiz_button.clicked.connect(self.go_to_next_question)
+
+        except Exception as e:
+            print("An error occurred in video func:", str(e))
 
     def go_to_next_question(self):
         try:
             if self.start_quiz_button:
+                print("start quiz clicked")
+
                 # Delete reading text widgets
-                self.reading_text_widget.deleteLater()
-                self.screen_layout.removeWidget(self.reading_text_heading)
-                self.reading_text_heading.deleteLater()
+                if self.reading_text_widget:
+                    print("deleting reading_text_widget")
+                    self.reading_text_widget.deleteLater()
+                    self.screen_layout.removeWidget(self.reading_text_heading)
+                    self.reading_text_heading.deleteLater()
+                    self.screen_layout.removeWidget(self.reading_topic)
+                    self.reading_topic.deleteLater()
+
+                if self.webview:
+                    print("deleting video webview")
+                    self.webview.deleteLater()
+                    self.screen_layout.removeWidget(self.webview)
+
+                # Delete start quiz button
                 self.screen_layout.removeWidget(self.start_quiz_button)
                 self.start_quiz_button.deleteLater()
-                self.screen_layout.removeWidget(self.reading_topic)
-                self.reading_topic.deleteLater()
                 self.start_quiz_button = None
+
                 # Add post quiz heading
                 self.post_quiz_heading = QLabel("Post Quiz")
                 self.post_quiz_heading.setObjectName("heading1")
@@ -225,6 +431,7 @@ class PostQuizWidget(QWidget):
             # self.post_quiz_widget.setStyleSheet("background: lightblue")  # Debugging
 
             # Get questions data
+            
             if self.current_question < len(self.post_quiz):
                 # Show the current question
                 self.question = self.post_quiz[self.current_question]
@@ -232,7 +439,7 @@ class PostQuizWidget(QWidget):
                 # Update question index
                 self.current_question += 1
                 # Set next button
-                self.submit_button = QPushButton('Next')
+                self.submit_button = QPushButton("Next")
                 self.screen_layout.addWidget(self.submit_button)
                 self.submit_button.clicked.connect(self.go_to_next_question)
             else:
@@ -242,19 +449,21 @@ class PostQuizWidget(QWidget):
                 self.screen_layout.removeWidget(self.post_quiz_heading)
                 self.post_quiz_heading.deleteLater()
                 self.go_to_next_material()
-                # self.show_completed_message()
                 return
         except Exception as e:
-            print("An error occurred:", str(e))
+            print("An error occurred in go to next question:", str(e))
 
     def show_question(self):
         try:
-            self.buttonGroups = []  # List to hold radio button groups for scale questions
+            self.buttonGroups = (
+                []
+            )  # List to hold radio button groups for scale questions
 
             if self.question.get("type") == "scale":
                 # Set heading for scale questions
                 heading_label = QLabel(
-                    "Based on your experience in reading the text - (strongly agree/agree/neither/disagree/strongly disagree)")
+                    "Based on your experience in reading the text - (strongly agree/agree/neither/disagree/strongly disagree)"
+                )
                 self.post_quiz_layout.addWidget(heading_label)
 
                 # Display table for scale questions
@@ -274,7 +483,13 @@ class PostQuizWidget(QWidget):
 
                 # Display scale rating labels
                 scale_rating_grid_layout = QGridLayout()
-                option_list = ["strongly agree", "agree", "neither", "disagree", "strongly disagree"]
+                option_list = [
+                    "strongly agree",
+                    "agree",
+                    "neither",
+                    "disagree",
+                    "strongly disagree",
+                ]
                 for i, option in enumerate(option_list):
                     option_label = QLabel(option)
                     option_label.setObjectName("headGridWidget")
@@ -299,14 +514,14 @@ class PostQuizWidget(QWidget):
                 heading_label = QLabel("Based on the topic of the presented text")
                 self.post_quiz_layout.addWidget(heading_label)
 
-            if self.question.get("text") != '':
+            if self.question.get("text") != "":
                 # Show question text
                 question_label = QLabel(self.question.get("text"))
                 self.post_quiz_layout.addWidget(question_label)
 
-            if self.question['type'] == 'single':
+            if self.question["type"] == "single":
                 self.show_single_choice_options()  # Show single choice options
-            if self.question['type'] == 'multiple':
+            if self.question["type"] == "multiple":
                 self.show_multiple_choice_options()  # Show multiple choice options
 
         except Exception as e:
@@ -315,7 +530,7 @@ class PostQuizWidget(QWidget):
     def show_single_choice_options(self):
         try:
             radio_group = QButtonGroup()
-            for i, option in enumerate(self.question.get('options')):
+            for i, option in enumerate(self.question.get("options")):
                 radio_button = QRadioButton(option)
                 self.post_quiz_layout.addWidget(radio_button)
                 radio_group.addButton(radio_button, i)
@@ -323,7 +538,7 @@ class PostQuizWidget(QWidget):
             print("An error occurred:", str(e))
 
     def show_multiple_choice_options(self):
-        for i, option in enumerate(self.question.get('options')):
+        for i, option in enumerate(self.question.get("options")):
             checkbox = QCheckBox(option)
             self.post_quiz_layout.addWidget(checkbox)
 
@@ -335,7 +550,9 @@ class PostQuizWidget(QWidget):
                 question_label.setWordWrap(True)
 
                 # Add label to the question grid layout
-                self.question_grid_layout.addWidget(question_label, sub_question_i + question_i, 0)
+                self.question_grid_layout.addWidget(
+                    question_label, sub_question_i + question_i, 0
+                )
                 self.question_grid_widget.setLayout(self.question_grid_layout)
                 self.post_quiz_layout.addWidget(self.question_grid_widget)
 
@@ -347,52 +564,69 @@ class PostQuizWidget(QWidget):
 
     def show_scale_options(self, question_i):
         # Define the scale options
-        option_list = ["strongly agree", "agree", "neither", "disagree", "strongly disagree"]
+        option_list = [
+            "strongly agree",
+            "agree",
+            "neither",
+            "disagree",
+            "strongly disagree",
+        ]
         radio_group = QButtonGroup(self)  # Create a button group for radio buttons
         layout_scale_option = QGridLayout()  # Create a grid layout for scale options
 
         for radio_button_i, _ in enumerate(option_list):
             radio_button = QRadioButton()  # Create a radio button for the option
-            radio_group.addButton(radio_button, radio_button_i)  # Add button to button group
-            layout_scale_option.addWidget(radio_button, 0, radio_button_i)  # Add button to grid layout
+            radio_group.addButton(
+                radio_button, radio_button_i
+            )  # Add button to button group
+            layout_scale_option.addWidget(
+                radio_button, 0, radio_button_i
+            )  # Add button to grid layout
 
         # Add the scale options layout to the question grid layout
         self.question_grid_layout.addLayout(layout_scale_option, question_i, 1)
-        self.buttonGroups.append(radio_group)  # Append the button group to a list for later access
+        self.buttonGroups.append(
+            radio_group
+        )  # Append the button group to a list for later access
 
     def show_completed_message(self):
         for i in reversed(range(self.post_quiz_layout.count())):
             self.post_quiz_layout.itemAt(i).widget().deleteLater()
 
-        self.completed_label = QLabel('Post Quiz Completed!')
+        self.completed_label = QLabel("Post Quiz Completed!")
         self.screen_layout.addWidget(self.completed_label)
+
 
 class QuizApp(QWidget):
     def __init__(self):
         super().__init__()
         self.screen_layout = QVBoxLayout()
-        self.pairs = None
+        self.text_pairs = None
+        self.video_pairs = None
+        self.display_content = None
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Quiz Application')
+        self.setWindowTitle("Quiz Application")
         self.setGeometry(100, 100, 1400, 400)
 
         # Read pre survey data from YAML
-        with open('./quiz_data/pre_survey.yaml', 'r', encoding='utf-8') as yaml_file:
+        with open("../quiz_data/pre_survey.yaml", "r", encoding="utf-8") as yaml_file:
             pre_survey = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
         self.loadMaterialQuizPairs()
 
         # pass data to pre survey and post quiz
         self.pre_survey_widget = PreSurveyWidget(pre_survey)
-        self.post_quiz_widget = PostQuizWidget(self.pairs)
+        print(type(self.pre_survey_widget))
+
+        self.post_quiz_widget = PostQuizWidget(self.display_content)
 
         # show pre-survey
         self.screen_layout.addWidget(self.pre_survey_widget)
         self.setLayout(self.screen_layout)
         # add next button
-        self.submit_button = QPushButton('Next')
+        self.submit_button = QPushButton("Next")
         self.screen_layout.addWidget(self.submit_button)
         self.submit_button.clicked.connect(self.transition_to_post_quiz)
 
@@ -412,42 +646,81 @@ class QuizApp(QWidget):
 
     def loadMaterialQuizPairs(self):
         # Directory where subdirectories containing material and quiz files are located
-        directory = "./quiz_data/post_quiz"  # Update to your directory path
+        directory = "../quiz_data/post_quiz"  # Update to your directory path
 
         # Initialize an empty list to store MaterialQuizPair instances
-        pairs = []
+        self.text_pairs = []
+        self.video_pairs = []
+
+        self.display_content = []
 
         # Iterate through the subdirectories
         for subdir in os.listdir(directory):
             subdir_path = os.path.join(directory, subdir)
-
+            print(subdir_path)
             # Check if it's a directory
             if os.path.isdir(subdir_path):
                 material_path = os.path.join(subdir_path, "material.yaml")
-                quiz_path = os.path.join(subdir_path, "quiz.yaml")
+                text_quiz_path = os.path.join(subdir_path, "text_quiz.yaml")
+                video_quiz_path = os.path.join(subdir_path, "video_quiz.yaml")
 
                 # Check if both material and quiz files exist in the subdirectory
-                if os.path.exists(material_path) and os.path.exists(quiz_path):
-                    # Read the contents of material and quiz files
-                    with open(material_path, 'r', encoding='utf-8') as material_file:
+                if (
+                    os.path.exists(material_path)
+                    and os.path.exists(text_quiz_path)
+                    and os.path.exists(video_quiz_path)
+                ):
+                    # Read the contents of material and text quiz and video quiz files
+                    with open(material_path, "r", encoding="utf-8") as material_file:
                         material_data = yaml.load(material_file, Loader=yaml.FullLoader)
-                    with open(quiz_path, 'r', encoding='utf-8') as quiz_file:
-                        quiz_data = yaml.load(quiz_file, Loader=yaml.FullLoader)
-                    # Create a MaterialQuizPair instance and append to the list
-                    pair = MaterialQuizPair(material_data, quiz_data)
-                    pairs.append(pair)
+                    with open(text_quiz_path, "r", encoding="utf-8") as quiz_file:
+                        text_quiz_data = yaml.load(quiz_file, Loader=yaml.FullLoader)
+                    with open(video_quiz_path, "r", encoding="utf-8") as quiz_file:
+                        video_quiz_data = yaml.load(quiz_file, Loader=yaml.FullLoader)
 
-        # Store the list of pairs in self.pairs for later use
-        self.pairs = pairs
+                    # Create a TextQuizPair instance and append to the list
 
-class MaterialQuizPair:
+                    self.text_pair = TextQuizPair(material_data, text_quiz_data)
+                    self.text_pairs.append(self.text_pair)
+                    print("PAIRS ---", self.text_pairs)
+
+                    # Create a VideoQuizPair instance and append to the list
+                    self.video_pair = VideoQuizPair(material_data, video_quiz_data)
+                    self.video_pairs.append(self.video_pair)
+                else:
+                    print("something's wrong")
+
+        # randomly pick a text from text_pairs
+        self.rand_text = random.choice(self.text_pairs)
+        # randomly pick a video from video_pairs
+        self.rand_video = random.choice(self.video_pairs)
+
+        # generate a random number to determine sequence of video and text (if rand num == 1, text first; else video first)
+        rand_num = random.randint(1, 2)
+        print(rand_num)
+        if rand_num == 1:
+            self.display_content.append(self.rand_text)
+            self.display_content.append(self.rand_video)
+        else:
+            self.display_content.append(self.rand_video)
+            self.display_content.append(self.rand_text)
+
+
+class TextQuizPair:
     def __init__(self, material, quiz):
         self.material = material
         self.quiz = quiz
 
-if __name__ == '__main__':
+
+class VideoQuizPair:
+    def __init__(self, material, quiz):
+        self.material = material
+        self.quiz = quiz
+
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyleSheet(Path('styles.qss').read_text())
+    app.setStyleSheet(Path("../styles.qss").read_text())
     ex = QuizApp()
     ex.show()
     sys.exit(app.exec_())
