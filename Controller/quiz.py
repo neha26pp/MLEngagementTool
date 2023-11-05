@@ -12,133 +12,10 @@ from PyQt5 import QtWebEngineWidgets
 
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
-
+file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 import video as video
 import emotional_analysis as emotional_analysis
 
-class PreSurveyWidget(QWidget):
-    def __init__(self, pre_survey, parent=None):
-        super().__init__(parent)
-        self.pre_survey = pre_survey
-        self.screen_layout = QVBoxLayout()
-        # radio button
-        self.buttonGroups = []  # for radio button groups
-        self.question_grid_layout = QGridLayout()
-        self.radio_group = QButtonGroup(self)
-
-        self.initUI()
-
-    def initUI(self):
-        # Create a label for "Pre Survey" heading
-        pre_survey_heading = QLabel("Pre Survey")
-        pre_survey_heading.setObjectName("heading1")
-        pre_survey_heading.setFixedHeight(75)
-        self.screen_layout.addWidget(pre_survey_heading)
-
-        # Create a grid layout for personal information form
-        info_grid_layout = QGridLayout()
-        for i, info in enumerate(self.pre_survey.get("information_form")):
-            info_form_layout = QFormLayout()
-            info_label = QLabel(info)
-            info_input = QLineEdit()
-            info_label.setFixedWidth(120 if i % 3 < 2 else 250)
-            info_input.setFixedWidth(125)
-            info_form_layout.addRow(info_label, info_input)
-            info_grid_layout.addItem(info_form_layout, int(i / 3), i % 3)
-        info_grid_layout.setColumnStretch(0, 1)
-        info_grid_layout.setColumnStretch(1, 1)
-        info_grid_layout.setColumnStretch(2, 2)
-        info_grid_widget = QWidget()
-        info_grid_widget.setLayout(info_grid_layout)
-        info_grid_widget.setFixedHeight(100)
-        self.screen_layout.addWidget(info_grid_widget)
-
-        # Create a grid layout for personal information question table
-        head_grid_layout = QGridLayout()
-        head_grid_layout.setColumnStretch(0, 1)
-        head_grid_layout.setColumnStretch(1, 2)
-        for i, label_text in enumerate(["Questions", "Scale Ratings"]):
-            head_question_label = QLabel(label_text)
-            head_question_label.setObjectName("headGridWidget")
-            head_grid_layout.addWidget(head_question_label, 0, i)
-
-        # Create a grid layout for scale ratings
-        scale_rating_grid_layout = QGridLayout()
-        option_list = [
-            "strongly agree",
-            "agree",
-            "neither",
-            "disagree",
-            "strongly disagree",
-        ]
-        for i, option in enumerate(option_list):
-            option_label = QLabel(option)
-            option_label.setObjectName("headGridWidget")
-            scale_rating_grid_layout.addWidget(option_label, 0, i)
-
-        # Add scale ratings to head grid layout
-        head_grid_layout.addItem(scale_rating_grid_layout, 1, 1)
-        head_grid_widget = QWidget()
-        head_grid_widget.setObjectName("headGridWidget")
-        head_grid_widget.setLayout(head_grid_layout)
-        head_grid_widget.setFixedHeight(75)
-        self.screen_layout.addWidget(head_grid_widget)
-
-        # Show Likert Scale questions
-        for question_i, question in enumerate(self.pre_survey.get("questions")):
-            self.show_scale_questions(question_i, question)
-
-        # Fix column stretch
-        self.question_grid_layout.setColumnStretch(0, 1)
-        self.question_grid_layout.setColumnStretch(1, 2)
-
-        # Set layouts
-        self.screen_layout.addItem(self.question_grid_layout)
-        self.setLayout(self.screen_layout)
-
-    def show_scale_questions(self, question_i, question):
-        # Create a QLabel for the question text and set it to word wrap
-        question_label = QLabel(question.get("text"))
-        question_label.setWordWrap(True)
-        self.question_grid_layout.addWidget(question_label, question_i, 0)
-        # Check if it's a scale question with subtext
-        if question.get("type") == "scale" and question.get("hasSubtext"):
-            for sub_question_i, text in enumerate(question.get("subtext")):
-                # Create QLabel for subtext, set it to word wrap, and add it to the layout
-                question_label = QLabel(text)
-                question_label.setWordWrap(True)
-                self.question_grid_layout.addWidget(
-                    question_label, question_i + sub_question_i + 1, 0
-                )
-                # Show scale options for subtext questions
-                self.show_scale_options(question_i + sub_question_i + 1)
-        # Check if it's a regular scale question
-        elif question.get("type") == "scale":
-            # Show scale options for the question
-            self.show_scale_options(question_i)
-
-    def show_scale_options(self, question_i):
-        # Create a button group for radio buttons
-        radio_group = QButtonGroup(self)
-        layout_scale_option = QGridLayout()
-        # Create radio buttons
-        for radio_button_i in range(5):
-            radio_button = QRadioButton()
-            radio_group.addButton(radio_button, radio_button_i)
-            layout_scale_option.addWidget(radio_button, 0, radio_button_i)
-        # Add the layout with radio buttons to the main question grid layout
-        self.question_grid_layout.addLayout(layout_scale_option, question_i, 1)
-        # Append the radio button group to a list for future reference
-        self.buttonGroups.append(radio_group)
-
-    def get_answers(self):  ##########
-        # Get answers from personal information widgets
-        information_answers = [info_input.text() for info_input in self.info_input]
-        # Get the selected radio button option
-        selected_option = self.radio_group.checkedId()
-        # Combine and return the answers
-        print(information_answers + [selected_option])
-        return information_answers + [selected_option]
 
 
 class PreSurveyWidget(QWidget):
@@ -257,14 +134,29 @@ class PreSurveyWidget(QWidget):
         # Append the radio button group to a list for future reference
         self.buttonGroups.append(radio_group)
 
-    def get_answers(self):  ##########
+     def get_answers(self):  ##########
         # Get answers from personal information widgets
-        information_answers = [info_input.text() for info_input in self.info_input]
-        # Get the selected radio button option
-        selected_option = self.radio_group.checkedId()
-        # Combine and return the answers
-        print(information_answers + [selected_option])
-        return information_answers + [selected_option]
+        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
+    
+        # Get the selected radio button options for scale questions
+        selected_options = []
+        for radio_group in self.buttonGroups:
+            selected_option = radio_group.checkedId()
+            if selected_option != -1:
+                selected_options.append(selected_option)
+
+        responses = information_answers + selected_options
+         # Save responses to a file
+        with open(file_path, "a") as file:
+            file.write("Pre Survey Responses:\n")
+            for response in responses:
+                file.write(str(response) + "\n")
+
+        # Print a message indicating that the responses have been saved
+        print("Responses saved to file:", file_path)
+
+        return responses
+        
 
 
 class PostQuizWidget(QWidget):
@@ -282,6 +174,7 @@ class PostQuizWidget(QWidget):
         # initialize index
         self.current_question = 0
         self.current_material = 0
+        self.buttonGroups = [] # for radio button groups
 
         self.initUI()
 
@@ -392,6 +285,8 @@ class PostQuizWidget(QWidget):
             if self.start_quiz_button:
                 print("start quiz clicked")
 
+                
+
                 # Delete reading text widgets
                 if self.reading_text_widget:
                     print("deleting reading_text_widget")
@@ -417,6 +312,7 @@ class PostQuizWidget(QWidget):
                 self.post_quiz_heading.setFixedHeight(75)
                 self.screen_layout.addWidget(self.post_quiz_heading)
             else:
+                responses = self.get_answers()
                 # Remove post quiz widgets
                 self.screen_layout.removeWidget(self.post_quiz_widget)
                 self.post_quiz_widget.deleteLater()
@@ -456,10 +352,6 @@ class PostQuizWidget(QWidget):
 
     def show_question(self):
         try:
-            self.buttonGroups = (
-                []
-            )  # List to hold radio button groups for scale questions
-
             if self.question.get("type") == "scale":
                 # Set heading for scale questions
                 heading_label = QLabel(
@@ -602,7 +494,43 @@ class PostQuizWidget(QWidget):
         self.completed_label = QLabel("Post Quiz Completed!")
         self.screen_layout.addWidget(self.completed_label)
 
-       
+    def get_answers(self):  ##########
+        # Get answers from personal information widgets
+         # Collect answers from personal information widgets (text input fields)
+        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
+
+        # Collect the selected radio button options for scale questions
+        selected_options = []
+        for radio_group in self.buttonGroups:
+            selected_option = radio_group.checkedId()
+            if selected_option != -1:
+                selected_options.append(selected_option)
+
+        checkbox_responses = []
+        for checkbox in self.findChildren(QCheckBox):
+            if checkbox.isChecked():
+                checkbox_responses.append(checkbox.text())
+
+        selected_radio_response = None
+        for radio_button in self.findChildren(QRadioButton):
+            if radio_button.isChecked():
+                selected_radio_response = radio_button.text()
+                break  # Exit the loop after finding the selected radio response
+
+        # Combine all the responses
+        responses = information_answers + selected_options + checkbox_responses + [selected_radio_response]
+
+        # Save responses to a file
+        with open(file_path, "a") as file:
+            file.write("Post Quiz Responses:\n")
+            for response in responses:
+                file.write(str(response) + "\n")
+
+        # Print a message indicating that the responses have been saved
+        print("Responses saved to file:", file_path)
+
+        return responses
+        
 
 
 class QuizApp(QWidget):
@@ -642,6 +570,8 @@ class QuizApp(QWidget):
         self.submit_button.clicked.connect(self.transition_to_post_quiz)
 
     def transition_to_post_quiz(self):
+
+        responses = self.pre_survey_widget.get_answers()
         # remove pre-survey widgets
         self.screen_layout.removeWidget(self.pre_survey_widget)
         self.pre_survey_widget.deleteLater()
