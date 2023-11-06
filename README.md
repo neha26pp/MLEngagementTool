@@ -1,5 +1,5 @@
 # MLEngagementTool
-This is a PyQT5 application for Researchers to measure student engagement. 
+This is a PyQT5 application for Researchers to measure student engagement using ML. 
 
 It uses a MVC - Model View Controller architecture. 
 
