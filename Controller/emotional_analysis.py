@@ -11,6 +11,7 @@ class EmotionalAnalysis(QThread):
     # ImageUpdate = pyqtSignal(QImage)
     # emotion_signal = pyqtSignal(str)
     detected_emotions = []
+    current_time = 0
 
     def __init__(self):
         super(EmotionalAnalysis, self).__init__()
@@ -58,7 +59,7 @@ class EmotionalAnalysis(QThread):
                 for result in results:
                     emotion = result['dominant_emotion']
                     # self.emotion_signal.emit(emotion)
-                    print("EMOOOOOOTION" , emotion)
+                    print("EMOTION DETECTED: " , emotion)
                     self.detected_emotions.append(emotion)
                 self.last_emotion_detection_time = current_time
                 
