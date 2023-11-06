@@ -134,7 +134,7 @@ class PreSurveyWidget(QWidget):
         # Append the radio button group to a list for future reference
         self.buttonGroups.append(radio_group)
 
-    def get_answers(self):  ##########
+     def get_answers(self):  ##########
         # Get answers from personal information widgets
         information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
     
