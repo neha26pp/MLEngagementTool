@@ -16,10 +16,38 @@ file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "response
 import video as video
 import emotional_analysis as emotional_analysis
 
+class ConsentFormWidget(QWidget):
+    def __init__(self, consent_form, parent=None):
+        super().__init__(parent)
+        self.screen_layout = QVBoxLayout()
+        self.consent_form = consent_form
+        self.initUI()
+    
+    def initUI(self):
+
+        self.form_content_widget = QScrollArea()
+        self.form_content_widget.setWidgetResizable(True)
+         # Create a label for "Pre Survey" heading
+        self.consent_form_heading = QLabel("Consent Form")
+        self.consent_form_heading.setObjectName("heading1")
+        self.consent_form_heading.setFixedHeight(75)
+        self.screen_layout.addWidget(self.consent_form_heading)
+
+        # Show reading text content
+        self.form_content_label = QLabel(" ".join(self.consent_form.get("text")))
+        print(self.consent_form.get("text"))
+        self.form_content_label.setWordWrap(True)
+        self.form_content_widget.setWidget(self.form_content_label)
+
+        self.screen_layout.addWidget(self.form_content_widget)
+
+        # # Add reading material widget to screen layout
+        # self.screen_layout.addWidget(self.form_content_label)
+        self.setLayout(self.screen_layout)
 
 
 class PreSurveyWidget(QWidget):
-    def __init__(self, pre_survey, parent=None):
+    def __init__(self, pre_survey, submit_button, submit_quiz_button, parent=None):
         super().__init__(parent)
         self.pre_survey = pre_survey
         self.screen_layout = QVBoxLayout()
@@ -28,7 +56,8 @@ class PreSurveyWidget(QWidget):
         self.buttonGroups = []  # for radio button groups
         self.question_grid_layout = QGridLayout()
         self.radio_group = QButtonGroup(self)
-
+        self.next_button = submit_button
+        self.submit_quiz_button = submit_quiz_button
         self.initUI()
 
     def initUI(self):
@@ -134,7 +163,21 @@ class PreSurveyWidget(QWidget):
         # Append the radio button group to a list for future reference
         self.buttonGroups.append(radio_group)
 
-    def get_answers(self):  ##########
+    def update_submit_button(self):
+        all_radio_buttons_selected = all(radio_group.checkedId() != -1 for radio_group in self.buttonGroups)
+
+        # Check if all text fields are filled
+        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
+        all_text_questions_answered = all(text_answer.strip() for text_answer in information_answers)
+        print(all_radio_buttons_selected and all_text_questions_answered)
+        self.next_button.setEnabled(all_radio_buttons_selected and all_text_questions_answered)
+        if (all_radio_buttons_selected and all_text_questions_answered):
+            self.submit_quiz_button.setEnabled(False)
+        
+
+
+    def get_answers(self): 
+        
         # Get answers from personal information widgets
         information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
     
@@ -238,8 +281,9 @@ class PostQuizWidget(QWidget):
 
         # Add reading material widget to screen layout
         self.screen_layout.addWidget(self.reading_text_widget)
-        self.webview = None
 
+        self.webview = None
+        
         # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
@@ -266,9 +310,9 @@ class PostQuizWidget(QWidget):
             self.reading_topic = QLabel(self.reading_text.get("topic"))
 
             # Show reading topic if available
-            # if self.reading_topic != "":
-            # self.reading_topic.setObjectName("heading2")
-            # self.screen_layout.addWidget(self.reading_topic)
+            if self.reading_topic != "":
+                self.reading_topic.setObjectName("heading2")
+                self.screen_layout.addWidget(self.reading_topic)
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.video_url))
             self.screen_layout.addWidget(self.webview)
@@ -546,6 +590,10 @@ class QuizApp(QWidget):
         self.setWindowTitle("Quiz Application")
         self.setGeometry(100, 100, 1400, 400)
 
+        # Read consent form data from YAML
+        with open("../quiz_data/consent_form.yaml", "r", encoding="utf-8") as yaml_file:
+            consent_form = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
         # Read pre survey data from YAML
         with open("../quiz_data/pre_survey.yaml", "r", encoding="utf-8") as yaml_file:
             pre_survey = yaml.load(yaml_file, Loader=yaml.FullLoader)
@@ -555,17 +603,67 @@ class QuizApp(QWidget):
         # create an instance of EmotionalAnalysis
         self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
 
+        # create an instance of ConsentFormWidget
+        self.consent_form_widget = ConsentFormWidget(consent_form)
+
+        self.submit_button = QPushButton("Next")
+        self.submit_button.setEnabled(False)
+
+        self.submit_quiz_button = QPushButton("Submit Quiz")
+
         # pass data to pre survey and post quiz
-        self.pre_survey_widget = PreSurveyWidget(pre_survey)
-        print(type(self.pre_survey_widget))
+        self.pre_survey_widget = PreSurveyWidget(pre_survey, self.submit_button, self.submit_quiz_button)
+
 
         self.post_quiz_widget = PostQuizWidget(self.display_content, self.emotional_analysis)
 
-        # show pre-survey
-        self.screen_layout.addWidget(self.pre_survey_widget)
+        # show consent form
+        self.screen_layout.addWidget(self.consent_form_widget)
+        self.consent_form_widget.show()
         self.setLayout(self.screen_layout)
+        
+
+        # Create a checkbox for user agreement
+        self.agree_checkbox = QCheckBox("I agree to the terms and conditions")
+        self.agree_checkbox.stateChanged.connect(self.update_start_pre_survey_button)
+        self.screen_layout.addWidget(self.agree_checkbox)
+
+        
+        # add a Start Pre-survey button 
+        self.start_pre_survey_button = QPushButton("Start Pre-survey")
+        self.start_pre_survey_button.setEnabled(False)
+        self.screen_layout.addWidget(self.start_pre_survey_button)
+        self.start_pre_survey_button.clicked.connect(self.transition_to_pre_survey)
+
+    def update_start_pre_survey_button(self ):
+        if self.agree_checkbox.isChecked():
+            self.start_pre_survey_button.setEnabled(True)
+        else:
+            self.start_pre_survey_button.setEnabled(False)
+    
+    def transition_to_pre_survey(self):
+        # remove consent form widgets
+        self.screen_layout.removeWidget(self.consent_form_widget)
+        self.consent_form_widget.deleteLater()
+
+        self.screen_layout.removeWidget(self.agree_checkbox)
+        self.agree_checkbox.deleteLater()
+
+
+        # remove next button
+        self.screen_layout.removeWidget(self.start_pre_survey_button)
+        self.start_pre_survey_button.deleteLater()
+
+        # add pre_survey widgets
+        self.screen_layout.addWidget(self.pre_survey_widget)
+        # show pre_survey
+        self.pre_survey_widget.show()
+
+        # Add a submit quiz button
+        self.screen_layout.addWidget(self.submit_quiz_button)
+        self.submit_quiz_button.clicked.connect(self.pre_survey_widget.update_submit_button)
+
         # add next button
-        self.submit_button = QPushButton("Next")
         self.screen_layout.addWidget(self.submit_button)
         self.submit_button.clicked.connect(self.transition_to_post_quiz)
 
@@ -575,6 +673,10 @@ class QuizApp(QWidget):
         # remove pre-survey widgets
         self.screen_layout.removeWidget(self.pre_survey_widget)
         self.pre_survey_widget.deleteLater()
+
+        # remove submit quiz button
+        self.screen_layout.removeWidget(self.submit_quiz_button)
+        self.submit_quiz_button.deleteLater()
 
         # remove next button
         self.screen_layout.removeWidget(self.submit_button)
@@ -588,6 +690,8 @@ class QuizApp(QWidget):
         self.screen_layout.addWidget(self.post_quiz_widget)
         # show post_quiz
         self.post_quiz_widget.show()
+
+       
 
     def loadMaterialQuizPairs(self):
         # Directory where subdirectories containing material and quiz files are located
@@ -637,8 +741,20 @@ class QuizApp(QWidget):
 
         # randomly pick a text from text_pairs
         self.rand_text = random.choice(self.text_pairs)
-        # randomly pick a video from video_pairs
-        self.rand_video = random.choice(self.video_pairs)
+
+        # print the index of self.rand_text
+        index = self.text_pairs.index(self.rand_text)
+
+        # remove the element at index from video_pairs
+    
+        
+        self.video_pairs.remove(self.video_pairs[index]) # remove the picked text from the list so that it's corresponding video cannot be picked
+        
+        # pick video from other topic
+        print("self.text_pairs", self.video_pairs)
+        self.rand_video = self.video_pairs[0]
+        print("self.rand_video", self.rand_video)
+        
 
         # generate a random number to determine sequence of video and text (if rand num == 1, text first; else video first)
         rand_num = random.randint(1, 2)
