@@ -8,6 +8,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWebEngineWidgets
+from PyQt5.QtCore import QTimer
 
 
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
@@ -16,10 +17,37 @@ file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "response
 import video as video
 import emotional_analysis as emotional_analysis
 
+class ConsentFormWidget(QWidget):
+    def __init__(self, consent_form, parent=None):
+        super().__init__(parent)
+        self.screen_layout = QVBoxLayout()
+        self.consent_form = consent_form
+        self.initUI()
+    
+    def initUI(self):
+
+        self.form_content_widget = QScrollArea()
+        self.form_content_widget.setWidgetResizable(True)
+         # Create a label for "Pre Survey" heading
+        self.consent_form_heading = QLabel("Consent Form")
+        self.consent_form_heading.setObjectName("heading1")
+        self.consent_form_heading.setFixedHeight(75)
+        self.screen_layout.addWidget(self.consent_form_heading)
+
+        # Show reading text content
+        self.form_content_label = QLabel(" ".join(self.consent_form.get("text")))
+        self.form_content_label.setWordWrap(True)
+        self.form_content_widget.setWidget(self.form_content_label)
+
+        self.screen_layout.addWidget(self.form_content_widget)
+
+        # # Add reading material widget to screen layout
+        # self.screen_layout.addWidget(self.form_content_label)
+        self.setLayout(self.screen_layout)
 
 
 class PreSurveyWidget(QWidget):
-    def __init__(self, pre_survey, parent=None):
+    def __init__(self, pre_survey, submit_button, submit_quiz_button, parent=None):
         super().__init__(parent)
         self.pre_survey = pre_survey
         self.screen_layout = QVBoxLayout()
@@ -28,6 +56,14 @@ class PreSurveyWidget(QWidget):
         self.buttonGroups = []  # for radio button groups
         self.question_grid_layout = QGridLayout()
         self.radio_group = QButtonGroup(self)
+        self.next_button = submit_button
+        self.submit_quiz_button = submit_quiz_button
+
+        self.recording_message = None
+        self.flash_timer = QTimer(self)
+        self.flash_state = False
+        self.flash_count = 0
+        self.max_flash_count = 2  # Set the maximum number of flashes
 
         self.initUI()
 
@@ -101,6 +137,7 @@ class PreSurveyWidget(QWidget):
 
     def show_scale_questions(self, question_i, question):
         # Create a QLabel for the question text and set it to word wrap
+        
         question_label = QLabel(question.get("text"))
         question_label.setWordWrap(True)
         self.question_grid_layout.addWidget(question_label, question_i, 0)
@@ -134,7 +171,55 @@ class PreSurveyWidget(QWidget):
         # Append the radio button group to a list for future reference
         self.buttonGroups.append(radio_group)
 
-    def get_answers(self):  ##########
+    def show_recording_message(self, message):
+        # Display a message saying "Recording will begin on next page"
+        self.recording_message = QLabel(message)
+        self.recording_message.setObjectName("recording_message")
+        self.recording_message.setStyleSheet("font-size: 20px; font-weight: bold; color: red;")
+        self.screen_layout.addWidget(self.recording_message)
+
+        # Start the flash timer to make the message flash
+        self.flash_timer.timeout.connect(self.toggle_flash)
+        self.flash_timer.start(500)  # Adjust the flash interval (in milliseconds) based on your preference
+
+    def toggle_flash(self):
+        # Toggle the flash state and update the message visibility accordingly
+        self.flash_state = not self.flash_state
+        self.recording_message.setVisible(self.flash_state)
+
+        # Check if the maximum number of flashes is reached
+        if self.flash_state and self.flash_count >= self.max_flash_count:
+            self.flash_timer.stop()
+            self.hide_recording_message()
+
+        # Increment the flash count if the message is visible
+        if self.flash_state:
+            self.flash_count += 1
+
+    def hide_recording_message(self):
+        # Remove the recording message widget
+         if self.recording_message:
+            self.screen_layout.removeWidget(self.recording_message)
+            self.recording_message.deleteLater()
+            self.recording_message = None
+
+    def update_submit_button(self):
+        self.show_recording_message("Recording will begin on next page")
+
+        all_radio_buttons_selected = all(radio_group.checkedId() != -1 for radio_group in self.buttonGroups)
+
+        # Check if all text fields are filled
+        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
+        all_text_questions_answered = all(text_answer.strip() for text_answer in information_answers)
+        print(all_radio_buttons_selected and all_text_questions_answered)
+        self.next_button.setEnabled(all_radio_buttons_selected and all_text_questions_answered)
+        if (all_radio_buttons_selected and all_text_questions_answered):
+            self.submit_quiz_button.setEnabled(False)
+        
+
+
+    def get_answers(self): 
+        
         # Get answers from personal information widgets
         information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
     
@@ -176,6 +261,12 @@ class PostQuizWidget(QWidget):
         self.current_material = 0
         self.buttonGroups = [] # for radio button groups
 
+        self.recording_message = None
+        self.flash_timer = QTimer(self)
+        self.flash_state = False
+        self.flash_count = 0
+        self.max_flash_count = 2  # Set the maximum number of flashes
+
         self.initUI()
 
     def initUI(self):
@@ -184,7 +275,40 @@ class PostQuizWidget(QWidget):
             self.go_to_next_material()
 
         except Exception as e:
-            print("An error occurred:", str(e))
+            print("An error occurred in initUI:", str(e))
+
+    def show_recording_message(self, message):
+        # Display a message saying "Recording will begin on next page"
+        self.recording_message = QLabel(message)
+        self.recording_message.setObjectName("recording_message")
+        self.recording_message.setStyleSheet("font-size: 20px; font-weight: bold; color: red;")
+        self.screen_layout.addWidget(self.recording_message)
+
+        # Start the flash timer to make the message flash
+        self.flash_timer.timeout.connect(self.toggle_flash)
+        self.flash_timer.start(500)  # Adjust the flash interval (in milliseconds) based on your preference
+    
+    def toggle_flash(self):
+        # Toggle the flash state and update the message visibility accordingly
+        self.flash_state = not self.flash_state
+        if self.recording_message:
+            self.recording_message.setVisible(self.flash_state)
+
+        # Check if the maximum number of flashes is reached
+        if self.flash_state and self.flash_count >= self.max_flash_count:
+            self.flash_timer.stop()
+            self.hide_recording_message()
+
+        # Increment the flash count if the message is visible
+        if self.flash_state:
+            self.flash_count += 1
+
+    def hide_recording_message(self):
+        # Remove the recording message widget
+        if self.recording_message:
+            self.screen_layout.removeWidget(self.recording_message)
+            self.recording_message.deleteLater()
+            self.recording_message = None
 
     def go_to_next_material(self):
         if self.current_material < len(self.display_content):
@@ -207,7 +331,6 @@ class PostQuizWidget(QWidget):
                     .get("video")
                 )
                 self.post_quiz = self.display_content[self.current_material].quiz
-
             self.current_material += 1
 
         else:
@@ -238,8 +361,9 @@ class PostQuizWidget(QWidget):
 
         # Add reading material widget to screen layout
         self.screen_layout.addWidget(self.reading_text_widget)
-        self.webview = None
 
+        self.webview = None
+        
         # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
@@ -247,7 +371,6 @@ class PostQuizWidget(QWidget):
 
     def show_video(self):
         try:
-            print("in video function")
             # Get video URL
 
             if self.video_button:
@@ -266,9 +389,9 @@ class PostQuizWidget(QWidget):
             self.reading_topic = QLabel(self.reading_text.get("topic"))
 
             # Show reading topic if available
-            # if self.reading_topic != "":
-            # self.reading_topic.setObjectName("heading2")
-            # self.screen_layout.addWidget(self.reading_topic)
+            if self.reading_topic != "":
+                self.reading_topic.setObjectName("heading2")
+                self.screen_layout.addWidget(self.reading_topic)
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.video_url))
             self.screen_layout.addWidget(self.webview)
@@ -283,13 +406,11 @@ class PostQuizWidget(QWidget):
     def go_to_next_question(self):
         try:
             if self.start_quiz_button:
-                print("start quiz clicked")
-
-                
-
+                self.hide_recording_message()
+                self.emotional_analysis.stop() # stop recording subject and performing emotional analysis
+                print("stopping emotional analysis")
                 # Delete reading text widgets
                 if self.reading_text_widget:
-                    print("deleting reading_text_widget")
                     self.reading_text_widget.deleteLater()
                     self.screen_layout.removeWidget(self.reading_text_heading)
                     self.reading_text_heading.deleteLater()
@@ -297,7 +418,6 @@ class PostQuizWidget(QWidget):
                     self.reading_topic.deleteLater()
 
                 if self.webview:
-                    print("deleting video webview")
                     self.webview.deleteLater()
                     self.screen_layout.removeWidget(self.webview)
 
@@ -325,10 +445,7 @@ class PostQuizWidget(QWidget):
             self.post_quiz_layout = QVBoxLayout()
             self.post_quiz_widget.setLayout(self.post_quiz_layout)
             self.screen_layout.addWidget(self.post_quiz_widget)
-            # self.post_quiz_widget.setStyleSheet("background: lightblue")  # Debugging
-
-            # Get questions data
-            
+    
             if self.current_question < len(self.post_quiz):
                 # Show the current question
                 self.question = self.post_quiz[self.current_question]
@@ -341,16 +458,20 @@ class PostQuizWidget(QWidget):
                 self.submit_button.clicked.connect(self.go_to_next_question)
             else:
                 self.current_question = 0
+                self.show_recording_message("Recording will begin now")
                 self.screen_layout.removeWidget(self.post_quiz_widget)
                 self.post_quiz_widget.deleteLater()
                 self.screen_layout.removeWidget(self.post_quiz_heading)
                 self.post_quiz_heading.deleteLater()
                 self.go_to_next_material()
+                self.emotional_analysis.start()
+                print("starting emotional analysis")
                 return
         except Exception as e:
             print("An error occurred in go to next question:", str(e))
 
     def show_question(self):
+        
         try:
             if self.question.get("type") == "scale":
                 # Set heading for scale questions
@@ -358,7 +479,7 @@ class PostQuizWidget(QWidget):
                     "Based on your experience in reading the text - (strongly agree/agree/neither/disagree/strongly disagree)"
                 )
                 self.post_quiz_layout.addWidget(heading_label)
-
+        
                 # Display table for scale questions
                 head_grid_layout = QGridLayout()
                 head_grid_layout.setColumnStretch(0, 1)
@@ -395,6 +516,9 @@ class PostQuizWidget(QWidget):
                 head_grid_widget.setFixedHeight(75)
                 self.post_quiz_layout.addWidget(head_grid_widget)
 
+                # Create a grid layout for questions
+                self.question_grid_layout = QGridLayout()
+
                 # Fix the column stretch
                 self.question_grid_layout.setColumnStretch(0, 1)
                 self.question_grid_layout.setColumnStretch(1, 2)
@@ -402,6 +526,7 @@ class PostQuizWidget(QWidget):
                 # Show Likert Scale questions
                 for question_i, question in enumerate(self.post_quiz):
                     self.show_scale_questions(question_i, question)
+
             else:
                 # Set heading for non-scale questions
                 heading_label = QLabel("Based on the topic of the presented text")
@@ -418,7 +543,7 @@ class PostQuizWidget(QWidget):
                 self.show_multiple_choice_options()  # Show multiple choice options
 
         except Exception as e:
-            print("An error occurred:", str(e))
+            print("An error occurred in show_question:", str(e))
 
     def show_single_choice_options(self):
         try:
@@ -436,8 +561,16 @@ class PostQuizWidget(QWidget):
             self.post_quiz_layout.addWidget(checkbox)
 
     def show_scale_questions(self, question_i, question):
+    
+        self.question_grid_widget = QWidget()
+
+    
+        self.question_grid_layout = QGridLayout()
+       
         if question.get("hasSubtext"):
+            print(type(question.get("subtext")))
             for sub_question_i, subtext in enumerate(question.get("subtext")):
+                
                 # Create label for subtext
                 question_label = QLabel(subtext)
                 question_label.setWordWrap(True)
@@ -485,6 +618,8 @@ class PostQuizWidget(QWidget):
     def show_completed_message(self):
         # stop recording subject and performing emotional analysis
         self.emotional_analysis.stop() 
+        self.hide_recording_message()
+        print("stopping emotional analysis")
         print("Emotions detected throughout session: " ,self.emotional_analysis.detected_emotions)
 
 
@@ -546,6 +681,10 @@ class QuizApp(QWidget):
         self.setWindowTitle("Quiz Application")
         self.setGeometry(100, 100, 1400, 400)
 
+        # Read consent form data from YAML
+        with open("../quiz_data/consent_form.yaml", "r", encoding="utf-8") as yaml_file:
+            consent_form = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
         # Read pre survey data from YAML
         with open("../quiz_data/pre_survey.yaml", "r", encoding="utf-8") as yaml_file:
             pre_survey = yaml.load(yaml_file, Loader=yaml.FullLoader)
@@ -555,17 +694,68 @@ class QuizApp(QWidget):
         # create an instance of EmotionalAnalysis
         self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
 
+        # create an instance of ConsentFormWidget
+        self.consent_form_widget = ConsentFormWidget(consent_form)
+
+        self.submit_button = QPushButton("Next")
+        self.submit_button.setEnabled(False)
+
+        self.submit_quiz_button = QPushButton("Submit Quiz")
+
         # pass data to pre survey and post quiz
-        self.pre_survey_widget = PreSurveyWidget(pre_survey)
-        print(type(self.pre_survey_widget))
+        self.pre_survey_widget = PreSurveyWidget(pre_survey, self.submit_button, self.submit_quiz_button)
+
 
         self.post_quiz_widget = PostQuizWidget(self.display_content, self.emotional_analysis)
 
-        # show pre-survey
-        self.screen_layout.addWidget(self.pre_survey_widget)
+        # show consent form
+        self.screen_layout.addWidget(self.consent_form_widget)
+        self.consent_form_widget.show()
         self.setLayout(self.screen_layout)
+        
+
+        # Create a checkbox for user agreement
+        self.agree_checkbox = QCheckBox("I agree to the terms and conditions")
+        self.agree_checkbox.stateChanged.connect(self.update_start_pre_survey_button)
+        self.screen_layout.addWidget(self.agree_checkbox)
+
+        
+        # add a Start Pre-survey button 
+        self.start_pre_survey_button = QPushButton("Start Pre-survey")
+        self.start_pre_survey_button.setEnabled(False)
+        self.screen_layout.addWidget(self.start_pre_survey_button)
+        self.start_pre_survey_button.clicked.connect(self.transition_to_pre_survey)
+
+    def update_start_pre_survey_button(self ):
+        if self.agree_checkbox.isChecked():
+            self.start_pre_survey_button.setEnabled(True)
+        else:
+            self.start_pre_survey_button.setEnabled(False)
+    
+    def transition_to_pre_survey(self):
+        # remove consent form widgets
+        self.screen_layout.removeWidget(self.consent_form_widget)
+        self.consent_form_widget.deleteLater()
+
+        self.screen_layout.removeWidget(self.agree_checkbox)
+        self.agree_checkbox.deleteLater()
+
+
+        # remove next button
+        self.screen_layout.removeWidget(self.start_pre_survey_button)
+        self.start_pre_survey_button.deleteLater()
+
+        # add pre_survey widgets
+        self.screen_layout.addWidget(self.pre_survey_widget)
+        # show pre_survey
+        self.pre_survey_widget.show()
+
+        # Add a submit quiz button
+        self.screen_layout.addWidget(self.submit_quiz_button)
+        self.submit_quiz_button.clicked.connect(self.pre_survey_widget.update_submit_button)
+
+        
         # add next button
-        self.submit_button = QPushButton("Next")
         self.screen_layout.addWidget(self.submit_button)
         self.submit_button.clicked.connect(self.transition_to_post_quiz)
 
@@ -576,6 +766,10 @@ class QuizApp(QWidget):
         self.screen_layout.removeWidget(self.pre_survey_widget)
         self.pre_survey_widget.deleteLater()
 
+        # remove submit quiz button
+        self.screen_layout.removeWidget(self.submit_quiz_button)
+        self.submit_quiz_button.deleteLater()
+
         # remove next button
         self.screen_layout.removeWidget(self.submit_button)
         self.submit_button.deleteLater()
@@ -583,11 +777,14 @@ class QuizApp(QWidget):
         # start recording subject and performing emotional analysis
         print("starting emotional analysis")
         self.emotional_analysis.start()
+       
 
         # add post_quiz widgets
         self.screen_layout.addWidget(self.post_quiz_widget)
         # show post_quiz
         self.post_quiz_widget.show()
+
+       
 
     def loadMaterialQuizPairs(self):
         # Directory where subdirectories containing material and quiz files are located
@@ -637,8 +834,20 @@ class QuizApp(QWidget):
 
         # randomly pick a text from text_pairs
         self.rand_text = random.choice(self.text_pairs)
-        # randomly pick a video from video_pairs
-        self.rand_video = random.choice(self.video_pairs)
+
+        # print the index of self.rand_text
+        index = self.text_pairs.index(self.rand_text)
+
+        # remove the element at index from video_pairs
+    
+        
+        self.video_pairs.remove(self.video_pairs[index]) # remove the picked text from the list so that it's corresponding video cannot be picked
+        
+        # pick video from other topic
+        print("self.text_pairs", self.video_pairs)
+        self.rand_video = self.video_pairs[0]
+        print("self.rand_video", self.rand_video)
+        
 
         # generate a random number to determine sequence of video and text (if rand num == 1, text first; else video first)
         rand_num = random.randint(1, 2)
