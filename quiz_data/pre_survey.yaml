@@ -9,10 +9,10 @@ information_form:
   - Year standing
   - Semester standing
 questions:
-  - text: How would you describe your <b>knowledge</b> of the topic of space and astrophysics?
+  - text: I am strongly <b>knowledgable</b> in the topic of space and astrophysics.
     type: scale
     hasSubtext: false
-  - text: How would you describe your <b>interest</b> in the topic of space and astrophysics?
+  - text: I am strongly <b>interested</b> in the topic of space and astrophysics.
     type: scale
     hasSubtext: false
   - text: I define myself as someone who..
