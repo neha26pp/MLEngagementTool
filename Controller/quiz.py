@@ -51,7 +51,8 @@ class PreSurveyWidget(QWidget):
         super().__init__(parent)
         self.pre_survey = pre_survey
         self.screen_layout = QVBoxLayout()
-        self.emotional_analysis = emotional_analysis
+        # self.emotional_analysis = emotional_analysis
+
         # radio button
         self.buttonGroups = []  # for radio button groups
         self.question_grid_layout = QGridLayout()
@@ -59,11 +60,11 @@ class PreSurveyWidget(QWidget):
         self.next_button = submit_button
         self.submit_quiz_button = submit_quiz_button
 
-        self.recording_message = None
-        self.flash_timer = QTimer(self)
-        self.flash_state = False
-        self.flash_count = 0
-        self.max_flash_count = 2  # Set the maximum number of flashes
+        # self.recording_message = None
+        # self.flash_timer = QTimer(self)
+        # self.flash_state = False
+        # self.flash_count = 0
+        # self.max_flash_count = 2  # Set the maximum number of flashes
 
         self.initUI()
 
@@ -171,6 +172,133 @@ class PreSurveyWidget(QWidget):
         # Append the radio button group to a list for future reference
         self.buttonGroups.append(radio_group)
 
+    def update_submit_button(self):
+        # self.show_recording_message("Recording will begin on next page")
+
+        all_radio_buttons_selected = all(radio_group.checkedId() != -1 for radio_group in self.buttonGroups)
+
+        # Check if all text fields are filled
+        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
+        all_text_questions_answered = all(text_answer.strip() for text_answer in information_answers)
+        
+        self.next_button.setEnabled(all_radio_buttons_selected and all_text_questions_answered)
+        if (all_radio_buttons_selected and all_text_questions_answered):
+            self.submit_quiz_button.setEnabled(False)
+        
+    def get_answers(self): 
+        
+        # Get answers from personal information widgets
+        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
+    
+        # Get the selected radio button options for scale questions
+        selected_options = []
+        for radio_group in self.buttonGroups:
+            selected_option = radio_group.checkedId()
+            if selected_option != -1:
+                selected_options.append(selected_option)
+
+        responses = information_answers + selected_options
+        # Save responses to a file
+        with open(file_path, "a") as file:
+            file.write("Pre Survey Responses:\n")
+            for response in responses:
+                file.write(str(response) + "\n")
+
+        # Print a message indicating that the responses have been saved
+        print("Responses saved to file:", file_path)
+
+        return responses
+        
+
+class IndividualInterestSurveyWidget(QWidget):
+    def __init__(self, individual_interest_survey, next_button, submit_quiz_button, parent=None):
+        super().__init__(parent)
+        self.individual_interest_survey = individual_interest_survey
+        self.screen_layout = QVBoxLayout()
+        self.emotional_analysis = emotional_analysis
+        # radio button
+        self.buttonGroups = []  # for radio button groups
+        self.question_grid_layout = QGridLayout()
+        self.radio_group = QButtonGroup(self)
+        self.next_button = next_button
+        self.submit_quiz_button = submit_quiz_button
+
+        self.recording_message = None
+        self.flash_timer = QTimer(self)
+        self.flash_state = False
+        self.flash_count = 0
+        self.max_flash_count = 2  # Set the maximum number of flashes
+
+        self.initUI()
+
+
+    def initUI(self):
+        # Create a label for "Individual Interest survey" heading
+        individual_interest_survey_heading = QLabel("Individual Interest Survey")
+        individual_interest_survey_heading.setObjectName("heading1")
+        individual_interest_survey_heading.setFixedHeight(75)
+        self.screen_layout.addWidget(individual_interest_survey_heading)
+
+        # Create a grid layout for scale ratings
+        scale_rating_grid_layout = QGridLayout()
+        option_list = [
+            "Very true for me",
+            "True for me",
+            "Neuatral",
+            "Not true for me",
+            "Not true at all",
+        ]
+
+        for i, option in enumerate(option_list):
+            option_label = QLabel(option)
+            option_label.setObjectName("headGridWidget")
+            scale_rating_grid_layout.addWidget(option_label, 0, i)
+        
+        # Add scale ratings to head grid layout
+        head_grid_layout = QGridLayout()
+        head_grid_layout.setColumnStretch(0, 1)
+        head_grid_layout.setColumnStretch(1, 2)
+        head_grid_layout.addItem(scale_rating_grid_layout, 1, 1)
+        head_grid_widget = QWidget()
+        head_grid_widget.setObjectName("headGridWidget")
+        head_grid_widget.setLayout(head_grid_layout)
+        head_grid_widget.setFixedHeight(75)
+        self.screen_layout.addWidget(head_grid_widget)
+
+        # Show Likert Scale questions
+        for question_i, question in enumerate(self.individual_interest_survey.get("questions")):
+            self.show_scale_questions(question_i, question)
+
+        # Fix column stretch
+        self.question_grid_layout.setColumnStretch(0, 1)
+        self.question_grid_layout.setColumnStretch(1, 2)
+
+        # Set layouts
+        self.screen_layout.addItem(self.question_grid_layout)
+        self.setLayout(self.screen_layout)
+    
+    def show_scale_questions(self, question_i, question):
+        # Create a QLabel for question text and set it to word wrap
+        question_label = QLabel(question.get("text"))
+        question_label.setWordWrap(True)
+        self.question_grid_layout.addWidget(question_label, question_i, 0)
+
+        self.show_scale_options(question_i)
+
+    def show_scale_options(self, question_i):
+        # Create a button group for radio buttons
+        radio_group = QButtonGroup(self)
+        layout_scale_option = QGridLayout()
+        # Create radio buttons
+        for radio_button_i in range(5):
+            radio_button = QRadioButton()
+            radio_group.addButton(radio_button, radio_button_i)
+            layout_scale_option.addWidget(radio_button, 0, radio_button_i)
+        # Add the layout with radio buttons to the main question grid layout
+        self.question_grid_layout.addLayout(layout_scale_option, question_i, 1)
+        # Append the radio button group to a list for future reference
+        self.buttonGroups.append(radio_group)
+
     def show_recording_message(self, message):
         # Display a message saying "Recording will begin on next page"
         self.recording_message = QLabel(message)
@@ -204,36 +332,27 @@ class PreSurveyWidget(QWidget):
             self.recording_message = None
 
     def update_submit_button(self):
-        self.show_recording_message("Recording will begin on next page")
-
-        all_radio_buttons_selected = all(radio_group.checkedId() != -1 for radio_group in self.buttonGroups)
-
-        # Check if all text fields are filled
-        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
-        all_text_questions_answered = all(text_answer.strip() for text_answer in information_answers)
-        print(all_radio_buttons_selected and all_text_questions_answered)
-        self.next_button.setEnabled(all_radio_buttons_selected and all_text_questions_answered)
-        if (all_radio_buttons_selected and all_text_questions_answered):
-            self.submit_quiz_button.setEnabled(False)
-        
-
-
-    def get_answers(self): 
-        
-        # Get answers from personal information widgets
-        information_answers = [info_input.text() for info_input in self.findChildren(QLineEdit)]
     
+        all_radio_buttons_selected = all(radio_group.checkedId() != -1 for radio_group in self.buttonGroups)
+        if (all_radio_buttons_selected):
+            self.show_recording_message("Recording will begin on next page")
+            self.submit_quiz_button.setEnabled(False)
+            
+        self.next_button.setEnabled(all_radio_buttons_selected)
+
+    def get_answers(self):
+
         # Get the selected radio button options for scale questions
         selected_options = []
         for radio_group in self.buttonGroups:
             selected_option = radio_group.checkedId()
             if selected_option != -1:
                 selected_options.append(selected_option)
-
-        responses = information_answers + selected_options
-         # Save responses to a file
+        
+        responses = selected_options
+        # Save responses to a file
         with open(file_path, "a") as file:
-            file.write("Pre Survey Responses:\n")
+            file.write("Individual Interest Survey Responses:\n")
             for response in responses:
                 file.write(str(response) + "\n")
 
@@ -241,7 +360,6 @@ class PreSurveyWidget(QWidget):
         print("Responses saved to file:", file_path)
 
         return responses
-        
 
 
 class PostQuizWidget(QWidget):
@@ -449,6 +567,7 @@ class PostQuizWidget(QWidget):
             if self.current_question < len(self.post_quiz):
                 # Show the current question
                 self.question = self.post_quiz[self.current_question]
+                print(self.question)
                 self.show_question()
                 # Update question index
                 self.current_question += 1
@@ -473,7 +592,8 @@ class PostQuizWidget(QWidget):
     def show_question(self):
         
         try:
-            if self.question.get("type") == "scale":
+            
+            if self.question.get("name") == "post_quiz":
                 # Set heading for scale questions
                 heading_label = QLabel(
                     "Based on your experience in reading the text - (strongly agree/agree/neither/disagree/strongly disagree)"
@@ -524,9 +644,60 @@ class PostQuizWidget(QWidget):
                 self.question_grid_layout.setColumnStretch(1, 2)
 
                 # Show Likert Scale questions
-                for question_i, question in enumerate(self.post_quiz):
-                    self.show_scale_questions(question_i, question)
+                
+                self.show_scale_questions(0, self.question)
+            
+            elif self.question.get("name") == "situational_interest":
+                heading_label = QLabel(
+                    "Answer the following with very true for me/true for me/neutral/not true for me/not true at all"  
+                )
+                self.post_quiz_layout.addWidget(heading_label)
 
+                 # Display table for scale questions
+                head_grid_layout = QGridLayout()
+                head_grid_layout.setColumnStretch(0, 1)
+                head_grid_layout.setColumnStretch(1, 2)
+
+                # Set question head
+                head_question_label = QLabel("Questions")
+                head_question_label.setObjectName("headGridWidget")
+                head_grid_layout.addWidget(head_question_label, 0, 0)
+
+                # Set scale ratings head
+                head_question_label = QLabel("Scale Ratings")
+                head_question_label.setObjectName("headGridWidget")
+                head_grid_layout.addWidget(head_question_label, 0, 1)
+
+                # Display scale rating labels
+                scale_rating_grid_layout = QGridLayout()
+                option_list = [
+                    "Very true for me",
+                    "True for me",
+                    "Neutral",
+                    "Not true for me",
+                    "Not true at all",
+                ]
+                for i, option in enumerate(option_list):
+                    option_label = QLabel(option)
+                    option_label.setObjectName("headGridWidget")
+                    scale_rating_grid_layout.addWidget(option_label, 0, i)
+                head_grid_layout.addItem(scale_rating_grid_layout, 1, 1)
+
+                head_grid_widget = QWidget()
+                head_grid_widget.setObjectName("headGridWidget")
+                head_grid_widget.setLayout(head_grid_layout)
+                head_grid_widget.setFixedHeight(75)
+                self.post_quiz_layout.addWidget(head_grid_widget)
+
+                # Create a grid layout for questions
+                self.question_grid_layout = QGridLayout()
+
+                # Fix the column stretch
+                self.question_grid_layout.setColumnStretch(0, 1)
+                self.question_grid_layout.setColumnStretch(1, 2)
+
+                # Show Likert Scale questions
+                self.show_scale_questions(1, self.question)
             else:
                 # Set heading for non-scale questions
                 heading_label = QLabel("Based on the topic of the presented text")
@@ -564,39 +735,68 @@ class PostQuizWidget(QWidget):
     
         self.question_grid_widget = QWidget()
 
-    
         self.question_grid_layout = QGridLayout()
-       
-        if question.get("hasSubtext"):
-            print(type(question.get("subtext")))
-            for sub_question_i, subtext in enumerate(question.get("subtext")):
-                
-                # Create label for subtext
-                question_label = QLabel(subtext)
-                question_label.setWordWrap(True)
 
-                # Add label to the question grid layout
-                self.question_grid_layout.addWidget(
-                    question_label, sub_question_i + question_i, 0
-                )
-                self.question_grid_widget.setLayout(self.question_grid_layout)
-                self.post_quiz_layout.addWidget(self.question_grid_widget)
+        
+        
+        if self.question.get("hasSubtext"):
+            
+            if self.question.get("name") == "post_quiz":
 
-                # Show options
-                self.show_scale_options(sub_question_i + question_i)
+                for sub_question_i, subtext in enumerate(question.get("postQuizSubtext")):
+                    print(subtext)
+                        # Create label for subtext
+                    question_label = QLabel(subtext)
+                    question_label.setWordWrap(True)
+
+                    # Add label to the question grid layout
+                    self.question_grid_layout.addWidget(
+                        question_label, sub_question_i + 0, 0
+                    )
+                    self.question_grid_widget.setLayout(self.question_grid_layout)
+                    self.post_quiz_layout.addWidget(self.question_grid_widget)
+
+                    # Show options
+                    self.show_scale_options(sub_question_i + question_i, question)
+
+            else:
+                for sub_question_i, subtext in enumerate(question.get("situationalInterestSubtext")):
+                    print("----------------", subtext)
+                        # Create label for subtext
+                    question_label = QLabel(subtext)
+                    question_label.setWordWrap(True)
+
+                    # Add label to the question grid layout
+                    self.question_grid_layout.addWidget(
+                        question_label, sub_question_i + 1, 0
+                    )
+                    self.question_grid_widget.setLayout(self.question_grid_layout)
+                    self.post_quiz_layout.addWidget(self.question_grid_widget)
+
+                    # Show options
+                    self.show_scale_options(sub_question_i + question_i, question)
         else:
-            # Show options
-            self.show_scale_options(question_i)
+            self.show_scale_options(question_i, self.question)
+    
 
-    def show_scale_options(self, question_i):
+    def show_scale_options(self, question_i, question):
         # Define the scale options
-        option_list = [
-            "strongly agree",
-            "agree",
-            "neither",
-            "disagree",
-            "strongly disagree",
-        ]
+        if(question.get("name") == "post_quiz"):
+            option_list = [
+                "strongly agree",
+                "agree",
+                "neither",
+                "disagree",
+                "strongly disagree",
+            ]
+        else:
+            option_list = [
+                    "Very true for me",
+                    "True for me",
+                    "Neutral",
+                    "Not true for me",
+                    "Not true at all",
+                ]
         radio_group = QButtonGroup(self)  # Create a button group for radio buttons
         layout_scale_option = QGridLayout()  # Create a grid layout for scale options
 
@@ -689,6 +889,10 @@ class QuizApp(QWidget):
         with open("../quiz_data/pre_survey.yaml", "r", encoding="utf-8") as yaml_file:
             pre_survey = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
+        # Read individual interest survey data from YAML
+        with open("../quiz_data/individual_interest_questionnaire.yaml", "r", encoding="utf-8") as yaml_file:
+            individual_interest_survey = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
         self.loadMaterialQuizPairs()
 
         # create an instance of EmotionalAnalysis
@@ -697,16 +901,22 @@ class QuizApp(QWidget):
         # create an instance of ConsentFormWidget
         self.consent_form_widget = ConsentFormWidget(consent_form)
 
-        self.submit_button = QPushButton("Next")
-        self.submit_button.setEnabled(False)
+        # next buttons
 
-        self.submit_quiz_button = QPushButton("Submit Quiz")
+        self.go_to_individual_interest_survey_button = QPushButton("Next")
+        self.go_to_individual_interest_survey_button.setEnabled(False)
 
-        # pass data to pre survey and post quiz
-        self.pre_survey_widget = PreSurveyWidget(pre_survey, self.submit_button, self.submit_quiz_button)
+        self.go_to_postquiz_button = QPushButton("Next")
+        self.go_to_postquiz_button.setEnabled(False)
 
+        # submit survey responses buttons
+        self.submit_presurvey_button = QPushButton("Submit Quiz")
+        self.submit_individual_interest_survey_button = QPushButton("Submit Quiz")
 
+        # create the 3 widgets
+        self.pre_survey_widget = PreSurveyWidget(pre_survey, self.go_to_individual_interest_survey_button, self.submit_presurvey_button)
         self.post_quiz_widget = PostQuizWidget(self.display_content, self.emotional_analysis)
+        self.individual_interest_survey_widget = IndividualInterestSurveyWidget(individual_interest_survey, self.go_to_postquiz_button, self.submit_individual_interest_survey_button)
 
         # show consent form
         self.screen_layout.addWidget(self.consent_form_widget)
@@ -740,7 +950,6 @@ class QuizApp(QWidget):
         self.screen_layout.removeWidget(self.agree_checkbox)
         self.agree_checkbox.deleteLater()
 
-
         # remove next button
         self.screen_layout.removeWidget(self.start_pre_survey_button)
         self.start_pre_survey_button.deleteLater()
@@ -751,15 +960,15 @@ class QuizApp(QWidget):
         self.pre_survey_widget.show()
 
         # Add a submit quiz button
-        self.screen_layout.addWidget(self.submit_quiz_button)
-        self.submit_quiz_button.clicked.connect(self.pre_survey_widget.update_submit_button)
+        self.screen_layout.addWidget(self.submit_presurvey_button)
+        self.submit_presurvey_button.clicked.connect(self.pre_survey_widget.update_submit_button)
 
         
         # add next button
-        self.screen_layout.addWidget(self.submit_button)
-        self.submit_button.clicked.connect(self.transition_to_post_quiz)
+        self.screen_layout.addWidget(self.go_to_individual_interest_survey_button)
+        self.go_to_individual_interest_survey_button.clicked.connect(self.transition_to_individual_interest_survey)
 
-    def transition_to_post_quiz(self):
+    def transition_to_individual_interest_survey(self):
 
         responses = self.pre_survey_widget.get_answers()
         # remove pre-survey widgets
@@ -767,12 +976,39 @@ class QuizApp(QWidget):
         self.pre_survey_widget.deleteLater()
 
         # remove submit quiz button
-        self.screen_layout.removeWidget(self.submit_quiz_button)
-        self.submit_quiz_button.deleteLater()
+        self.screen_layout.removeWidget(self.submit_presurvey_button)
+        self.submit_presurvey_button.deleteLater()
 
         # remove next button
-        self.screen_layout.removeWidget(self.submit_button)
-        self.submit_button.deleteLater()
+        self.screen_layout.removeWidget(self.go_to_individual_interest_survey_button)
+        self.go_to_individual_interest_survey_button.deleteLater()
+
+        self.screen_layout.addWidget(self.individual_interest_survey_widget)
+        # show post_quiz
+        self.individual_interest_survey_widget.show()
+
+        # Add a submit quiz button
+        self.screen_layout.addWidget(self.submit_individual_interest_survey_button)
+        self.submit_individual_interest_survey_button.clicked.connect(self.individual_interest_survey_widget.update_submit_button)
+
+        # add next button
+        self.screen_layout.addWidget(self.go_to_postquiz_button)
+        self.go_to_postquiz_button.clicked.connect(self.transition_to_post_quiz)
+
+    def transition_to_post_quiz(self):
+
+        responses = self.individual_interest_survey_widget.get_answers()
+        # remove pre-survey widgets
+        self.screen_layout.removeWidget(self.individual_interest_survey_widget)
+        self.individual_interest_survey_widget.deleteLater()
+
+        # remove submit quiz button
+        self.screen_layout.removeWidget(self.submit_individual_interest_survey_button)
+        self.submit_individual_interest_survey_button.deleteLater()
+
+        # remove next button
+        self.screen_layout.removeWidget(self.go_to_postquiz_button)
+        self.go_to_postquiz_button.deleteLater()
 
         # start recording subject and performing emotional analysis
         print("starting emotional analysis")

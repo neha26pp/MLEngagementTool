@@ -1,7 +1,8 @@
-- text: ''
+- text: ""
+  name: post_quiz
   type: scale
   hasSubtext: true
-  subtext:
+  postQuizSubtext:
     - "I lost myself in reading this text"
     - "The time I spent reading this text just slipped away"
     - "I was absorbed in reading this text"
@@ -14,7 +15,17 @@
     - "Reading this text was worthwhile"
     - "Reading this text was rewarding"
     - "I felt interested in reading this text"
+- text: ""
+  name: situational_interest
+  type: scale
+  hasSubtext: true
+  situationalInterestSubtext:
+    - "I am fully focused on today's topic; I am not distracted by other things."
+    - "I think today's topic is interesting."
+    - "I will enjoy working on today's topic."
+    - "Presently I feel bored."
 - text: "How was the earth’s moon formed?"
+  name: "moon_formation"
   type: single
   options:
     - "Debris from Earth’s collision with another planet"
@@ -22,6 +33,7 @@
     - "Debris from earth’s collision with a comet"
     - "It formed alongside Earth"
 - text: "What is the main mineral that composes the moon’s core?"
+  name: "moon_core"
   type: single
   options:
     - "Carbon"
@@ -29,19 +41,16 @@
     - "Silicon"
     - "Iron"
 - text: "If you want to study the largest crater on the moon, where would you land your astronauts?"
+  name: "moon_crater"
   type: single
   options:
     - "North pole"
     - "South pole"
 - text: "Select all the correct statements"
+  name: "moon_facts"
   type: multiple
   options:
     - "The moon is made up of an iron-rich core, mantle, and crust containing minerals"
     - "The phases of the moon are the basics for the earliest calendars"
     - "Volcanic eruptions and earthquakes caused by the craters on the moon’s surface"
     - "The moon doesn’t rotate because the same side of the moon always faces the Earth"
-- text: "You learned about the Earth’s moon. Do you want to learn more about the largest moons in our solar system?"
-  type: single
-  options:
-    - "Yes"
-    - "No"
