@@ -1,7 +1,8 @@
 - text: ""
+  name: post_quiz
   type: scale
   hasSubtext: true
-  subtext:
+  postQuizSubtext:
     - "I lost myself in watching this video"
     - "The time I spent watching this video just slipped away"
     - "I was absorbed in watching this video"
@@ -14,12 +15,23 @@
     - "Watching this video was worthwhile"
     - "Watching this video was rewarding"
     - "I felt interested in watching this video"
+- text: ""
+  name: situational_interest
+  type: scale
+  hasSubtext: true
+  situationalInterestSubtext:
+    - "I am fully focused on today's topic; I am not distracted by other things."
+    - "I think today's topic is interesting."
+    - "I will enjoy working on today's topic."
+    - "Presently I feel bored."
 - text: "If you design a rocket launchpad, how would you position the direction of the launchpad?"
+  name: "rocket_launchpad"
   type: single
   options:
     - "Vertically"
     - "Vertically, but at an angle"
 - text: "Why do rockets need to move horizontally at a high speed to enter orbit?"
+  name: "rocket_speed"
   type: single
   options:
     - "To overcome the pull of gravity"
@@ -27,6 +39,7 @@
     - "To avoid collisions with other objects in space"
     - "To conserve fuel"
 - text: "What determines the choice of orbit for a satellite?"
+  name: "satellite_orbit"
   type: single
   options:
     - "The purpose of the satellite"
@@ -34,6 +47,7 @@
     - "The speed of the satellite"
     - "The size of the satellite"
 - text: "If you want to monitor a geographical area using a satellite, what would be the type of orbit for that satellite?"
+  name: "satellite_orbit_2"
   type: single
   options:
     - "Low Earth Orbit (LEO)"
@@ -41,14 +55,10 @@
     - "High Earth Orbit (HEO)"
     - "Geosynchronous Orbit (GEO)"
 - text: "Select all the correct statements"
+  name: "satellite_orbit_3"
   type: multiple
   options:
     - "Going straight up requires less rocket power than going up."
     - "Most of the uiverse is empty space, with only a small fraction containing celestial objects."
     - "The closer you orbit from Earth, the higher gravity's pull. So, the faster you fly to overcome gravity, the more fuel you need."
     - "The gravitational pull at the orbit of the International Space Station is close to zero which makes astronauts appear weightless."
-- text: "You learned about the Earth’s moon. Do you want to learn more about the largest moons in our solar system?"
-  type: single
-  options:
-    - "Yes"
-    - "No"
