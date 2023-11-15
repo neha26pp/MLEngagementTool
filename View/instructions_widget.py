@@ -1,26 +1,20 @@
-import os
-import sys
-import yaml
-from pathlib import Path
-import random
-
-from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+
 
 class InstructionsWidget(QWidget):
     def __init__(self, instruction_form, parent=None):
         super().__init__(parent)
+        self.form_content_label = None
+        self.instruction_form_heading = None
+        self.form_content_widget = None
         self.screen_layout = QVBoxLayout()
         self.instruction_form = instruction_form
         self.initUI()
 
     def initUI(self):
-        self.form_content_widget = QScrollArea()
+        self.form_content_widget = QScrollArea(parent=None)
         self.form_content_widget.setWidgetResizable(True)
-         # Create a label for "Pre Survey" heading
+        # Create a label for "Instructions" heading
         self.instruction_form_heading = QLabel("Instructions")
         self.instruction_form_heading.setObjectName("heading1")
         self.instruction_form_heading.setFixedHeight(75)

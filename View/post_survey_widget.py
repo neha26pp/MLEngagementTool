@@ -1,9 +1,4 @@
 import os
-import sys
-import yaml
-from pathlib import Path
-import random
-
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
@@ -36,7 +31,6 @@ class PostQuizWidget(QWidget):
         self.flash_count = 0
         self.max_flash_count = 2  # Set the maximum number of flashes
 
-
         # initialize a timer to be displayed on screen
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_timer)
@@ -64,16 +58,19 @@ class PostQuizWidget(QWidget):
             print("An error occurred in initUI:", str(e))
 
     def show_recording_message(self, message):
-        # Display a message saying "Recording will begin on next page"
-        self.recording_message = QLabel(message)
-        self.recording_message.setObjectName("recording_message")
-        self.recording_message.setStyleSheet("font-size: 20px; font-weight: bold; color: red;")
-        self.screen_layout.addWidget(self.recording_message)
+        try:
+            # Display a message saying "Recording will begin on next page"
+            self.recording_message = QLabel(message)
+            self.recording_message.setObjectName("recording_message")
+            self.recording_message.setStyleSheet("font-size: 20px; font-weight: bold; color: red;")
+            self.screen_layout.addWidget(self.recording_message)
 
-        # Start the flash timer to make the message flash
-        self.flash_timer.timeout.connect(self.toggle_flash)
-        self.flash_timer.start(500)  # Adjust the flash interval (in milliseconds) based on your preference
-    
+            # Start the flash timer to make the message flash
+            self.flash_timer.timeout.connect(self.toggle_flash)
+            self.flash_timer.start(500)  # Adjust the flash interval (in milliseconds) based on your preference
+        except Exception as e:
+            print("An error occurred in show_recording_message func:", str(e))
+
     def toggle_flash(self):
         # Toggle the flash state and update the message visibility accordingly
         self.flash_state = not self.flash_state
@@ -105,6 +102,16 @@ class PostQuizWidget(QWidget):
         self.timer_label.setText(time_str)
 
     def go_to_next_material(self):
+        if self.next_button:
+            self.next_button.deleteLater()
+            self.screen_layout.removeWidget(self.next_button)
+            self.next_button = None
+
+        if self.webview:
+            self.screen_layout.removeWidget(self.webview)
+            self.webview.deleteLater()
+            self.webview = None
+
         # set the timer layout
         if self.current_material < len(self.display_content):
             # display content has either [video, text] or [text, video]
@@ -146,7 +153,7 @@ class PostQuizWidget(QWidget):
         # Show reading topic if available
         if self.reading_topic != "":
             self.reading_topic.setObjectName("heading2")
-            self.screen_layout.addWidget(self.reading_topic)
+            self.reading_text_widget.setWidget(self.reading_topic)
 
         # Show reading text content
         self.reading_text_label = QLabel(" ".join(self.reading_text.get("text")))
@@ -180,7 +187,6 @@ class PostQuizWidget(QWidget):
                 self.webview.deleteLater()
 
             self.reading_text_widget = QScrollArea()
-            # self.reading_text_widget.setStyleSheet("background: lightblue") # Debugging
             self.reading_text_widget.setWidgetResizable(True)
             # Set reading text heading
             self.reading_text_heading = QLabel("Video")
@@ -193,10 +199,11 @@ class PostQuizWidget(QWidget):
             # Show reading topic if available
             if self.reading_topic != "":
                 self.reading_topic.setObjectName("heading2")
-                self.screen_layout.addWidget(self.reading_topic)
+                self.reading_text_widget.setWidget(self.reading_topic)
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.video_url))
-            self.screen_layout.addWidget(self.webview)
+            self.reading_text_widget.setWidget(self.webview)
+            self.screen_layout.addWidget(self.reading_text_widget)
 
             if not self.timer.isActive():
                 self.screen_layout.addWidget(self.timer_label)
@@ -210,27 +217,34 @@ class PostQuizWidget(QWidget):
             print("An error occurred in video func:", str(e))
 
     def go_to_quiz(self):
-        # remove reading text widget
-        self.screen_layout.removeWidget(self.reading_text_widget)
-        self.reading_text_widget.deleteLater()
+        try:
+            # remove reading text widget
+            self.screen_layout.removeWidget(self.reading_text_widget)
+            self.reading_text_widget.deleteLater()
 
-        # remove start quiz button
-        self.screen_layout.removeWidget(self.start_quiz_button)
-        self.start_quiz_button.deleteLater()
+            self.screen_layout.removeWidget(self.reading_text_heading)
+            self.reading_text_heading.deleteLater()
 
-        # remove the previous webview widget
-        if self.webview:
-            self.screen_layout.removeWidget(self.webview)
-            self.webview.deleteLater()
+            # remove start quiz button
+            self.screen_layout.removeWidget(self.start_quiz_button)
+            self.start_quiz_button.deleteLater()
 
-        # create a new webview to display the quiz
-        self.webview = QWebEngineView()
-        self.webview.setUrl(QUrl(self.post_quiz))
-        self.screen_layout.addWidget(self.webview)
+            # remove the previous webview widget
+            if self.webview:
+                self.screen_layout.removeWidget(self.webview)
+                self.webview.deleteLater()
 
-        # create a "Next" button
-        self.screen_layout.addWidget(self.next_button)
-        self.next_button.clicked.connect(self.go_to_next_material)
+            # create a new webview to display the quiz
+            self.webview = QWebEngineView()
+            self.webview.setUrl(QUrl(self.post_quiz))
+            self.screen_layout.addWidget(self.webview)
+
+            # create a "Next" button
+            self.next_button = QPushButton("Next")
+            self.screen_layout.addWidget(self.next_button)
+            self.next_button.clicked.connect(self.go_to_next_material)
+        except Exception as e:
+            print("An error occurred in go_to_quiz func:", str(e))
 
     def show_completed_message(self):
         # stop recording subject and performing emotional analysis
