@@ -119,3 +119,11 @@ Total time taken: 00 hours, 02 minutes, 29 seconds
 Total time taken: 00 hours, 02 minutes, 29 seconds
 Total time taken: 00 hours, 02 minutes, 29 seconds
 Total time taken: 00 hours, 00 minutes, 06 seconds
+Total time taken: 00 hours, 00 minutes, 08 seconds
+Total time taken: 00 hours, 00 minutes, 09 seconds
+Total time taken: 00 hours, 00 minutes, 32 seconds
+Total time taken: 00 hours, 00 minutes, 12 seconds
+Total time taken: 00 hours, 00 minutes, 16 seconds
+Total time taken: 00 hours, 00 minutes, 22 seconds
+Total time taken: 00 hours, 00 minutes, 30 seconds
+Total time taken: 00 hours, 00 minutes, 30 seconds

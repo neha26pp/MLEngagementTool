@@ -5,6 +5,8 @@ from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
 
+from constant import *
+
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
@@ -14,6 +16,7 @@ import instructions_widget as instructions_widget
 import consent_form_widget as consent_form_widget
 import presurvey_widget as pre_survey_widget
 import post_survey_widget as post_survey_widget
+import start_page_widget
 
 
 def read_yaml(file_path):
@@ -35,7 +38,7 @@ class QuizApp(QWidget):
     def initUI(self):
         try:
             self.setWindowTitle("Quiz Application")
-            self.setGeometry(100, 100, 1400, 1000)
+            self.setGeometry(100, 100, 1800, 1200)
             self.setLayout(self.screen_layout)
 
             # Read instructions data from YAML
@@ -51,6 +54,8 @@ class QuizApp(QWidget):
 
             # create an instance of EmotionalAnalysis
             self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
+            # create an instance of StartPageWidget
+            self.start_page_widget = start_page_widget.StartPage()
             # create an instance of InstructionsWidget
             self.instructions_widget = instructions_widget.InstructionsWidget(instructions)
             # create an instance of ConsentFormWidget
@@ -63,6 +68,7 @@ class QuizApp(QWidget):
                                                                       type(self.display_content[1]))
 
             # manage different pages in a stacked widget
+            self.stacked_widget.addWidget(self.start_page_widget)
             self.stacked_widget.addWidget(self.instructions_widget)
             self.stacked_widget.addWidget(self.consent_form_widget)
             self.stacked_widget.addWidget(self.pre_survey_widget)
@@ -74,6 +80,9 @@ class QuizApp(QWidget):
             # add the stacked widget to the layout
             self.screen_layout.addWidget(self.stacked_widget)
 
+            # connect button in start page widget
+            self.start_page_widget.collect_data_clicked.connect(self.next_button_clicked)
+
             # Create a checkbox for user agreement
             self.agree_checkbox = QCheckBox("I agree to the terms and conditions")
             self.agree_checkbox.stateChanged.connect(self.update_start_pre_survey_button)
@@ -84,20 +93,24 @@ class QuizApp(QWidget):
             self.back_button = QPushButton("Back")
             self.back_button.setEnabled(False)
             self.back_button.setObjectName("bottomButton")
+            self.back_button.setFixedHeight(BOTTOM_BUTTON_H)
             self.back_button.clicked.connect(self.back_button_clicked)
 
             self.cancel_button = QPushButton("Cancel Session")
             self.cancel_button.setObjectName("bottomButton")
-            self.cancel_button.clicked.connect(self.next_button_clicked)
+            self.cancel_button.setFixedHeight(BOTTOM_BUTTON_H)
+            self.cancel_button.clicked.connect(self.showConfirmation)
 
             self.next_button = QPushButton("Next")
             self.next_button.setObjectName("bottomButton")
+            self.next_button.setFixedHeight(BOTTOM_BUTTON_H)
             self.next_button.clicked.connect(self.next_button_clicked)
 
             self.bottomButtonLayout.addWidget(self.back_button)
             self.bottomButtonLayout.addWidget(self.cancel_button)
             self.bottomButtonLayout.addWidget(self.next_button)
             self.bottomButtonWidget.setLayout(self.bottomButtonLayout)
+            self.bottomButtonWidget.hide()
             self.screen_layout.addWidget(self.bottomButtonWidget)
 
         except Exception as e:
@@ -105,12 +118,18 @@ class QuizApp(QWidget):
 
     def back_button_clicked(self):
         current_index = self.stacked_widget.currentIndex()
+        # go to previous screen
+        print(current_index)
         if current_index > 0:
             self.stacked_widget.setCurrentIndex(current_index - 1)
-        else:
-            self.back_button.setEnabled(False)
-        # if back is on consent form
-        if current_index == 2:
+
+        # if back to start page
+        if current_index == 1:
+            self.bottomButtonWidget.hide()
+            return
+
+        # if back to consent form
+        if current_index == 3:
             self.next_button.setEnabled(False)
             self.agree_checkbox.show()
             self.agree_checkbox.setChecked(False)
@@ -119,17 +138,23 @@ class QuizApp(QWidget):
                 self.next_button.setEnabled(True)
                 self.agree_checkbox.hide()
 
+        # if back from post survey
         if self.bottomButtonWidget.isHidden():
             self.bottomButtonWidget.show()
 
     def next_button_clicked(self):
         current_index = self.stacked_widget.currentIndex()
+        # go to next screen
         if current_index < self.stacked_widget.count() - 1:
             self.stacked_widget.setCurrentIndex(current_index + 1)
             self.back_button.setEnabled(True)
 
-        # if going to consent form
+        # if leaving the start page, show the bottom button bar
         if current_index == 0:
+            self.bottomButtonWidget.show()
+
+        # if going to consent form, initialize settings for consent form
+        if current_index == 1:
             self.next_button.setEnabled(False)
             self.agree_checkbox.show()
             self.agree_checkbox.setChecked(False)
@@ -138,7 +163,7 @@ class QuizApp(QWidget):
                 self.next_button.setEnabled(True)
                 self.agree_checkbox.hide()
 
-        # if going to post survey hide the bottom bar
+        # if going to post survey, hide the bottom bar
         if current_index == self.stacked_widget.count() - 2:
             self.bottomButtonWidget.hide()
             # start recording subject and performing emotional analysis
@@ -176,7 +201,7 @@ class QuizApp(QWidget):
                     # Read the contents of material and text quiz and video quiz files
                     material_data = read_yaml(material_path)
 
-                    # get the text and video matrial
+                    # get the text and video material
                     self.text_pairs = TextQuizPair(material_data)
                     self.texts.append(self.text_pairs)
 
@@ -192,8 +217,7 @@ class QuizApp(QWidget):
         index = self.texts.index(self.rand_text)
 
         # remove the element at index from videos (to not pick the video belonging to same topic)
-        self.videos.remove(self.videos[
-                               index])  # remove the picked text from the list so that it's corresponding video cannot be picked
+        self.videos.remove(self.videos[index])  # remove the picked text from the list so that it's corresponding video cannot be picked
 
         # pick video from other topic
         self.rand_video = self.videos[0]
@@ -207,10 +231,23 @@ class QuizApp(QWidget):
             self.display_content.append(self.rand_video)
             self.display_content.append(self.rand_text)
 
+    def showConfirmation(self):
+        # create message box
+        reply = QMessageBox.question(self, 'Confirmation', 'Are you sure you want to exit?',
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        # process confirmation
+        if reply == QMessageBox.Yes:
+            # if yes, exit the system
+            sys.exit()
+        else:
+            # if no, cancel exit
+            pass
+
 
 class TextQuizPair:
     def __init__(self, material):
         self.material = material
+
 
 class VideoQuizPair:
     def __init__(self, material):

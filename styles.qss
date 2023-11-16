@@ -2,24 +2,30 @@
 
 QLabel#heading1 {
     font-size: 30px;
-    background-color: darkblue;
     color: white;
     padding: 10px 0;
 }
+
 QLabel#heading2 {
     font-size: 28px;
     font-weight: bold;
-    color: darkblue;
+    color: #050375;
+}
+
+/* header*/
+QWidget#headerWidget {
+    background-color: #050375;
 }
 
 QWidget#headGridWidget  {
-    background-color: darkblue;
+    background-color: #050375;
     color: white;
 }
 
+/* bottom button */
 QPushButton#bottomButton:enabled  {
     color: white;
-    background-color: darkblue;
+    background-color: #050375;
 }
 
 QPushButton#bottomButton:disabled {
@@ -27,11 +33,24 @@ QPushButton#bottomButton:disabled {
     background-color: white;
 }
 
-
+/* others */
 QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
-    font-size: 18px;
+    font-size: 24px;
 }
 
 QScrollArea QLabel {
     padding: 20px 40px;
+}
+
+
+/* start page*/
+QLabel#startPageTitle {
+    font-size: 60px;
+    color: #050375;
+}
+
+QPushButton#startPageButton {
+    background-color: #050375;
+    color: white;
+    font-size: 36px;
 }

@@ -11,6 +11,11 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
+from Controller import emotional_analysis
+from View.header_widget import HeaderWidget
+from constant import HEADING1_H
+
+
 class IndividualInterestSurveyWidget(QWidget):
     def __init__(self, individual_interest_survey, next_button, parent=None):
         super().__init__(parent)
@@ -32,9 +37,9 @@ class IndividualInterestSurveyWidget(QWidget):
 
     def initUI(self):
         # Create a label for "Individual Interest survey" heading
-        individual_interest_survey_heading = QLabel("Individual Interest Survey")
+        individual_interest_survey_heading = HeaderWidget("Individual Interest Survey")
         individual_interest_survey_heading.setObjectName("heading1")
-        individual_interest_survey_heading.setFixedHeight(75)
+        individual_interest_survey_heading.setFixedHeight(HEADING1_H)
         self.screen_layout.addWidget(individual_interest_survey_heading)
 
         # need to change this link
