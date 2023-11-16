@@ -129,3 +129,5 @@ Total time taken: 00 hours, 00 minutes, 30 seconds
 Total time taken: 00 hours, 00 minutes, 30 seconds
 Total time taken: 00 hours, 00 minutes, 07 seconds
 Total time taken: 00 hours, 00 minutes, 17 seconds
+Total time taken: 00 hours, 00 minutes, 24 seconds
+Total time taken: 00 hours, 01 minutes, 39 seconds
