@@ -6,7 +6,6 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
-
 from header_widget import HeaderWidget
 
 from data_router import TextQuizPair
@@ -257,6 +256,7 @@ class PostQuizWidget(QWidget):
             print("An error occurred in go_to_quiz func:", str(e))
 
     def show_completed_message(self):
+
         # stop recording subject and performing emotional analysis
         self.emotional_analysis.stop()
         # stop timer
@@ -275,5 +275,26 @@ class PostQuizWidget(QWidget):
         print("stopping emotional analysis")
         print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
 
-        self.completed_label = QLabel("Thank you for completing the survey! We appreciate your time")
-        self.screen_layout.addWidget(self.completed_label)
+        header = HeaderWidget("Finish")
+        self.screen_layout.addWidget(header)
+
+        self.completed_layout = QVBoxLayout()
+        self.completed_layout.setAlignment(Qt.AlignCenter)
+        self.completed_layout.addStretch(1)
+
+        self.completed_label = QLabel("Thank You!\n Your responses have been recorded.")
+        self.completed_label.setFixedHeight(400)
+        self.completed_label.setObjectName("completeMessage")
+        self.completed_label.setAlignment(Qt.AlignCenter)
+        self.completed_layout.addWidget(self.completed_label)
+
+        self.view_report_button = QPushButton("View Report")
+        self.view_report_button.setFixedSize(850, 150)
+
+        self.view_report_button.setObjectName("viewReportButton")
+        self.completed_layout.addWidget(self.view_report_button, alignment=Qt.AlignCenter)
+        self.completed_layout.addStretch(1)
+
+        self.screen_layout.addLayout(self.completed_layout)
+
+

@@ -5,6 +5,8 @@ from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
 
+from View import start_recording_widget
+
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
@@ -55,6 +57,8 @@ class QuizApp(QWidget):
             self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
             # create an instance of StartPageWidget
             self.start_page_widget = start_page_widget.StartPage()
+            # create an instance of StartRecording
+            self.start_recording_widget = start_recording_widget.StartRecording()
             # create an instance of InstructionsWidget
             self.instructions_widget = instructions_widget.InstructionsWidget(instructions)
             # create an instance of ConsentFormWidget
@@ -71,6 +75,7 @@ class QuizApp(QWidget):
             self.stacked_widget.addWidget(self.instructions_widget)
             self.stacked_widget.addWidget(self.consent_form_widget)
             self.stacked_widget.addWidget(self.pre_survey_widget)
+            self.stacked_widget.addWidget(self.start_recording_widget)
             self.stacked_widget.addWidget(self.post_quiz_widget)
 
             # set the initial page
@@ -165,6 +170,7 @@ class QuizApp(QWidget):
         # if going to post survey, hide the bottom bar
         if current_index == self.stacked_widget.count() - 2:
             self.bottomButtonWidget.hide()
+            self.start_recording_widget.stop_camera()
             # start recording subject and performing emotional analysis
             print("starting emotional analysis")
             self.emotional_analysis.start()

@@ -42,14 +42,18 @@ QScrollArea QLabel {
     padding: 20px 40px;
 }
 
-
-/* start page*/
-QLabel#startPageTitle {
+QLabel#startPageTitle,QLabel#completeMessage {
     font-size: 60px;
     color: #050375;
 }
 
 QPushButton#startPageButton {
+    background-color: #050375;
+    color: white;
+    font-size: 36px;
+}
+
+QPushButton#viewReportButton {
     background-color: #050375;
     color: white;
     font-size: 36px;
