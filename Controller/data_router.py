@@ -63,8 +63,8 @@ class QuizApp(QWidget):
             # create the 3 widgets
             self.pre_survey_widget = pre_survey_widget.PreSurveyWidget(pre_survey)
             self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.display_content, self.emotional_analysis,
-                                                                      type(self.display_content[0]),
-                                                                      type(self.display_content[1]))
+                                                                      self.display_content[0].text,
+                                                                      self.display_content[1].text)
 
             # manage different pages in a stacked widget
             self.stacked_widget.addWidget(self.start_page_widget)
@@ -226,9 +226,11 @@ class QuizApp(QWidget):
         if rand_num == 1:
             self.display_content.append(self.rand_text)
             self.display_content.append(self.rand_video)
+            print(self.display_content)
         else:
             self.display_content.append(self.rand_video)
             self.display_content.append(self.rand_text)
+            print(self.display_content)
 
     def showConfirmation(self):
         # create message box
@@ -246,11 +248,13 @@ class QuizApp(QWidget):
 class TextQuizPair:
     def __init__(self, material):
         self.material = material
+        self.text = True
 
 
 class VideoQuizPair:
     def __init__(self, material):
         self.material = material
+        self.text = False
 
 
 if __name__ == "__main__":
