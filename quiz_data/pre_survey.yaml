@@ -9,7 +9,7 @@ information_form:
   - Year standing
   - Semester standing
 questions:
-  - text: I am strongly <b>knowledgable</b> in the topic of space and astrophysics.
+  - text: I am strongly <b>knowledgeable</b> in the topic of space and astrophysics.
     type: scale
     hasSubtext: false
   - text: I am strongly <b>interested</b> in the topic of space and astrophysics.

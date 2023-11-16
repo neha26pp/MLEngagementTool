@@ -5,13 +5,19 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
+
+from header_widget import HeaderWidget
+
 from data_router import TextQuizPair
+
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
+
 class PostQuizWidget(QWidget):
-    def __init__(self, display_content, emotional_analysis, stimulus1_type,stimulus2_type, parent=None):
+    def __init__(self, display_content, emotional_analysis, stimulus1_type, stimulus2_type, parent=None):
         super().__init__(parent)
         # read data
+        self.post_quiz_heading = None
         self.emotional_analysis = emotional_analysis
         self.display_content = display_content
 
@@ -35,6 +41,7 @@ class PostQuizWidget(QWidget):
         self.elapsed_time = 0
         # create a timer label
         self.timer_label = QLabel("00:00:00", self)
+        self.timer_label.setFixedHeight(36)
         # align the timer to the top right corner
         self.timer_label.setAlignment(Qt.AlignRight)
         self.timer_label.setStyleSheet("font-size: 36px;")
@@ -90,7 +97,7 @@ class PostQuizWidget(QWidget):
             self.screen_layout.removeWidget(self.recording_message)
             self.recording_message.deleteLater()
             self.recording_message = None
-    
+
     def update_timer(self):
         self.elapsed_time += 1
         hours = self.elapsed_time // 3600
@@ -100,6 +107,11 @@ class PostQuizWidget(QWidget):
         self.timer_label.setText(time_str)
 
     def go_to_next_material(self):
+        if self.post_quiz_heading:
+            self.post_quiz_heading.deleteLater()
+            self.screen_layout.removeWidget(self.post_quiz_heading)
+            self.post_quiz_heading = None
+
         if self.next_button:
             self.next_button.deleteLater()
             self.screen_layout.removeWidget(self.next_button)
@@ -134,15 +146,13 @@ class PostQuizWidget(QWidget):
         if self.webview:
             self.screen_layout.removeWidget(self.webview)
             self.webview.deleteLater()
-            
+
         # Initialize reading text widget
         self.reading_text_widget = QScrollArea()
         # self.reading_text_widget.setStyleSheet("background: lightblue") # Debugging
         self.reading_text_widget.setWidgetResizable(True)
         # Set reading text heading
-        self.reading_text_heading = QLabel("Reading Text")
-        self.reading_text_heading.setObjectName("heading1")
-        self.reading_text_heading.setFixedHeight(75)
+        self.reading_text_heading = HeaderWidget("Reading Text")
         self.screen_layout.addWidget(self.reading_text_heading)
 
         self.reading_topic = QLabel(self.reading_text.get("topic"))
@@ -163,10 +173,10 @@ class PostQuizWidget(QWidget):
         # if timer hasn't already been started, start it
         if not self.timer.isActive():
             self.screen_layout.addWidget(self.timer_label)
-            self.timer.start(1000) # update every second
+            self.timer.start(1000)  # update every second
 
         self.webview = None
-        
+
         # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
@@ -186,14 +196,12 @@ class PostQuizWidget(QWidget):
             self.reading_text_widget = QScrollArea()
             self.reading_text_widget.setWidgetResizable(True)
             # Set reading text heading
-            self.reading_text_heading = QLabel("Video")
-            self.reading_text_heading.setObjectName("heading1")
-            self.reading_text_heading.setFixedHeight(75)
+            self.reading_text_heading = HeaderWidget("Video")
             self.screen_layout.addWidget(self.reading_text_heading)
 
             self.reading_topic = QLabel(self.reading_text.get("topic"))
 
-            # Show reading topic if available
+            # Show video topic if available
             if self.reading_topic != "":
                 self.reading_topic.setObjectName("heading2")
                 self.reading_text_widget.setWidget(self.reading_topic)
@@ -204,7 +212,7 @@ class PostQuizWidget(QWidget):
 
             if not self.timer.isActive():
                 self.screen_layout.addWidget(self.timer_label)
-                self.timer.start(1000) # update every second
+                self.timer.start(1000)  # update every second
             # Set start quiz button
             self.start_quiz_button = QPushButton("Start Quiz")
             self.screen_layout.addWidget(self.start_quiz_button)
@@ -231,6 +239,10 @@ class PostQuizWidget(QWidget):
                 self.screen_layout.removeWidget(self.webview)
                 self.webview.deleteLater()
 
+            # Set post quiz heading
+            self.post_quiz_heading = HeaderWidget("Post Quiz")
+            self.screen_layout.addWidget(self.post_quiz_heading)
+
             # create a new webview to display the quiz
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.post_quiz))
@@ -244,8 +256,9 @@ class PostQuizWidget(QWidget):
             print("An error occurred in go_to_quiz func:", str(e))
 
     def show_completed_message(self):
+
         # stop recording subject and performing emotional analysis
-        self.emotional_analysis.stop() 
+        self.emotional_analysis.stop()
         # stop timer
         self.timer.stop()
         elapsed_time = self.elapsed_time
@@ -255,12 +268,33 @@ class PostQuizWidget(QWidget):
         seconds = elapsed_time % 60
         # Write the formatted elapsed time to the file
         with open(file_path, "a") as file:
-            file.write("Total time taken: {:02d} hours, {:02d} minutes, {:02d} seconds\n".format(hours, minutes, seconds))
-
+            file.write(
+                "Total time taken: {:02d} hours, {:02d} minutes, {:02d} seconds\n".format(hours, minutes, seconds))
 
         self.hide_recording_message()
         print("stopping emotional analysis")
-        print("Emotions detected throughout session: " ,self.emotional_analysis.detected_emotions)
+        print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
 
-        self.completed_label = QLabel("Thank you for completing the survey! We appreciate your time")
-        self.screen_layout.addWidget(self.completed_label)
+        header = HeaderWidget("Finish")
+        self.screen_layout.addWidget(header)
+
+        self.completed_layout = QVBoxLayout()
+        self.completed_layout.setAlignment(Qt.AlignCenter)
+        self.completed_layout.addStretch(1)
+
+        self.completed_label = QLabel("Thank You!\n Your responses have been recorded.")
+        self.completed_label.setFixedHeight(400)
+        self.completed_label.setObjectName("completeMessage")
+        self.completed_label.setAlignment(Qt.AlignCenter)
+        self.completed_layout.addWidget(self.completed_label)
+
+        self.view_report_button = QPushButton("View Report")
+        self.view_report_button.setFixedSize(850, 150)
+
+        self.view_report_button.setObjectName("viewReportButton")
+        self.completed_layout.addWidget(self.view_report_button, alignment=Qt.AlignCenter)
+        self.completed_layout.addStretch(1)
+
+        self.screen_layout.addLayout(self.completed_layout)
+
+

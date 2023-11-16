@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-
+from header_widget import HeaderWidget
 
 class InstructionsWidget(QWidget):
     def __init__(self, instruction_form, parent=None):
@@ -15,9 +15,7 @@ class InstructionsWidget(QWidget):
         self.form_content_widget = QScrollArea(parent=None)
         self.form_content_widget.setWidgetResizable(True)
         # Create a label for "Instructions" heading
-        self.instruction_form_heading = QLabel("Instructions")
-        self.instruction_form_heading.setObjectName("heading1")
-        self.instruction_form_heading.setFixedHeight(75)
+        self.instruction_form_heading = HeaderWidget("Instructions")
         self.screen_layout.addWidget(self.instruction_form_heading)
 
         # Show reading text content

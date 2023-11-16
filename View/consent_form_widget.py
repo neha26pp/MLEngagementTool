@@ -1,14 +1,9 @@
-import os
-import sys
-import yaml
-from pathlib import Path
-import random
-
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+
+from header_widget import HeaderWidget
+
 
 class ConsentFormWidget(QWidget):
     def __init__(self, consent_form, parent=None):
@@ -19,9 +14,7 @@ class ConsentFormWidget(QWidget):
     
     def initUI(self):
         # Create a label for "Consent Form" heading
-        consent_form_heading = QLabel("Consent Form")
-        consent_form_heading.setObjectName("heading1")
-        consent_form_heading.setFixedHeight(65)
+        consent_form_heading = HeaderWidget("Consent Form")
         self.screen_layout.addWidget(consent_form_heading)
         self.webview = QWebEngineView()
         self.webview.setUrl(QUrl("https://pennstate.qualtrics.com/jfe/form/SV_3yqNWDKN5PxuPoW"))

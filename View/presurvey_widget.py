@@ -1,14 +1,9 @@
-import os
-import sys
-import yaml
-from pathlib import Path
-import random
-
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+
+from header_widget import HeaderWidget
+
 
 class PreSurveyWidget(QWidget):
     def __init__(self, pre_survey, parent=None):
@@ -21,9 +16,7 @@ class PreSurveyWidget(QWidget):
 
     def initUI(self):
         # Create a label for "Pre Survey" heading
-        pre_survey_heading = QLabel("Pre Survey")
-        pre_survey_heading.setObjectName("heading1")
-        pre_survey_heading.setFixedHeight(75)
+        pre_survey_heading = HeaderWidget("Pre Survey")
         self.screen_layout.addWidget(pre_survey_heading)
 
         # need to change this link
