@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
-
+from data_router import TextQuizPair
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
 class PostQuizWidget(QWidget):
@@ -14,8 +14,6 @@ class PostQuizWidget(QWidget):
         # read data
         self.emotional_analysis = emotional_analysis
         self.display_content = display_content
-        self.stimulus1_type = stimulus1_type
-        self.stimulus2_type = stimulus2_type
 
         # initialize layouts
         self.screen_layout = QVBoxLayout()
@@ -115,8 +113,7 @@ class PostQuizWidget(QWidget):
         # set the timer layout
         if self.current_material < len(self.display_content):
             # display content has either [video, text] or [text, video]
-            print(self.stimulus1_type)
-            if self.stimulus1_type == "<class 'quiz.TextQuizPair'>":
+            if self.display_content[self.current_material].text is True:
                 self.reading_text = self.display_content[self.current_material].material.get("reading-text")
                 self.text = self.reading_text.get("text")
                 self.post_quiz = self.reading_text.get("text_quiz")
