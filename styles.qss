@@ -6,7 +6,6 @@ QLabel#heading1 {
     color: white;
     padding: 10px 0;
 }
-
 QLabel#heading2 {
     font-size: 28px;
     font-weight: bold;
@@ -17,6 +16,18 @@ QWidget#headGridWidget  {
     background-color: darkblue;
     color: white;
 }
+
+QPushButton#bottomButton:enabled  {
+    color: white;
+    background-color: darkblue;
+}
+
+QPushButton#bottomButton:disabled {
+    color: grey;
+    background-color: white;
+}
+
+
 QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
     font-size: 18px;
 }

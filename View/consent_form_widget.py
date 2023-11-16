@@ -18,7 +18,7 @@ class ConsentFormWidget(QWidget):
         self.initUI()
     
     def initUI(self):
-        # Create a label for "Pre Survey" heading
+        # Create a label for "Consent Form" heading
         consent_form_heading = QLabel("Consent Form")
         consent_form_heading.setObjectName("heading1")
         consent_form_heading.setFixedHeight(65)

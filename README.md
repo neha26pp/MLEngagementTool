@@ -16,5 +16,8 @@ Install the following libraries:
 To start the application, navigate to the controller directory `cd controller` and then
 run the command `python main.py`
 
+To install all dependencies: `pip install -r requirements.txt`
+
+To output installed packages in requirements format: `pip freeze > requirements.txt`
 
 
