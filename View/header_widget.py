@@ -1,7 +1,8 @@
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import QSize
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import *
-from constant import *
+
+HEADER_H = 150  # header bar widget height
 
 
 class HeaderWidget(QWidget):

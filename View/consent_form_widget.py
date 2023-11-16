@@ -2,7 +2,7 @@ from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
 
-from View.header_widget import HeaderWidget
+from header_widget import HeaderWidget
 
 
 class ConsentFormWidget(QWidget):

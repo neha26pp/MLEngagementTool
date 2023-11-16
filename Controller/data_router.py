@@ -5,8 +5,6 @@ from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
 
-from constant import *
-
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
@@ -18,6 +16,7 @@ import presurvey_widget as pre_survey_widget
 import post_survey_widget as post_survey_widget
 import start_page_widget
 
+BOTTOM_BUTTON_H = 70  # bottom button bar height
 
 def read_yaml(file_path):
     with open(file_path, "r", encoding="utf-8") as yaml_file:
