@@ -5,7 +5,7 @@ from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
 
-from View import start_recording_widget
+
 
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
 sys.path.append(video_directory)
@@ -16,9 +16,9 @@ import instructions_widget as instructions_widget
 import consent_form_widget as consent_form_widget
 import presurvey_widget as pre_survey_widget
 import post_survey_widget as post_survey_widget
-import start_page_widget
-
-BOTTOM_BUTTON_H = 70  # bottom button bar height
+import start_page_widget as start_page_widget
+import start_recording_widget as start_recording_widget
+BOTTOM_BUTTON_H = 60  # bottom button bar height
 
 def read_yaml(file_path):
     with open(file_path, "r", encoding="utf-8") as yaml_file:
@@ -148,6 +148,7 @@ class QuizApp(QWidget):
 
     def next_button_clicked(self):
         current_index = self.stacked_widget.currentIndex()
+        print(current_index)
         # go to next screen
         if current_index < self.stacked_widget.count() - 1:
             self.stacked_widget.setCurrentIndex(current_index + 1)
@@ -169,7 +170,8 @@ class QuizApp(QWidget):
 
         # if going to post survey, hide the bottom bar
         if current_index == self.stacked_widget.count() - 2:
-            self.bottomButtonWidget.hide()
+            self.bottomButtonWidget.show()
+            self.stacked_widget.setCurrentIndex(current_index + 1)
             self.start_recording_widget.stop_camera()
             # start recording subject and performing emotional analysis
             print("starting emotional analysis")
