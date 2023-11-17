@@ -288,12 +288,12 @@ class PostQuizWidget(QWidget):
         self.completed_label.setAlignment(Qt.AlignCenter)
         self.completed_layout.addWidget(self.completed_label)
 
-        self.view_report_button = QPushButton("View Report")
-        self.view_report_button.setFixedSize(850, 150)
+        # self.view_report_button = QPushButton("View Report")
+        # self.view_report_button.setFixedSize(850, 150)
 
-        self.view_report_button.setObjectName("viewReportButton")
-        self.completed_layout.addWidget(self.view_report_button, alignment=Qt.AlignCenter)
-        self.completed_layout.addStretch(1)
+        # self.view_report_button.setObjectName("viewReportButton")
+        # self.completed_layout.addWidget(self.view_report_button, alignment=Qt.AlignCenter)
+        # self.completed_layout.addStretch(1)
 
         self.screen_layout.addLayout(self.completed_layout)
 
