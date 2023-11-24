@@ -14,11 +14,12 @@ file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "response
 
 
 class PostQuizWidget(QWidget):
-    def __init__(self, display_content, emotional_analysis, stimulus1_type, stimulus2_type, parent=None):
+    def __init__(self, display_content, emotion_thread, eyetracking_thread, stimulus1_type, stimulus2_type, parent=None):
         super().__init__(parent)
         # read data
         self.post_quiz_heading = None
-        self.emotional_analysis = emotional_analysis
+        self.emotional_analysis = emotion_thread
+        self.eye_tracker = eyetracking_thread
         self.display_content = display_content
 
         # initialize layouts
@@ -125,27 +126,40 @@ class PostQuizWidget(QWidget):
         # set the timer layout
         if self.current_material < len(self.display_content):
             # display content has either [video, text] or [text, video]
+          
+
+               
             if self.display_content[self.current_material].text is True:
                 self.reading_text = self.display_content[self.current_material].material.get("reading-text")
                 self.text = self.reading_text.get("text")
                 self.post_quiz = self.reading_text.get("text_quiz")
+             
                 self.show_reading_material()
+               
             else:
                 self.video_button = QPushButton("Watch Video")
                 self.screen_layout.addWidget(self.video_button)
+             
                 self.video_button.clicked.connect(self.show_video)
                 self.reading_text = self.display_content[self.current_material].material.get("reading-text")
                 self.video_url = self.reading_text.get("video")
                 self.post_quiz = self.reading_text.get("video_quiz")
+                
             self.current_material += 1
 
         else:
             self.show_completed_message()
 
     def show_reading_material(self):
+        print("starting eyetracking before stimulus")
+        self.eye_tracker.start()
+        print("starting emotional analysis before stimulus")
+        self.emotional_analysis.start()
         if self.webview:
             self.screen_layout.removeWidget(self.webview)
             self.webview.deleteLater()
+
+       
 
         # Initialize reading text widget
         self.reading_text_widget = QScrollArea()
@@ -157,7 +171,7 @@ class PostQuizWidget(QWidget):
 
         self.reading_topic = QLabel(self.reading_text.get("topic"))
 
-        # Show reading topic if available
+        # Show reading topic if availablestart
         if self.reading_topic != "":
             self.reading_topic.setObjectName("heading2")
             self.reading_text_widget.setWidget(self.reading_topic)
@@ -182,8 +196,13 @@ class PostQuizWidget(QWidget):
         self.screen_layout.addWidget(self.start_quiz_button)
         self.start_quiz_button.clicked.connect(self.go_to_quiz)
 
+
     def show_video(self):
         try:
+            print("starting eyetracking before stimulus")
+            self.eye_tracker.start()
+            print("starting emotional analysis before stimulus")
+            self.emotional_analysis.start()
             # Get video URL
             if self.video_button:
                 self.video_button.deleteLater()
@@ -218,11 +237,19 @@ class PostQuizWidget(QWidget):
             self.screen_layout.addWidget(self.start_quiz_button)
             self.start_quiz_button.clicked.connect(self.go_to_quiz)
 
+
         except Exception as e:
             print("An error occurred in video func:", str(e))
 
     def go_to_quiz(self):
         try:
+            thread_activity = self.emotional_analysis.get_activity()
+        
+            print("stropping eyetracking after stimulus")
+            self.eye_tracker.stop()
+            print("stopping emotional analysis after stimulus")
+            self.emotional_analysis.stop()
+            
             # remove reading text widget
             self.screen_layout.removeWidget(self.reading_text_widget)
             self.reading_text_widget.deleteLater()
@@ -259,6 +286,7 @@ class PostQuizWidget(QWidget):
 
         # stop recording subject and performing emotional analysis
         self.emotional_analysis.stop()
+        self.eye_tracker.stop()
         # stop timer
         self.timer.stop()
         elapsed_time = self.elapsed_time

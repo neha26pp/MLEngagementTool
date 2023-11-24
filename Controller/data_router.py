@@ -4,7 +4,7 @@ import yaml
 from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
-
+import threading
 
 
 video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
@@ -12,12 +12,15 @@ sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
 import emotional_analysis as emotional_analysis
+import eye_tracker as eye_tracker
 import instructions_widget as instructions_widget
 import consent_form_widget as consent_form_widget
 import presurvey_widget as pre_survey_widget
 import post_survey_widget as post_survey_widget
 import start_page_widget as start_page_widget
 import start_recording_widget as start_recording_widget
+
+
 BOTTOM_BUTTON_H = 60  # bottom button bar height
 
 def read_yaml(file_path):
@@ -32,7 +35,7 @@ class QuizApp(QWidget):
         self.stacked_widget = QStackedWidget(self)
         self.screen_layout = QVBoxLayout()
         self.bottomButtonLayout = QHBoxLayout()
-        self.bottomButtonWidget = QWidget()
+        self.bottomButtonWidget = QWidget()        
 
         self.initUI()
 
@@ -55,7 +58,14 @@ class QuizApp(QWidget):
 
             # create an instance of EmotionalAnalysis
             self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
+    
+            # create an instance of EyeTracker
+            self.eye_tracker = eye_tracker.EyeTracker()
+            # create eye tracking thread
+        
             # create an instance of StartPageWidget
+
+
             self.start_page_widget = start_page_widget.StartPage()
             # create an instance of StartRecording
             self.start_recording_widget = start_recording_widget.StartRecording()
@@ -66,9 +76,10 @@ class QuizApp(QWidget):
 
             # create the 3 widgets
             self.pre_survey_widget = pre_survey_widget.PreSurveyWidget(pre_survey)
-            self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.display_content, self.emotional_analysis,
+            self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.display_content, self.emotional_analysis, self.eye_tracker,
                                                                       self.display_content[0].text,
                                                                       self.display_content[1].text)
+
 
             # manage different pages in a stacked widget
             self.stacked_widget.addWidget(self.start_page_widget)
@@ -173,9 +184,14 @@ class QuizApp(QWidget):
             self.bottomButtonWidget.show()
             self.stacked_widget.setCurrentIndex(current_index + 1)
             self.start_recording_widget.stop_camera()
-            # start recording subject and performing emotional analysis
-            print("starting emotional analysis")
-            self.emotional_analysis.start()
+            # print("starting eyetracking before stimulus")
+            # self.eye_tracker.start()
+            # print("starting emotional analysis before stimulus")
+            # self.emotional_analysis.start()
+       
+           
+            
+
 
     def update_start_pre_survey_button(self):
         if self.agree_checkbox.isChecked():
