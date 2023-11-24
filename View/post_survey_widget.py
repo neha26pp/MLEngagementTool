@@ -35,17 +35,6 @@ class PostQuizWidget(QWidget):
         self.flash_count = 0
         self.max_flash_count = 2  # Set the maximum number of flashes
 
-        # initialize a timer to be displayed on screen
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_timer)
-        self.elapsed_time = 0
-        # create a timer label
-        self.timer_label = QLabel("00:00:00", self)
-        self.timer_label.setFixedHeight(36)
-        # align the timer to the top right corner
-        self.timer_label.setAlignment(Qt.AlignRight)
-        self.timer_label.setStyleSheet("font-size: 36px;")
-
         self.media_player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.video_widget = QVideoWidget(self)
         self.media_player.setVideoOutput(self.video_widget)
@@ -76,35 +65,12 @@ class PostQuizWidget(QWidget):
         except Exception as e:
             print("An error occurred in show_recording_message func:", str(e))
 
-    def toggle_flash(self):
-        # Toggle the flash state and update the message visibility accordingly
-        self.flash_state = not self.flash_state
-        if self.recording_message:
-            self.recording_message.setVisible(self.flash_state)
-
-        # Check if the maximum number of flashes is reached
-        if self.flash_state and self.flash_count >= self.max_flash_count:
-            self.flash_timer.stop()
-            self.hide_recording_message()
-
-        # Increment the flash count if the message is visible
-        if self.flash_state:
-            self.flash_count += 1
-
     def hide_recording_message(self):
         # Remove the recording message widget
         if self.recording_message:
             self.screen_layout.removeWidget(self.recording_message)
             self.recording_message.deleteLater()
             self.recording_message = None
-
-    def update_timer(self):
-        self.elapsed_time += 1
-        hours = self.elapsed_time // 3600
-        minutes = (self.elapsed_time % 3600) // 60
-        seconds = self.elapsed_time % 60
-        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        self.timer_label.setText(time_str)
 
     def go_to_next_material(self):
         if self.post_quiz_heading:
@@ -122,7 +88,6 @@ class PostQuizWidget(QWidget):
             self.webview.deleteLater()
             self.webview = None
 
-        # set the timer layout
         if self.current_material < len(self.display_content):
             # display content has either [video, text] or [text, video]
             if self.display_content[self.current_material].text is True:
@@ -146,6 +111,7 @@ class PostQuizWidget(QWidget):
         if self.webview:
             self.screen_layout.removeWidget(self.webview)
             self.webview.deleteLater()
+            self.webview = None
 
         # Initialize reading text widget
         self.reading_text_widget = QScrollArea()
@@ -170,14 +136,6 @@ class PostQuizWidget(QWidget):
         # Add reading material widget to screen layout
         self.screen_layout.addWidget(self.reading_text_widget)
 
-        # if timer hasn't already been started, start it
-        if not self.timer.isActive():
-            self.screen_layout.addWidget(self.timer_label)
-            self.timer.start(1000)  # update every second
-
-        self.webview = None
-
-        # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
         self.start_quiz_button.clicked.connect(self.go_to_quiz)
@@ -210,9 +168,6 @@ class PostQuizWidget(QWidget):
             self.reading_text_widget.setWidget(self.webview)
             self.screen_layout.addWidget(self.reading_text_widget)
 
-            if not self.timer.isActive():
-                self.screen_layout.addWidget(self.timer_label)
-                self.timer.start(1000)  # update every second
             # Set start quiz button
             self.start_quiz_button = QPushButton("Start Quiz")
             self.screen_layout.addWidget(self.start_quiz_button)
