@@ -6,9 +6,7 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
-from header_widget import HeaderWidget
-
-from data_router import TextQuizPair
+from View.header_widget import HeaderWidget
 
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 

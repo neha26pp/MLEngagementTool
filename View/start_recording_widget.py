@@ -1,14 +1,9 @@
-import sys
-
 import cv2
-from PyQt5.QtCore import Qt, pyqtSignal, QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import *
-import os
-video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
-sys.path.append(video_directory)
 
-from header_widget import HeaderWidget
+from View.header_widget import HeaderWidget
 
 class StartRecording(QWidget):
     def __init__(self):

@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import *
-from header_widget import HeaderWidget
+from View.header_widget import HeaderWidget
 
 
 class StartPage(QWidget):
