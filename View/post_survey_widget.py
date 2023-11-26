@@ -15,6 +15,7 @@ class PostQuizWidget(QWidget):
     def __init__(self, display_content, emotional_analysis, stimulus1_type, stimulus2_type, parent=None):
         super().__init__(parent)
         # read data
+        self.reading_text_widget = None
         self.post_quiz_heading = None
         self.emotional_analysis = emotional_analysis
         self.display_content = display_content
@@ -256,22 +257,23 @@ class PostQuizWidget(QWidget):
     def show_completed_message(self):
 
         # stop recording subject and performing emotional analysis
-        self.emotional_analysis.stop()
-        # stop timer
-        self.timer.stop()
-        elapsed_time = self.elapsed_time
-        # Convert elapsed time to a human-readable format
-        hours = elapsed_time // 3600
-        minutes = (elapsed_time % 3600) // 60
-        seconds = elapsed_time % 60
-        # Write the formatted elapsed time to the file
-        with open(file_path, "a") as file:
-            file.write(
-                "Total time taken: {:02d} hours, {:02d} minutes, {:02d} seconds\n".format(hours, minutes, seconds))
+        if self.emotional_analysis:
+            self.emotional_analysis.stop()
+            # stop timer
+            self.timer.stop()
+            elapsed_time = self.elapsed_time
+            # Convert elapsed time to a human-readable format
+            hours = elapsed_time // 3600
+            minutes = (elapsed_time % 3600) // 60
+            seconds = elapsed_time % 60
+            # Write the formatted elapsed time to the file
+            with open(file_path, "a") as file:
+                file.write(
+                    "Total time taken: {:02d} hours, {:02d} minutes, {:02d} seconds\n".format(hours, minutes, seconds))
 
-        self.hide_recording_message()
-        print("stopping emotional analysis")
-        print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
+            self.hide_recording_message()
+            print("stopping emotional analysis")
+            print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
 
         header = HeaderWidget("Finish")
         self.screen_layout.addWidget(header)

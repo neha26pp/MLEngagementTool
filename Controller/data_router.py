@@ -227,11 +227,11 @@ class QuizApp(QWidget):
         if rand_num == 1:
             self.display_content.append(self.rand_text)
             self.display_content.append(self.rand_video)
-            print(self.display_content)
+            print("display_content:", self.display_content)
         else:
             self.display_content.append(self.rand_video)
             self.display_content.append(self.rand_text)
-            print(self.display_content)
+            print("display_content:", self.display_content)
 
     def showConfirmation(self):
         # create message box
