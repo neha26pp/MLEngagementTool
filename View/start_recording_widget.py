@@ -35,6 +35,7 @@ class StartRecording(QWidget):
         self.setLayout(main_layout)
 
     def update_camera(self):
+    
         ret, frame = self.camera.read()
 
         if ret:

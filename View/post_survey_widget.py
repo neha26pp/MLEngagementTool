@@ -1,4 +1,5 @@
 import os
+import sys
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
@@ -7,19 +8,20 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
 from header_widget import HeaderWidget
+video_directory = os.path.join(os.path.dirname(__file__), "..", "Controller")
+sys.path.append(video_directory)
 
 from data_router import TextQuizPair
-
+import eye_tracker as eye_tracker
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
 
 class PostQuizWidget(QWidget):
-    def __init__(self, display_content, emotion_thread, eyetracking_thread, stimulus1_type, stimulus2_type, parent=None):
+    def __init__(self, display_content, emotion_thread, stimulus1_type, stimulus2_type, parent=None):
         super().__init__(parent)
         # read data
         self.post_quiz_heading = None
         self.emotional_analysis = emotion_thread
-        self.eye_tracker = eyetracking_thread
         self.display_content = display_content
 
         # initialize layouts
@@ -152,6 +154,8 @@ class PostQuizWidget(QWidget):
 
     def show_reading_material(self):
         print("starting eyetracking before stimulus")
+        # create an instance of EyeTracker
+        self.eye_tracker = eye_tracker.EyeTracker()
         self.eye_tracker.start()
         print("starting emotional analysis before stimulus")
         self.emotional_analysis.start()
@@ -194,12 +198,15 @@ class PostQuizWidget(QWidget):
         # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
-        self.start_quiz_button.clicked.connect(self.go_to_quiz)
+        self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+        
+
 
 
     def show_video(self):
         try:
             print("starting eyetracking before stimulus")
+            self.eye_tracker = eye_tracker.EyeTracker()
             self.eye_tracker.start()
             print("starting emotional analysis before stimulus")
             self.emotional_analysis.start()
@@ -235,14 +242,16 @@ class PostQuizWidget(QWidget):
             # Set start quiz button
             self.start_quiz_button = QPushButton("Start Quiz")
             self.screen_layout.addWidget(self.start_quiz_button)
-            self.start_quiz_button.clicked.connect(self.go_to_quiz)
+            self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
 
 
         except Exception as e:
             print("An error occurred in video func:", str(e))
 
-    def go_to_quiz(self):
+    def go_to_quiz(self, eye_tracker):
+        
         try:
+            print("go to quiz")
             thread_activity = self.emotional_analysis.get_activity()
         
             print("stropping eyetracking after stimulus")
@@ -286,7 +295,8 @@ class PostQuizWidget(QWidget):
 
         # stop recording subject and performing emotional analysis
         self.emotional_analysis.stop()
-        self.eye_tracker.stop()
+      
+        # eye_tracker.stop()
         # stop timer
         self.timer.stop()
         elapsed_time = self.elapsed_time

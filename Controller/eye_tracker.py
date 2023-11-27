@@ -40,6 +40,12 @@ from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
 
 class EyeTracker(QThread): 
+    def __init__(self):
+        super(EyeTracker, self).__init__()
+          # Create TCP socket to connect to host
+        self.CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+       
       #------------------------------------------------------------------------------
     # CalCheckSum:  Calculate Check Sum of Buffer
     #    Buf		-	Buffer array
@@ -195,14 +201,12 @@ class EyeTracker(QThread):
         file_path = os.path.join(os.getcwd(), FNameStr)
         print(file_path)
 
-        # Create TCP socket to connect to host
-        CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+      
         # Set TCP_NODELAY
-        CmdSocket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.CmdSocket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         # Set time out to 10 seconds
-        CmdSocket.settimeout(10.0)
+        self.CmdSocket.settimeout(10.0)
 
         # Initialize Network Connected Flag
         FlagConnected = True
@@ -210,7 +214,7 @@ class EyeTracker(QThread):
         # Try to connect to Eye Tracker Host
         try:
             # Connect to host
-            CmdSocket.connect((HostIPAddr, HostPortNum))
+            self.CmdSocket.connect((HostIPAddr, HostPortNum))
 
         # Failed
         except Exception as e:
@@ -219,15 +223,15 @@ class EyeTracker(QThread):
 
         # Send command to Set Data File Name if connected
         if (FlagConnected):
-            FlagConnected = self.SendETCmdStr(CmdSocket, CMD_SET_DATAFILE_NAME, FNameStr)
+            FlagConnected = self.SendETCmdStr( self.CmdSocket, CMD_SET_DATAFILE_NAME, FNameStr)
 
         # Send command to Open Data File if connected
         if (FlagConnected):
-            FlagConnected = self.SendETCmd(CmdSocket, CMD_OPEN_DATAFILE, 0)
+            FlagConnected = self.SendETCmd( self.CmdSocket, CMD_OPEN_DATAFILE, 0)
 
         # Send command to Start Data File Recording if connected
         if (FlagConnected):
-            FlagConnected = self.SendETCmd(CmdSocket, CMD_START_DATAFILE_RECORDING, 0)
+            FlagConnected = self.SendETCmd( self.CmdSocket, CMD_START_DATAFILE_RECORDING, 0)
 
         # Check result
         if (FlagConnected):
@@ -256,12 +260,12 @@ class EyeTracker(QThread):
         # sys.exit()
     
     def stop(self):
-        mysocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.SendETCmd(mysocket, 0x0002, 0)
+        
+        self.SendETCmd( self.CmdSocket, 0x0002, 0)
 
                 # Send command to Close Data File if connected
        
-        self.SendETCmd(mysocket, 0x0004, 0)
+        self.SendETCmd( self.CmdSocket, 0x0004, 0)
                 
         self.quit()
 

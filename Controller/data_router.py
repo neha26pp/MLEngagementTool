@@ -59,10 +59,9 @@ class QuizApp(QWidget):
             # create an instance of EmotionalAnalysis
             self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
     
-            # create an instance of EyeTracker
-            self.eye_tracker = eye_tracker.EyeTracker()
+          
             # create eye tracking thread
-        
+            # self.eye_tracker = eye_tracker.EmotionalAnalysis()
             # create an instance of StartPageWidget
 
 
@@ -76,7 +75,7 @@ class QuizApp(QWidget):
 
             # create the 3 widgets
             self.pre_survey_widget = pre_survey_widget.PreSurveyWidget(pre_survey)
-            self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.display_content, self.emotional_analysis, self.eye_tracker,
+            self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.display_content, self.emotional_analysis,
                                                                       self.display_content[0].text,
                                                                       self.display_content[1].text)
 

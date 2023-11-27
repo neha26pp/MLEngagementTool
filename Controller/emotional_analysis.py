@@ -29,9 +29,11 @@ class EmotionalAnalysis(QThread):
 
 
     def run(self):
+        
         '''Thread that starts face recognition and analysis'''
         self.ThreadActive = True
         while self.ThreadActive:
+            
             ret, frame = self.capture.read()
             if ret:
                 Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert to RGB
