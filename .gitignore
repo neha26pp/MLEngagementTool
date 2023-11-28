@@ -7,4 +7,5 @@ logs
 .idea/
 .DS_Store
 *.pyc
+
 venv

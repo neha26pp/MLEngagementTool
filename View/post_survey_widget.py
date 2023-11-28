@@ -1,4 +1,5 @@
 import os
+import sys
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
@@ -6,18 +7,26 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
+
+
+video_directory = os.path.join(os.path.dirname(__file__), "..")
+sys.path.append(video_directory)
+
 from View.header_widget import HeaderWidget
+
+from Controller.data_router import TextQuizPair
+import Controller.eye_tracker as eye_tracker
 
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
 
 class PostQuizWidget(QWidget):
-    def __init__(self, display_content, emotional_analysis, stimulus1_type, stimulus2_type, parent=None):
+    def __init__(self, display_content, emotion_thread, stimulus1_type, stimulus2_type, parent=None):
         super().__init__(parent)
         # read data
         self.reading_text_widget = None
         self.post_quiz_heading = None
-        self.emotional_analysis = emotional_analysis
+        self.emotional_analysis = emotion_thread
         self.display_content = display_content
 
         # initialize layouts
@@ -124,27 +133,42 @@ class PostQuizWidget(QWidget):
         # set the timer layout
         if self.current_material < len(self.display_content):
             # display content has either [video, text] or [text, video]
+          
+
+               
             if self.display_content[self.current_material].text is True:
                 self.reading_text = self.display_content[self.current_material].material.get("reading-text")
                 self.text = self.reading_text.get("text")
                 self.post_quiz = self.reading_text.get("text_quiz")
+             
                 self.show_reading_material()
+               
             else:
                 self.video_button = QPushButton("Watch Video")
                 self.screen_layout.addWidget(self.video_button)
+             
                 self.video_button.clicked.connect(self.show_video)
                 self.reading_text = self.display_content[self.current_material].material.get("reading-text")
                 self.video_url = self.reading_text.get("video")
                 self.post_quiz = self.reading_text.get("video_quiz")
+                
             self.current_material += 1
 
         else:
             self.show_completed_message()
 
     def show_reading_material(self):
+        print("starting eyetracking before stimulus")
+        # create an instance of EyeTracker
+        self.eye_tracker = eye_tracker.EyeTracker()
+        self.eye_tracker.start()
+        print("starting emotional analysis before stimulus")
+        self.emotional_analysis.start()
         if self.webview:
             self.screen_layout.removeWidget(self.webview)
             self.webview.deleteLater()
+
+       
 
         # Initialize reading text widget
         self.reading_text_widget = QScrollArea()
@@ -156,7 +180,7 @@ class PostQuizWidget(QWidget):
 
         self.reading_topic = QLabel(self.reading_text.get("topic"))
 
-        # Show reading topic if available
+        # Show reading topic if availablestart
         if self.reading_topic != "":
             self.reading_topic.setObjectName("heading2")
             self.reading_text_widget.setWidget(self.reading_topic)
@@ -179,10 +203,18 @@ class PostQuizWidget(QWidget):
         # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
-        self.start_quiz_button.clicked.connect(self.go_to_quiz)
+        self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+        
+
+
 
     def show_video(self):
         try:
+            print("starting eyetracking before stimulus")
+            self.eye_tracker = eye_tracker.EyeTracker()
+            self.eye_tracker.start()
+            print("starting emotional analysis before stimulus")
+            self.emotional_analysis.start()
             # Get video URL
             if self.video_button:
                 self.video_button.deleteLater()
@@ -215,13 +247,23 @@ class PostQuizWidget(QWidget):
             # Set start quiz button
             self.start_quiz_button = QPushButton("Start Quiz")
             self.screen_layout.addWidget(self.start_quiz_button)
-            self.start_quiz_button.clicked.connect(self.go_to_quiz)
+            self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+
 
         except Exception as e:
             print("An error occurred in video func:", str(e))
 
-    def go_to_quiz(self):
+    def go_to_quiz(self, eye_tracker):
+        
         try:
+            print("go to quiz")
+            thread_activity = self.emotional_analysis.get_activity()
+        
+            print("stropping eyetracking after stimulus")
+            self.eye_tracker.stop()
+            print("stopping emotional analysis after stimulus")
+            self.emotional_analysis.stop()
+            
             # remove reading text widget
             self.screen_layout.removeWidget(self.reading_text_widget)
             self.reading_text_widget.deleteLater()
@@ -257,23 +299,24 @@ class PostQuizWidget(QWidget):
     def show_completed_message(self):
 
         # stop recording subject and performing emotional analysis
-        if self.emotional_analysis:
-            self.emotional_analysis.stop()
-            # stop timer
-            self.timer.stop()
-            elapsed_time = self.elapsed_time
-            # Convert elapsed time to a human-readable format
-            hours = elapsed_time // 3600
-            minutes = (elapsed_time % 3600) // 60
-            seconds = elapsed_time % 60
-            # Write the formatted elapsed time to the file
-            with open(file_path, "a") as file:
-                file.write(
-                    "Total time taken: {:02d} hours, {:02d} minutes, {:02d} seconds\n".format(hours, minutes, seconds))
+        self.emotional_analysis.stop()
+      
+        # eye_tracker.stop()
+        # stop timer
+        self.timer.stop()
+        elapsed_time = self.elapsed_time
+        # Convert elapsed time to a human-readable format
+        hours = elapsed_time // 3600
+        minutes = (elapsed_time % 3600) // 60
+        seconds = elapsed_time % 60
+        # Write the formatted elapsed time to the file
+        with open(file_path, "a") as file:
+            file.write(
+                "Total time taken: {:02d} hours, {:02d} minutes, {:02d} seconds\n".format(hours, minutes, seconds))
 
-            self.hide_recording_message()
-            print("stopping emotional analysis")
-            print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
+        self.hide_recording_message()
+        print("stopping emotional analysis")
+        print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
 
         header = HeaderWidget("Finish")
         self.screen_layout.addWidget(header)
