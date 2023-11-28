@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from View.header_widget import HeaderWidget
 
+
 class InstructionsWidget(QWidget):
     def __init__(self, instruction_form, parent=None):
         super().__init__(parent)

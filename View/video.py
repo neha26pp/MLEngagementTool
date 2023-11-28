@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import * 
 
+
 class Video(QWidget):
 
     """Display the YouTube video to student"""

@@ -18,7 +18,6 @@ import View.post_survey_widget as post_survey_widget
 import View.start_page_widget as start_page_widget
 import View.start_recording_widget as start_recording_widget
 
-
 BOTTOM_BUTTON_H = 60  # bottom button bar height
 
 

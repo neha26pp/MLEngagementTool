@@ -7,13 +7,10 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
-
-
 video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 
 from View.header_widget import HeaderWidget
-
 from Controller.data_router import TextQuizPair
 import Controller.eye_tracker as eye_tracker
 
@@ -330,6 +327,8 @@ class PostQuizWidget(QWidget):
         self.completed_label.setObjectName("completeMessage")
         self.completed_label.setAlignment(Qt.AlignCenter)
         self.completed_layout.addWidget(self.completed_label)
+        self.completed_layout.addStretch(1)
+
 
         # self.view_report_button = QPushButton("View Report")
         # self.view_report_button.setFixedSize(850, 150)

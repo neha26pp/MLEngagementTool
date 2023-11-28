@@ -149,6 +149,7 @@ Total time taken: 00 hours, 00 minutes, 03 seconds
 Total time taken: 00 hours, 00 minutes, 03 seconds
 Total time taken: 00 hours, 00 minutes, 16 seconds
 Total time taken: 00 hours, 00 minutes, 07 seconds
+<<<<<<< HEAD
 Total time taken: 00 hours, 00 minutes, 53 seconds
 Total time taken: 00 hours, 00 minutes, 15 seconds
 Total time taken: 00 hours, 00 minutes, 04 seconds
@@ -168,3 +169,8 @@ Total time taken: 00 hours, 00 minutes, 19 seconds
 Total time taken: 00 hours, 00 minutes, 42 seconds
 Total time taken: 00 hours, 00 minutes, 27 seconds
 Total time taken: 00 hours, 00 minutes, 36 seconds
+=======
+Total time taken: 00 hours, 00 minutes, 30 seconds
+Total time taken: 00 hours, 00 minutes, 19 seconds
+Total time taken: 00 hours, 00 minutes, 13 seconds
+>>>>>>> fb91d70 (display the message in the middle of screen and fix import path)
