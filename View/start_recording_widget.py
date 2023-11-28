@@ -4,10 +4,12 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import *
 import os
+
 video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 
 from View.header_widget import HeaderWidget
+
 
 class StartRecording(QWidget):
     def __init__(self):
@@ -34,7 +36,6 @@ class StartRecording(QWidget):
         self.setLayout(main_layout)
 
     def update_camera(self):
-    
         ret, frame = self.camera.read()
 
         if ret:
@@ -55,7 +56,6 @@ class StartRecording(QWidget):
     def stop_camera(self):
         # Release the camera when closing the window
         self.camera.release()
-
 
 # if __name__ == "__main__":
 

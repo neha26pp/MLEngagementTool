@@ -5,7 +5,6 @@ from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
 
-
 video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")

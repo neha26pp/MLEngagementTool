@@ -38,7 +38,7 @@ class IndividualInterestSurveyWidget(QWidget):
         # Create a label for "Individual Interest survey" heading
         individual_interest_survey_heading = HeaderWidget("Individual Interest Survey")
         individual_interest_survey_heading.setObjectName("heading1")
-        individual_interest_survey_heading.setFixedHeight(HEADING1_H)
+        individual_interest_survey_heading.setFixedHeight(150)
         self.screen_layout.addWidget(individual_interest_survey_heading)
 
         # need to change this link

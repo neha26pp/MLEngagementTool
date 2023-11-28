@@ -11,7 +11,6 @@ video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 
 from View.header_widget import HeaderWidget
-from Controller.data_router import TextQuizPair
 import Controller.eye_tracker as eye_tracker
 
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
