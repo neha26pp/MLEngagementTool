@@ -1,9 +1,5 @@
 # Play the video for the student
-from PyQt5 import QtWidgets, QtCore, QtGui
-import sys, time
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5 import QtWebEngineWidgets
-from PyQt5 import QtWebEngineCore
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import * 
 

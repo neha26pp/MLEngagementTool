@@ -4,24 +4,23 @@ import yaml
 from pathlib import Path
 import random
 from PyQt5.QtWidgets import *
-import threading
 
 
-video_directory = os.path.join(os.path.dirname(__file__), "..", "View")
+video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
-import emotional_analysis as emotional_analysis
-import eye_tracker as eye_tracker
-import instructions_widget as instructions_widget
-import consent_form_widget as consent_form_widget
-import presurvey_widget as pre_survey_widget
-import post_survey_widget as post_survey_widget
-import start_page_widget as start_page_widget
-import start_recording_widget as start_recording_widget
+import Controller.emotional_analysis as emotional_analysis
+import View.instructions_widget as instructions_widget
+import View.consent_form_widget as consent_form_widget
+import View.presurvey_widget as pre_survey_widget
+import View.post_survey_widget as post_survey_widget
+import View.start_page_widget as start_page_widget
+import View.start_recording_widget as start_recording_widget
 
 
 BOTTOM_BUTTON_H = 60  # bottom button bar height
+
 
 def read_yaml(file_path):
     with open(file_path, "r", encoding="utf-8") as yaml_file:
@@ -31,7 +30,7 @@ def read_yaml(file_path):
 class QuizApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.agree_checkbox = None
+        self.agree_checkbox = QCheckBox()
         self.stacked_widget = QStackedWidget(self)
         self.screen_layout = QVBoxLayout()
         self.bottomButtonLayout = QHBoxLayout()
@@ -133,7 +132,6 @@ class QuizApp(QWidget):
     def back_button_clicked(self):
         current_index = self.stacked_widget.currentIndex()
         # go to previous screen
-        print(current_index)
         if current_index > 0:
             self.stacked_widget.setCurrentIndex(current_index - 1)
 
@@ -152,13 +150,8 @@ class QuizApp(QWidget):
                 self.next_button.setEnabled(True)
                 self.agree_checkbox.hide()
 
-        # if back from post survey
-        if self.bottomButtonWidget.isHidden():
-            self.bottomButtonWidget.show()
-
     def next_button_clicked(self):
         current_index = self.stacked_widget.currentIndex()
-        print(current_index)
         # go to next screen
         if current_index < self.stacked_widget.count() - 1:
             self.stacked_widget.setCurrentIndex(current_index + 1)
@@ -178,10 +171,8 @@ class QuizApp(QWidget):
                 self.next_button.setEnabled(True)
                 self.agree_checkbox.hide()
 
-        # if going to post survey, hide the bottom bar
+        # if going to post survey
         if current_index == self.stacked_widget.count() - 2:
-            self.bottomButtonWidget.show()
-            self.stacked_widget.setCurrentIndex(current_index + 1)
             self.start_recording_widget.stop_camera()
             # print("starting eyetracking before stimulus")
             # self.eye_tracker.start()
@@ -239,7 +230,8 @@ class QuizApp(QWidget):
         index = self.texts.index(self.rand_text)
 
         # remove the element at index from videos (to not pick the video belonging to same topic)
-        self.videos.remove(self.videos[index])  # remove the picked text from the list so that it's corresponding video cannot be picked
+        self.videos.remove(self.videos[
+                               index])  # remove the picked text from the list so that it's corresponding video cannot be picked
 
         # pick video from other topic
         self.rand_video = self.videos[0]
@@ -249,11 +241,11 @@ class QuizApp(QWidget):
         if rand_num == 1:
             self.display_content.append(self.rand_text)
             self.display_content.append(self.rand_video)
-            print(self.display_content)
+            print("display_content:", self.display_content)
         else:
             self.display_content.append(self.rand_video)
             self.display_content.append(self.rand_text)
-            print(self.display_content)
+            print("display_content:", self.display_content)
 
     def showConfirmation(self):
         # create message box

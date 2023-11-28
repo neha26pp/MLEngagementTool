@@ -13,7 +13,6 @@ from PyQt5.QtCore import QTimer
 
 from Controller import emotional_analysis
 from View.header_widget import HeaderWidget
-from constant import HEADING1_H
 
 
 class IndividualInterestSurveyWidget(QWidget):

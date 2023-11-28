@@ -7,12 +7,16 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import QTimer
 
-from header_widget import HeaderWidget
-video_directory = os.path.join(os.path.dirname(__file__), "..", "Controller")
+
+
+video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 
-from data_router import TextQuizPair
-import eye_tracker as eye_tracker
+from View.header_widget import HeaderWidget
+
+from Controller.data_router import TextQuizPair
+import Controller.eye_tracker as eye_tracker
+
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
 
@@ -20,6 +24,7 @@ class PostQuizWidget(QWidget):
     def __init__(self, display_content, emotion_thread, stimulus1_type, stimulus2_type, parent=None):
         super().__init__(parent)
         # read data
+        self.reading_text_widget = None
         self.post_quiz_heading = None
         self.emotional_analysis = emotion_thread
         self.display_content = display_content
