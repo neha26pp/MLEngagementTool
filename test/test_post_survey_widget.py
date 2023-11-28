@@ -20,12 +20,14 @@ class VideoQuizPair:
         self.material = material
         self.text = False
 
+
 class TestPostQuizWidget(unittest.TestCase):
     def setUp(self):
         self.app = QApplication([])
 
     def tearDown(self):
-        self.app.exit()
+        # self.app.exit()
+        pass
 
     def test_show_recording_message(self):
         post_quiz_widget = PostQuizWidget(None, None, None, None)
@@ -33,18 +35,18 @@ class TestPostQuizWidget(unittest.TestCase):
         self.assertIsNotNone(post_quiz_widget.recording_message)
         self.assertEqual(post_quiz_widget.recording_message.text(), "Recording will begin now")
 
+    def test_hide_recording_message(self):
+        post_quiz_widget = PostQuizWidget(None, None, None, None)
+        post_quiz_widget.show_recording_message("Recording will begin now")
+        post_quiz_widget.hide_recording_message()
+        self.assertIsNone(post_quiz_widget.recording_message)
+
     def test_toggle_flash(self):
         post_quiz_widget = PostQuizWidget(None, None, None, None)
         post_quiz_widget.show_recording_message("Recording will begin now")
         initial_flash_state = post_quiz_widget.flash_state
         post_quiz_widget.toggle_flash()
         self.assertNotEqual(post_quiz_widget.flash_state, initial_flash_state)
-
-    def test_hide_recording_message(self):
-        post_quiz_widget = PostQuizWidget(None, None, None, None)
-        post_quiz_widget.show_recording_message("Recording will begin now")
-        post_quiz_widget.hide_recording_message()
-        self.assertIsNone(post_quiz_widget.recording_message)
 
     def test_update_timer(self):
         post_quiz_widget = PostQuizWidget(None, None, None, None)
@@ -90,6 +92,7 @@ class TestPostQuizWidget(unittest.TestCase):
         post_quiz_widget = PostQuizWidget(None, None, None, None)
         post_quiz_widget.show_completed_message()
         self.assertIsNotNone(post_quiz_widget.completed_label)
+
 
 if __name__ == '__main__':
     unittest.main()

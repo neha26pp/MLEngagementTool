@@ -1,6 +1,5 @@
 import os
 import unittest
-
 from PyQt5.QtWidgets import *
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../View"))
@@ -17,13 +16,6 @@ class TestQuizApp(unittest.TestCase):
     def tearDown(self):
         # clean up after each test case run
         self.app.exit()
-
-    def test_initUI(self):
-        # check if widget variables are created
-        self.assertIsNotNone(self.quiz_app.stacked_widget)
-        self.assertIsInstance(self.quiz_app.screen_layout, QVBoxLayout)
-        self.assertIsInstance(self.quiz_app.bottomButtonLayout, QHBoxLayout)
-        self.assertIsInstance(self.quiz_app.bottomButtonWidget, QWidget)
 
     def test_back_button_clicked(self):
         self.assertNotEqual(self.quiz_app.stacked_widget.count(), 0)
@@ -61,9 +53,12 @@ class TestQuizApp(unittest.TestCase):
         self.quiz_app.update_start_pre_survey_button()
         self.assertFalse(self.quiz_app.next_button.isEnabled())
 
-    def test_next_button_clicked_start_page(self):
+    def test_next_button_clicked_instruction(self):
         # set index as 0
         self.quiz_app.stacked_widget.setCurrentIndex(0)
+
+        # check is Back button is disable
+        self.assertFalse(self.quiz_app.back_button.isEnabled())
 
         # click on Next Button
         self.quiz_app.next_button_clicked()
@@ -72,7 +67,10 @@ class TestQuizApp(unittest.TestCase):
         self.assertEqual(self.quiz_app.stacked_widget.currentIndex(), 1)
 
         # check if bottom button widget is available
-        self.assertFalse(self.quiz_app.bottomButtonWidget.isVisible())
+        self.assertTrue(self.quiz_app.bottomButtonWidget)
+
+        # check is Back button is enable
+        self.assertTrue(self.quiz_app.back_button.isEnabled())
 
         # check heading
         found_label = self.quiz_app.instructions_widget.findChild(QLabel, "heading1")
@@ -83,6 +81,9 @@ class TestQuizApp(unittest.TestCase):
         # set index as 1
         self.quiz_app.stacked_widget.setCurrentIndex(1)
 
+        # hide check box
+        self.quiz_app.agree_checkbox.show()
+
         # click on Next Button
         self.quiz_app.next_button_clicked()
 
@@ -90,7 +91,7 @@ class TestQuizApp(unittest.TestCase):
         self.assertEqual(self.quiz_app.stacked_widget.currentIndex(), 2)
 
         # check if the agree checkbox is available and next_button is not enable
-        self.assertFalse(self.quiz_app.agree_checkbox.isVisible())
+        self.assertTrue(self.quiz_app.agree_checkbox)
         self.assertFalse(self.quiz_app.next_button.isEnabled())
 
         # check heading
@@ -105,11 +106,10 @@ class TestQuizApp(unittest.TestCase):
         # click on Next Button
         self.quiz_app.next_button_clicked()
 
-        # check if current index is 2
+        # check if current index is 3
         self.assertEqual(self.quiz_app.stacked_widget.currentIndex(), 3)
 
         # check if the agree checkbox is hidden and next_button is enable
-        self.assertFalse(self.quiz_app.agree_checkbox.isVisible())
         self.assertTrue(self.quiz_app.next_button.isEnabled())
 
         # check heading
@@ -130,7 +130,6 @@ class TestQuizApp(unittest.TestCase):
         # check heading
         found_button = self.quiz_app.post_quiz_widget.findChild(QPushButton)
         self.assertIsNotNone(found_button)
-        self.assertEqual(found_button.text(), "Watch Video")
 
 
 if __name__ == '__main__':

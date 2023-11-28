@@ -28,7 +28,7 @@ def read_yaml(file_path):
 class QuizApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.agree_checkbox = None
+        self.agree_checkbox = QCheckBox()
         self.stacked_widget = QStackedWidget(self)
         self.screen_layout = QVBoxLayout()
         self.bottomButtonLayout = QHBoxLayout()
