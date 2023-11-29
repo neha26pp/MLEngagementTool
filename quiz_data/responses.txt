@@ -174,3 +174,4 @@ Total time taken: 00 hours, 00 minutes, 30 seconds
 Total time taken: 00 hours, 00 minutes, 19 seconds
 Total time taken: 00 hours, 00 minutes, 13 seconds
 >>>>>>> fb91d70 (display the message in the middle of screen and fix import path)
+Total time taken: 00 hours, 00 minutes, 49 seconds

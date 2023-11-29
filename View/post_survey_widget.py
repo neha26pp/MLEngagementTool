@@ -157,9 +157,9 @@ class PostQuizWidget(QWidget):
         print("starting eyetracking before stimulus")
         # create an instance of EyeTracker
         self.eye_tracker = eye_tracker.EyeTracker()
-        self.eye_tracker.start()
+        # self.eye_tracker.start()
         print("starting emotional analysis before stimulus")
-        self.emotional_analysis.start()
+        # self.emotional_analysis.start()
         if self.webview:
             self.screen_layout.removeWidget(self.webview)
             self.webview.deleteLater()
@@ -256,7 +256,7 @@ class PostQuizWidget(QWidget):
             thread_activity = self.emotional_analysis.get_activity()
         
             print("stropping eyetracking after stimulus")
-            self.eye_tracker.stop()
+            # self.eye_tracker.stop()
             print("stopping emotional analysis after stimulus")
             self.emotional_analysis.stop()
             

@@ -3,6 +3,8 @@ import sys
 import yaml
 from pathlib import Path
 import random
+
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import *
 
 video_directory = os.path.join(os.path.dirname(__file__), "..")
@@ -16,6 +18,9 @@ import View.presurvey_widget as pre_survey_widget
 import View.post_survey_widget as post_survey_widget
 import View.start_page_widget as start_page_widget
 import View.start_recording_widget as start_recording_widget
+import View.session_history_widget as session_history_widget
+import View.select_model_widget as select_model_widget
+import View.engagement_report_widget as engagement_report_widget
 
 BOTTOM_BUTTON_H = 60  # bottom button bar height
 
@@ -26,13 +31,20 @@ def read_yaml(file_path):
 
 
 class QuizApp(QWidget):
+    student_data_updated_signal = pyqtSignal(dict)
+
     def __init__(self):
         super().__init__()
         self.agree_checkbox = QCheckBox()
-        self.stacked_widget = QStackedWidget(self)
+        self.main_stack_widget = QStackedWidget(self)
+        self.collect_data_stacked_widget = QStackedWidget(self)
+        self.analyze_data_stacked_widget = QStackedWidget(self)
         self.screen_layout = QVBoxLayout()
         self.bottomButtonLayout = QHBoxLayout()
-        self.bottomButtonWidget = QWidget()        
+        self.bottomButtonWidget = QWidget()
+
+        self.student_data = None
+        self.selected_model = None
 
         self.initUI()
 
@@ -48,20 +60,18 @@ class QuizApp(QWidget):
             consent_form = read_yaml("../quiz_data/consent_form.yaml")
             # Read pre survey data from YAML
             pre_survey = read_yaml("../quiz_data/pre_survey.yaml")
-            # Read individual interest survey data from YAML
-            individual_interest_survey = read_yaml("../quiz_data/individual_interest_questionnaire.yaml")
+            # Read student data from YAML
+            self.session_history = read_yaml("../quiz_data/session_history.yaml")
 
             self.loadMaterialQuizPairs()
 
             # create an instance of EmotionalAnalysis
             self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
-    
-          
+
             # create eye tracking thread
             # self.eye_tracker = eye_tracker.EmotionalAnalysis()
+
             # create an instance of StartPageWidget
-
-
             self.start_page_widget = start_page_widget.StartPage()
             # create an instance of StartRecording
             self.start_recording_widget = start_recording_widget.StartRecording()
@@ -76,33 +86,18 @@ class QuizApp(QWidget):
                                                                       self.display_content[0].text,
                                                                       self.display_content[1].text)
 
+            # manage different screens in a stacked widget
+            self.collect_data_stacked_widget.addWidget(self.instructions_widget)
+            self.collect_data_stacked_widget.addWidget(self.consent_form_widget)
+            self.collect_data_stacked_widget.addWidget(self.pre_survey_widget)
+            self.collect_data_stacked_widget.addWidget(self.start_recording_widget)
+            self.collect_data_stacked_widget.addWidget(self.post_quiz_widget)
 
-            # manage different pages in a stacked widget
-            self.stacked_widget.addWidget(self.start_page_widget)
-            self.stacked_widget.addWidget(self.instructions_widget)
-            self.stacked_widget.addWidget(self.consent_form_widget)
-            self.stacked_widget.addWidget(self.pre_survey_widget)
-            self.stacked_widget.addWidget(self.start_recording_widget)
-            self.stacked_widget.addWidget(self.post_quiz_widget)
+            # set the initial screen
+            self.collect_data_stacked_widget.setCurrentIndex(0)
 
-            # set the initial page
-            self.stacked_widget.setCurrentIndex(0)
-
-            # add the stacked widget to the layout
-            self.screen_layout.addWidget(self.stacked_widget)
-
-            # connect button in start page widget
-            self.start_page_widget.collect_data_clicked.connect(self.next_button_clicked)
-
-            # Create a checkbox for user agreement
-            self.agree_checkbox = QCheckBox("I agree to the terms and conditions")
-            self.agree_checkbox.stateChanged.connect(self.update_start_pre_survey_button)
-            self.screen_layout.addWidget(self.agree_checkbox)
-            self.agree_checkbox.hide()
-
-            # add bottom button bar to the layout
+            # Create bottom button bar
             self.back_button = QPushButton("Back")
-            self.back_button.setEnabled(False)
             self.back_button.setObjectName("bottomButton")
             self.back_button.setFixedHeight(BOTTOM_BUTTON_H)
             self.back_button.clicked.connect(self.back_button_clicked)
@@ -122,64 +117,131 @@ class QuizApp(QWidget):
             self.bottomButtonLayout.addWidget(self.next_button)
             self.bottomButtonWidget.setLayout(self.bottomButtonLayout)
             self.bottomButtonWidget.hide()
+
+            # analyze data branch
+            # create an instance of SessionHistory Widget
+            self.session_history_widget = (
+                session_history_widget.SessionHistoryWidget(session_history=self.session_history))
+            # create an instance of SelectModel Widget
+            # create an instance of SelectModel Widget
+            self.select_model_widget = select_model_widget.SelectModelWidget()
+            # create an instance of EngagementReport Widget
+            self.engagement_report_widget = (engagement_report_widget.EngagementReportWidget(
+                student_data=self.student_data, model=self.selected_model))
+            # manage different screen in a Analyze Data stacked widget
+            self.analyze_data_stacked_widget.addWidget(self.session_history_widget)  # index 0
+            self.analyze_data_stacked_widget.addWidget(self.select_model_widget)  # index 1
+            self.analyze_data_stacked_widget.addWidget(self.engagement_report_widget)  # index 2
+
+            # add main stacked widget to the screen layout
+            self.screen_layout.addWidget(self.main_stack_widget)
+
+            # add root screen and branch stacked widgets to the main stacked widget
+            self.main_stack_widget.addWidget(self.start_page_widget)
+            self.main_stack_widget.addWidget(self.collect_data_stacked_widget)
+            self.main_stack_widget.addWidget(self.analyze_data_stacked_widget)
+
+            # Create a checkbox for user agreement
+            self.agree_checkbox = QCheckBox("I agree to the terms and conditions")
+            self.agree_checkbox.stateChanged.connect(self.update_start_pre_survey_button)
+            self.agree_checkbox.hide()
+            self.screen_layout.addWidget(self.agree_checkbox)
+
+            # add bottom button widget to the screen layout
             self.screen_layout.addWidget(self.bottomButtonWidget)
+
+            # connect button in start page widget to switch between branches
+            self.start_page_widget.collect_data_clicked.connect(lambda: self.switch_to_branch(1))
+            self.start_page_widget.analyze_data_clicked.connect(lambda: self.switch_to_branch(2))
+
+            # connect button in session history widget
+            self.session_history_widget.view_report_clicked.connect(self.handle_view_report_clicked)
+            # connect button in select model widget
+            self.select_model_widget.model_selected.connect(self.handle_model_selected)
+            # connect signal from QuizApp to EngagementReportWidget
+            self.student_data_updated_signal.connect(self.engagement_report_widget.update_student_data)
 
         except Exception as e:
             print("An error occurred in Quiz App:", str(e))
 
-    def back_button_clicked(self):
-        current_index = self.stacked_widget.currentIndex()
-        # go to previous screen
-        if current_index > 0:
-            self.stacked_widget.setCurrentIndex(current_index - 1)
-
-        # if back to start page
-        if current_index == 1:
-            self.bottomButtonWidget.hide()
-            return
-
-        # if back to consent form
-        if current_index == 3:
-            self.next_button.setEnabled(False)
-            self.agree_checkbox.show()
-            self.agree_checkbox.setChecked(False)
+    def switch_to_branch(self, branch_index):
+        self.main_stack_widget.setCurrentIndex(branch_index)
+        if branch_index > 0:
+            self.bottomButtonWidget.show()
+            if branch_index == 2:
+                self.next_button.setEnabled(False)
         else:
-            if self.agree_checkbox and not self.agree_checkbox.isHidden():
-                self.next_button.setEnabled(True)
-                self.agree_checkbox.hide()
+            self.bottomButtonWidget.hide()
+            self.next_button.setEnabled(True)
+
+    def back_button_clicked(self):
+        try:
+            if self.main_stack_widget.currentIndex() == 1:  # collect data branch
+                current_index = self.collect_data_stacked_widget.currentIndex()
+                # if current index is 0, switch to start screen
+                if current_index == 0:
+                    self.switch_to_branch(0)
+                else:  # go to previous screen
+                    self.collect_data_stacked_widget.setCurrentIndex(current_index - 1)
+
+                # if back to consent form
+                if current_index == 2:
+                    self.next_button.setEnabled(False)
+                    self.agree_checkbox.show()
+                    self.agree_checkbox.show()
+                    self.agree_checkbox.setChecked(False)
+                else:
+                    if self.agree_checkbox and not self.agree_checkbox.isHidden():
+                        self.next_button.setEnabled(True)
+                        self.agree_checkbox.hide()
+            if self.main_stack_widget.currentIndex() == 2:  # analyze data branch
+                current_index = self.analyze_data_stacked_widget.currentIndex()
+                # if current index is 0, switch to start screen
+                if current_index == 0:
+                    self.switch_to_branch(0)
+                else:  # go to previous screen
+                    self.analyze_data_stacked_widget.setCurrentIndex(current_index - 1)
+                    if current_index == 1:
+                        self.next_button.setEnabled(False)
+
+        except Exception as e:
+            print("An error occurred in back_button_clicked:", str(e))
 
     def next_button_clicked(self):
-        current_index = self.stacked_widget.currentIndex()
-        # go to next screen
-        if current_index < self.stacked_widget.count() - 1:
-            self.stacked_widget.setCurrentIndex(current_index + 1)
-            self.back_button.setEnabled(True)
+        if self.main_stack_widget.currentIndex() == 1:  # collect data branch
+            current_index = self.collect_data_stacked_widget.currentIndex()
+            # go to next screen
+            if current_index < self.collect_data_stacked_widget.count() - 1:
+                self.collect_data_stacked_widget.setCurrentIndex(current_index + 1)
+                self.back_button.setEnabled(True)
 
-        # if leaving the start page, show the bottom button bar
-        if current_index == 0:
-            self.bottomButtonWidget.show()
+            # if going to consent form, initialize settings for consent form
+            if current_index == 1:
+                self.next_button.setEnabled(False)
+                self.agree_checkbox.show()
+                self.agree_checkbox.setChecked(False)
+            else:
+                if self.agree_checkbox and not self.agree_checkbox.isHidden():
+                    self.next_button.setEnabled(True)
+                    self.agree_checkbox.hide()
 
-        # if going to consent form, initialize settings for consent form
-        if current_index == 1:
+            # if going to post survey
+            if current_index == self.collect_data_stacked_widget.count() - 2:
+                self.start_recording_widget.stop_camera()
+                # print("starting eyetracking before stimulus")
+                # self.eye_tracker.start()
+                # print("starting emotional analysis before stimulus")
+                # self.emotional_analysis.start()
+        if self.main_stack_widget.currentIndex() == 2:  # analyze data branch
+            current_index = self.analyze_data_stacked_widget.currentIndex()
             self.next_button.setEnabled(False)
-            self.agree_checkbox.show()
-            self.agree_checkbox.setChecked(False)
-        else:
-            if self.agree_checkbox and not self.agree_checkbox.isHidden():
-                self.next_button.setEnabled(True)
-                self.agree_checkbox.hide()
-
-        # if going to post survey
-        if current_index == self.stacked_widget.count() - 2:
-            self.start_recording_widget.stop_camera()
-            # print("starting eyetracking before stimulus")
-            # self.eye_tracker.start()
-            # print("starting emotional analysis before stimulus")
-            # self.emotional_analysis.start()
-       
-           
-            
-
+            # go to next screen
+            if current_index < self.analyze_data_stacked_widget.count() - 1:
+                self.analyze_data_stacked_widget.setCurrentIndex(current_index + 1)
+                self.back_button.setEnabled(True)
+            if current_index == 1:
+                # emit signal when moving to engagement report
+                self.student_data_updated_signal.emit(self.student_data)
 
     def update_start_pre_survey_button(self):
         if self.agree_checkbox.isChecked():
@@ -233,7 +295,8 @@ class QuizApp(QWidget):
 
         # pick video from other topic
         self.rand_video = self.videos[0]
-        # generate a random number to determine sequence of video and text (if rand num == 1, text first; else video first)
+        # generate a random number to determine sequence of video and text
+        # (if rand num == 1, text first; else video first)
         rand_num = random.randint(1, 2)
 
         if rand_num == 1:
@@ -244,6 +307,20 @@ class QuizApp(QWidget):
             self.display_content.append(self.rand_video)
             self.display_content.append(self.rand_text)
             print("display_content:", self.display_content)
+
+    def handle_view_report_clicked(self, row):
+        try:
+            current_index = self.analyze_data_stacked_widget.currentIndex()
+            self.analyze_data_stacked_widget.setCurrentIndex(current_index + 1)
+            self.student_data = self.session_history[row]
+            print("handle_view_report_clicked:", self.student_data)
+            self.engagement_report_widget.update_student_data(self.student_data)
+        except Exception as e:
+            print("An error occurred in handle_view_report_clicked:", str(e))
+
+    def handle_model_selected(self, selected_radio):
+        self.selected_model = selected_radio
+        self.next_button.setEnabled(True)
 
     def showConfirmation(self):
         # create message box
