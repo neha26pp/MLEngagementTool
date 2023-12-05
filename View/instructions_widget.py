@@ -26,5 +26,5 @@ class InstructionsWidget(QWidget):
 
         self.screen_layout.addWidget(self.form_content_widget)
 
-        # # Add reading material widget to screen layout
+        # Add reading material widget to screen layout
         self.setLayout(self.screen_layout)

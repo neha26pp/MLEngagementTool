@@ -8,6 +8,7 @@ from View.header_widget import HeaderWidget
 class StartPage(QWidget):
     collect_data_clicked = pyqtSignal()
     analyze_data_clicked = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         # create header

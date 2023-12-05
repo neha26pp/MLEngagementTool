@@ -42,7 +42,7 @@ QScrollArea QLabel {
     padding: 20px 40px;
 }
 
-QLabel#startPageTitle,QLabel#completeMessage {
+QLabel#startPageTitle,QLabel#completeMessage, QLabel#analyzeDataTitle {
     font-size: 60px;
     color: #050375;
 }
@@ -58,3 +58,9 @@ QPushButton#viewReportButton {
     color: white;
     font-size: 36px;
 }
+
+QLabel#score {
+    font-size: 32px;
+    color: #050375;
+}
+
