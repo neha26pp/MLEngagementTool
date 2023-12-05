@@ -156,15 +156,13 @@ class PostQuizWidget(QWidget):
     def show_reading_material(self):
         print("starting eyetracking before stimulus")
         # create an instance of EyeTracker
-        self.eye_tracker = eye_tracker.EyeTracker()
+        # self.eye_tracker = eye_tracker.EyeTracker()
         # self.eye_tracker.start()
         print("starting emotional analysis before stimulus")
-        # self.emotional_analysis.start()
+        self.emotional_analysis.start()
         if self.webview:
             self.screen_layout.removeWidget(self.webview)
             self.webview.deleteLater()
-
-       
 
         # Initialize reading text widget
         self.reading_text_widget = QScrollArea()
@@ -199,7 +197,9 @@ class PostQuizWidget(QWidget):
         # Set start quiz button
         self.start_quiz_button = QPushButton("Start Quiz")
         self.screen_layout.addWidget(self.start_quiz_button)
-        self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+        # self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+        self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz())
+
         
 
 
@@ -207,8 +207,8 @@ class PostQuizWidget(QWidget):
     def show_video(self):
         try:
             print("starting eyetracking before stimulus")
-            self.eye_tracker = eye_tracker.EyeTracker()
-            self.eye_tracker.start()
+            # self.eye_tracker = eye_tracker.EyeTracker()
+            # self.eye_tracker.start()
             print("starting emotional analysis before stimulus")
             self.emotional_analysis.start()
             # Get video URL
@@ -243,14 +243,16 @@ class PostQuizWidget(QWidget):
             # Set start quiz button
             self.start_quiz_button = QPushButton("Start Quiz")
             self.screen_layout.addWidget(self.start_quiz_button)
-            self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+            # self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz(self.eye_tracker))
+            self.start_quiz_button.clicked.connect(lambda: self.go_to_quiz())
 
 
         except Exception as e:
             print("An error occurred in video func:", str(e))
 
-    def go_to_quiz(self, eye_tracker):
-        
+    # def go_to_quiz(self, eye_tracker):
+    def go_to_quiz(self):
+
         try:
             print("go to quiz")
             thread_activity = self.emotional_analysis.get_activity()

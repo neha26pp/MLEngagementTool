@@ -216,7 +216,7 @@ class QuizApp(QWidget):
                 self.back_button.setEnabled(True)
 
             # if going to consent form, initialize settings for consent form
-            if current_index == 1:
+            if current_index == 0:
                 self.next_button.setEnabled(False)
                 self.agree_checkbox.show()
                 self.agree_checkbox.setChecked(False)
