@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import *
 
-HEADER_H = 150  # header bar widget height
+HEADER_H = 120  # header bar widget height
 
 
 class HeaderWidget(QWidget):
@@ -34,4 +34,6 @@ class HeaderWidget(QWidget):
         # set the layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(header_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(main_layout)
+

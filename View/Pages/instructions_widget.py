@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-from View.header_widget import HeaderWidget
+from View.Components.header_widget import HeaderWidget
 
 
 class InstructionsWidget(QWidget):

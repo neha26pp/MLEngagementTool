@@ -1,9 +1,6 @@
-import sys
-import yaml
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
-from View.header_widget import HeaderWidget
+from View.Components.header_widget import HeaderWidget
 
 
 class SelectModelWidget(QWidget):

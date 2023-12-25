@@ -1,11 +1,9 @@
-import sys
-
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import *
-from View.header_widget import HeaderWidget
+from View.Components.header_widget import HeaderWidget
 
 
-class StartPage(QWidget):
+class Dashboard(QWidget):
     collect_data_clicked = pyqtSignal()
     analyze_data_clicked = pyqtSignal()
 
@@ -16,19 +14,19 @@ class StartPage(QWidget):
 
         # create title label
         title_label = QLabel("Student Engagement Tool")
-        title_label.setObjectName("startPageTitle")
+        title_label.setObjectName("dashboardTitle")
         title_label.setFixedHeight(200)
         title_label.setAlignment(Qt.AlignCenter)
 
         # create buttons
         collect_data_button = QPushButton("Collect Data", self)
-        collect_data_button.setObjectName("startPageButton")
+        collect_data_button.setObjectName("dashboardButton")
         collect_data_button.setFixedSize(450, 375)
 
         collect_data_button.clicked.connect(self.collect_data_clicked.emit)
 
         analyze_data_button = QPushButton("Analyze Data", self)
-        analyze_data_button.setObjectName("startPageButton")
+        analyze_data_button.setObjectName("dashboardButton")
         analyze_data_button.setFixedSize(450, 375)
         analyze_data_button.clicked.connect(self.analyze_data_clicked.emit)
 
@@ -57,6 +55,6 @@ class StartPage(QWidget):
 #     app = QApplication(sys.argv)
 #     self.setWindowTitle("Start Page")
 #     self.setGeometry(100, 100, 400, 200)
-#     start_page = StartPage()
+#     start_page = dashboard()
 #     start_page.show()
 #     sys.exit(app.exec_())
