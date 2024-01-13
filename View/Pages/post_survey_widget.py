@@ -4,7 +4,7 @@ from pathlib import Path
 import random
 from PyQt5.Qt import *
 
-from Controller import emotional_analysis
+from Controller import emotional_analysis, eye_tracker
 from Controller.data_router import read_yaml
 from Controller.data_router import show_confirmation
 from View.Pages.PostSurvey.finish_widget import FinishWidget
@@ -209,15 +209,10 @@ class PostQuizWidget(QWidget):
                     self.show_reading_material()
 
                 else:
-                    # self.bottom_button_widget.disconnect_signals()
-                    # self.bottom_button_widget.connect_signals(None, show_confirmation, self.show_video)
-                    # self.bottom_button_widget.set_button_info(None, "Watch Video")
-
-                    self.bottom_button_widget.set_next_button_enabled(False)
-
                     self.reading_text = self.display_content[self.current_material].material.get("reading-text")
                     self.video_url = self.reading_text.get("video")
                     self.post_quiz = self.reading_text.get("video_quiz")
+                    self.bottom_button_widget.set_next_button_enabled(False)
 
                     self.show_video()
 
@@ -233,12 +228,14 @@ class PostQuizWidget(QWidget):
 
     def show_reading_material(self):
         try:
-            print("starting eyetracking before stimulus")
-            # create an instance of EyeTracker
-            # self.eye_tracker = eye_tracker.EyeTracker()
-            # self.eye_tracker.start()
-            print("starting emotional analysis before stimulus")
+            if self.eye_tracker:
+                print("starting eyetracking before stimulus")
+                # create an instance of EyeTracker
+                self.eye_tracker = eye_tracker.EyeTracker()
+                self.eye_tracker.start()
+
             if self.emotional_analysis:
+                print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
 
             # Reset the container_layout
@@ -256,20 +253,28 @@ class PostQuizWidget(QWidget):
 
             # Set bottom button bar
             self.bottom_button_widget.disconnect_signals()
-            self.bottom_button_widget.connect_signals(None,
-                                                      show_confirmation,
-                                                      self.go_to_quiz)
+            self.bottom_button_widget.connect_signals(None, show_confirmation, self.go_to_quiz)
             self.bottom_button_widget.set_button_info(None, "Start Quiz")
+            if len(self.reading_text.get("text")) > 1:
+                self.bottom_button_widget.set_next_button_enabled(False)
+            self.reading_text_widget.reading_material_finished_signal.connect(
+                lambda: self.bottom_button_widget.set_next_button_enabled(True))
+            self.reading_text_widget.reading_material_not_finished_signal.connect(
+                lambda: self.bottom_button_widget.set_next_button_enabled(False))
+
         except Exception as e:
             print("An error occurred in show_reading_material:", str(e))
 
     def show_video(self):
         try:
-            print("starting eyetracking before stimulus")
-            # self.eye_tracker = eye_tracker.EyeTracker()
-            # self.eye_tracker.start()
-            print("starting emotional analysis before stimulus")
+            if self.eye_tracker:
+                print("starting eyetracking before stimulus")
+                # create an instance of EyeTracker
+                self.eye_tracker = eye_tracker.EyeTracker()
+                self.eye_tracker.start()
+
             if self.emotional_analysis:
+                print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
 
             # Reset the container_layout
@@ -284,11 +289,11 @@ class PostQuizWidget(QWidget):
 
             # Set bottom button bar
             self.bottom_button_widget.disconnect_signals()
-            self.bottom_button_widget.connect_signals(None,
-                                                      show_confirmation,
-                                                      self.go_to_quiz)
+            self.bottom_button_widget.connect_signals(None, show_confirmation, self.go_to_quiz)
             self.bottom_button_widget.set_button_info(None, "Start Quiz")
-            self.bottom_button_widget.set_next_button_enabled(True)
+            self.video_widget.watch_video_button_signal.connect(
+                lambda: self.bottom_button_widget.set_next_button_enabled(True))
+
 
         except Exception as e:
             print("An error occurred in video func:", str(e))
@@ -296,13 +301,13 @@ class PostQuizWidget(QWidget):
     def go_to_quiz(self):
         try:
             print("go to quiz")
-            if self.emotional_analysis:
+            if self.eye_tracker:
                 thread_activity = self.emotional_analysis.get_activity()
+                print("stopping eyetracking after stimulus")
+                self.eye_tracker.stop()
 
-            print("stropping eyetracking after stimulus")
-            # self.eye_tracker.stop()
-            print("stopping emotional analysis after stimulus")
             if self.emotional_analysis:
+                print("stopping emotional analysis after stimulus")
                 self.emotional_analysis.stop()
 
             # Reset the container_layout
@@ -314,9 +319,7 @@ class PostQuizWidget(QWidget):
 
             # Set bottom button bar
             self.bottom_button_widget.disconnect_signals()
-            self.bottom_button_widget.connect_signals(None,
-                                                      show_confirmation,
-                                                      self.go_to_next_material)
+            self.bottom_button_widget.connect_signals(None, show_confirmation, self.go_to_next_material)
 
             if self.current_material < len(self.display_content):
                 self.bottom_button_widget.set_button_info(None, "Next Material")
@@ -330,8 +333,14 @@ class PostQuizWidget(QWidget):
         try:
             # stop recording subject and performing emotional analysis
             if self.eye_tracker:
-                self.emotional_analysis.stop()
+                print("stopping eyetracking")
                 self.eye_tracker.stop()
+
+            if self.emotional_analysis:
+                print("stopping emotional analysis")
+                self.emotional_analysis.stop()
+                print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
+
             # stop timer
             self.timer.stop()
 
@@ -346,10 +355,6 @@ class PostQuizWidget(QWidget):
 
             # Hide recording message
             self.hide_recording_message()
-
-            print("stopping emotional analysis")
-            if self.emotional_analysis:
-                print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
 
             # Set the instance of FinishWidget
             self.content_layout.addWidget(self.finish_widget)

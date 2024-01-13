@@ -1,9 +1,8 @@
 import os
 import sys
 import yaml
-from pathlib import Path
 
-from PyQt5.QtCore import pyqtSignal
+from pathlib import Path
 from PyQt5.QtWidgets import *
 
 import View.Pages.dashboard_widget as dashboard_widget

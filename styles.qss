@@ -47,7 +47,8 @@ QPushButton#goToDashboardButton:hover {
 }
 
 /* others */
-QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
+QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox,
+QTextBrowser {
     font-size: 24px;
 }
 
