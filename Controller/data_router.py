@@ -5,6 +5,12 @@ import yaml
 from pathlib import Path
 from PyQt5.QtWidgets import *
 
+
+
+video_directory = os.path.join(os.path.dirname(__file__), "..")
+sys.path.append(video_directory)
+file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
+
 import View.Pages.dashboard_widget as dashboard_widget
 import View.Pages.instructions_widget as instructions_widget
 import View.Pages.consent_form_widget as consent_form_widget
@@ -14,11 +20,6 @@ import View.Pages.post_survey_widget as post_survey_widget
 import View.Pages.session_history_widget as session_history_widget
 import View.Pages.engagement_report_widget as engagement_report_widget
 import View.Components.bottom_button_bar as bottom_button_bar
-
-video_directory = os.path.join(os.path.dirname(__file__), "..")
-sys.path.append(video_directory)
-file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
-
 
 def read_yaml(file_path):
     with open(file_path, "r", encoding="utf-8") as yaml_file:

@@ -317,3 +317,12 @@ Total time taken: 00:00:04
 Total time taken: 00:00:10
 Total time taken: 00:00:04
 Total time taken: 00:00:16
+Total time taken: 00:00:12
+Total time taken: 00:00:05
+Total time taken: 00:00:06
+Total time taken: 00:00:05
+Total time taken: 00:00:05
+Total time taken: 00:00:15
+Total time taken: 00:00:07
+Total time taken: 00:00:10
+Total time taken: 00:00:04

@@ -95,7 +95,7 @@ class MaterialWidget(QWidget):
             self.show_current_reading_text_page()
             self.next_page_button.setEnabled(True)
             self.reading_material_not_finished_signal.emit()
-        if self.page_index <= 1:
+        if self.page_index < 1:
             self.prev_page_button.setEnabled(False)
 
     def show_watch_video_button(self):
