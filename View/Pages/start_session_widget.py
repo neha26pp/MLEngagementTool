@@ -5,16 +5,16 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import *
 import os
 
-video_directory = os.path.join(os.path.dirname(__file__), "..")
+video_directory = os.path.join(os.path.dirname(__file__), "../..")
 sys.path.append(video_directory)
 
-from View.header_widget import HeaderWidget
+from View.Components.header_widget import HeaderWidget
 
 
-class StartRecording(QWidget):
+class StartSession(QWidget):
     def __init__(self):
         super().__init__()
-        header = HeaderWidget("Starting Recording")
+        header = HeaderWidget("Start Session")
 
         # create label to display camera
         self.image_label = QLabel(self)
@@ -25,7 +25,7 @@ class StartRecording(QWidget):
         main_layout.addWidget(self.image_label)
 
         # open camera
-        self.camera = cv2.VideoCapture(0)
+        self.camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
         # create timer to update camera
         self.timer = QTimer(self)

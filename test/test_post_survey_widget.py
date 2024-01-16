@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../View"))
 os.chdir(project_root)
 
-from View.post_survey_widget import PostQuizWidget
+from View.Pages.post_survey_widget import PostQuizWidget
 
 
 class TextQuizPair:

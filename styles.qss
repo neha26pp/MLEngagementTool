@@ -15,6 +15,7 @@ QLabel#heading2 {
 /* header*/
 QWidget#headerWidget {
     background-color: #050375;
+    margin: 0;
 }
 
 QWidget#headGridWidget  {
@@ -23,6 +24,11 @@ QWidget#headGridWidget  {
 }
 
 /* bottom button */
+QPushButton#bottomButton {
+    margin: 0;
+    padding: 0;
+}
+
 QPushButton#bottomButton:enabled  {
     color: white;
     background-color: #050375;
@@ -33,8 +39,16 @@ QPushButton#bottomButton:disabled {
     background-color: white;
 }
 
+QPushButton#bottomButton:hover,
+QPushButton#dashboardButton:hover,
+QPushButton#goToDashboardButton:hover {
+    color: white;
+    background-color: #363590;
+}
+
 /* others */
-QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox {
+QLabel, QLineEdit, QPushButton, QRadioButton, QCheckBox,
+QTextBrowser {
     font-size: 24px;
 }
 
@@ -42,18 +56,12 @@ QScrollArea QLabel {
     padding: 20px 40px;
 }
 
-QLabel#startPageTitle,QLabel#completeMessage, QLabel#analyzeDataTitle {
+QLabel#dashboardTitle,QLabel#completeMessage, QLabel#analyzeDataTitle {
     font-size: 60px;
     color: #050375;
 }
 
-QPushButton#startPageButton {
-    background-color: #050375;
-    color: white;
-    font-size: 36px;
-}
-
-QPushButton#viewReportButton {
+QPushButton#dashboardButton, QPushButton#goToDashboardButton {
     background-color: #050375;
     color: white;
     font-size: 36px;
@@ -63,4 +71,6 @@ QLabel#score {
     font-size: 32px;
     color: #050375;
 }
+
+
 
