@@ -6,5 +6,6 @@ logs
 .vscode/
 .idea/
 .DS_Store
+*.pyc
 
 venv

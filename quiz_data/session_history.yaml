@@ -1,0 +1,31 @@
+- name: Neha
+  date: 11/28/2023
+  SVR Eye: 90.00
+  SVR Emotion: 85.00
+  SVR Fusion: 88.00
+  stimulus1: text1
+  stimulus2: video2
+
+- name: Jack
+  date: 11/28/2023
+  SVR Eye: 85.00
+  SVR Emotion: 92.00
+  SVR Fusion: 88.50
+  stimulus1: video1
+  stimulus2: text2
+
+- name: Carlo
+  date: 11/28/2023
+  SVR Eye: 88.00
+  SVR Emotion: 89.00
+  SVR Fusion: 91.00
+  stimulus1: text2
+  stimulus2: video1
+
+- name: Yuying
+  date: 11/28/2023
+  SVR Eye: 91.00
+  SVR Emotion: 87.00
+  SVR Fusion: 89.50
+  stimulus1: video2
+  stimulus2: text1

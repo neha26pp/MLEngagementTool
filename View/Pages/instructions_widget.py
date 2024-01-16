@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
-from header_widget import HeaderWidget
+from View.Components.header_widget import HeaderWidget
+
 
 class InstructionsWidget(QWidget):
     def __init__(self, instruction_form, parent=None):
@@ -25,5 +26,5 @@ class InstructionsWidget(QWidget):
 
         self.screen_layout.addWidget(self.form_content_widget)
 
-        # # Add reading material widget to screen layout
+        # Add reading material widget to screen layout
         self.setLayout(self.screen_layout)

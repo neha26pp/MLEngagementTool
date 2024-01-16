@@ -1,8 +1,8 @@
-from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
 
-from header_widget import HeaderWidget
+from View.Components.header_widget import HeaderWidget
 
 
 class PreSurveyWidget(QWidget):
