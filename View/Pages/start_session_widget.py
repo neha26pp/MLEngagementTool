@@ -24,6 +24,10 @@ class StartSession(QWidget):
         main_layout.addWidget(header)
         main_layout.addWidget(self.image_label)
 
+        # set layout for the main widget
+        self.setLayout(main_layout)
+
+    def open_camera(self):
         # open camera
         self.camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
@@ -31,9 +35,6 @@ class StartSession(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_camera)
         self.timer.start(50)
-
-        # set layout for the main widget
-        self.setLayout(main_layout)
 
     def update_camera(self):
         ret, frame = self.camera.read()

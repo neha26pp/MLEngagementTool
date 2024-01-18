@@ -23,8 +23,9 @@ class PostQuizWidget(QWidget):
         # read data
         self.reading_text_widget = None
         self.post_quiz_heading = None
-        # self.eye_tracker = eye_tracker.EyeTracker()
-        self.eye_tracker = None
+        # self.eye_tracker = None
+        self.eye_tracker = eye_tracker.EyeTracker()
+
         self.emotional_analysis = emotional_analysis
         self.display_content = None
 
@@ -228,14 +229,13 @@ class PostQuizWidget(QWidget):
 
     def show_reading_material(self):
         try:
-            if self.eye_tracker:
-                print("starting eyetracking before stimulus")
-                # create an instance of EyeTracker
-                self.eye_tracker.start()
-
             if self.emotional_analysis:
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
+
+            if self.eye_tracker:
+                print("starting eyetracking before stimulus")
+                self.eye_tracker.start()
 
             # Reset the container_layout
             self.reset_content_widget()
@@ -266,15 +266,13 @@ class PostQuizWidget(QWidget):
 
     def show_video(self):
         try:
-            if self.eye_tracker:
-                print("starting eyetracking before stimulus")
-                # create an instance of EyeTracker
-                self.eye_tracker = eye_tracker.EyeTracker()
-                self.eye_tracker.start()
-
             if self.emotional_analysis:
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
+
+            if self.eye_tracker:
+                print("starting eyetracking before stimulus")
+                self.eye_tracker.start()
 
             # Reset the container_layout
             self.reset_content_widget()
@@ -298,14 +296,15 @@ class PostQuizWidget(QWidget):
     def go_to_quiz(self):
         try:
             print("go to quiz")
-            if self.eye_tracker:
-                thread_activity = self.emotional_analysis.get_activity()
-                print("stopping eyetracking after stimulus")
-                self.eye_tracker.stop()
 
             if self.emotional_analysis:
                 print("stopping emotional analysis after stimulus")
                 self.emotional_analysis.stop()
+
+            if self.eye_tracker:
+                thread_activity = self.emotional_analysis.get_activity()
+                print("stopping eyetracking after stimulus")
+                self.eye_tracker.stop()
 
             # Reset the container_layout
             self.reset_content_widget()
@@ -329,14 +328,14 @@ class PostQuizWidget(QWidget):
     def show_completed_message(self):
         try:
             # stop recording subject and performing emotional analysis
-            if self.eye_tracker:
-                print("stopping eyetracking")
-                self.eye_tracker.stop()
-
             if self.emotional_analysis:
                 print("stopping emotional analysis")
                 self.emotional_analysis.stop()
                 print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
+
+            if self.eye_tracker:
+                print("stopping eyetracking")
+                self.eye_tracker.stop()
 
             # stop timer
             self.timer.stop()

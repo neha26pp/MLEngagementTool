@@ -333,3 +333,9 @@ Total time taken: 00:00:04
 Total time taken: 00:00:09
 Total time taken: 00:00:16
 Total time taken: 00:00:16
+Total time taken: 00:00:10
+Total time taken: 00:00:33
+Total time taken: 00:00:04
+Total time taken: 00:01:37
+Total time taken: 00:00:12
+Total time taken: 00:00:18

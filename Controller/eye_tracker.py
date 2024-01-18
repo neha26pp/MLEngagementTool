@@ -244,7 +244,8 @@ class EyeTracker(QThread):
             print("Please double check the IP Address and Port Number that Eye Tracker is listening!\n")
             
             # Quit
-            sys.exit()
+            # sys.exit()
+            return None # not exit the application, insteadly, initialize the eye tracker instance with None
 
         # while (FlagConnected):
 

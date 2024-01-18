@@ -61,7 +61,7 @@ class QuizApp(QWidget):
     def initUI(self):
         try:
             self.setWindowTitle("Quiz Application")
-            self.setGeometry(100, 100, 1600, 1200)
+            self.setGeometry(100, 40, 1200, 960)
             self.setLayout(self.screen_layout)
 
             # Read instructions data from YAML
@@ -75,13 +75,13 @@ class QuizApp(QWidget):
 
             # create an instance of StartPageWidget
             self.dashboard_widget = dashboard_widget.Dashboard()
-            # create an instance of StartSession
-            self.start_session_widget = start_session_widget.StartSession()
             # create an instance of InstructionsWidget
             self.instructions_widget = instructions_widget.InstructionsWidget(instructions)
             # create an instance of ConsentFormWidget
             self.consent_form_widget = consent_form_widget.ConsentFormWidget(consent_form)
             self.consent_form_widget.connect_signals(self.update_start_pre_survey_button)
+            # create an instance of StartSession
+            self.start_session_widget = start_session_widget.StartSession()
 
             # create an instance of PreSurveyWidget
             self.pre_survey_widget = pre_survey_widget.PreSurveyWidget(pre_survey)
@@ -203,6 +203,10 @@ class QuizApp(QWidget):
                     self.consent_form_widget.set_checked(False)
                 else:
                     self.bottom_button_bar_widget.set_next_button_enabled(True)
+
+                # if going to start survey
+                if current_index == self.collect_data_stacked_widget.count() - 2:
+                    self.start_session_widget.open_camera()
 
                 # if going to post survey
                 if current_index == self.collect_data_stacked_widget.count() - 1:
