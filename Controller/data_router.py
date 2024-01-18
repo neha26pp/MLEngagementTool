@@ -5,12 +5,11 @@ import yaml
 from pathlib import Path
 from PyQt5.QtWidgets import *
 
-
-
 video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
+from Controller import emotional_analysis, eye_tracker
 import View.Pages.dashboard_widget as dashboard_widget
 import View.Pages.instructions_widget as instructions_widget
 import View.Pages.consent_form_widget as consent_form_widget
@@ -20,6 +19,7 @@ import View.Pages.post_survey_widget as post_survey_widget
 import View.Pages.session_history_widget as session_history_widget
 import View.Pages.engagement_report_widget as engagement_report_widget
 import View.Components.bottom_button_bar as bottom_button_bar
+
 
 def read_yaml(file_path):
     with open(file_path, "r", encoding="utf-8") as yaml_file:
@@ -52,6 +52,9 @@ class QuizApp(QWidget):
         self.bottom_button_bar_widget = QWidget()
         self.student_data = None
         self.select_model = None
+
+        # Initialize emotional analysis
+        self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
 
         self.initUI()
 
@@ -205,7 +208,7 @@ class QuizApp(QWidget):
                 if current_index == self.collect_data_stacked_widget.count() - 1:
                     self.start_session_widget.stop_camera()
                     self.bottom_button_bar_widget.hide()
-                    self.post_quiz_widget = post_survey_widget.PostQuizWidget()
+                    self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.emotional_analysis)
                     self.post_quiz_widget.finish_widget.go_to_dashboard_button.clicked.connect(
                         self.on_go_to_dashboard_clicked)
                     self.collect_data_stacked_widget.addWidget(self.post_quiz_widget)
