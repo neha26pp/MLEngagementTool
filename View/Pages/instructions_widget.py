@@ -19,12 +19,11 @@ class InstructionsWidget(QWidget):
         self.instruction_form_heading = HeaderWidget("Instructions")
         self.screen_layout.addWidget(self.instruction_form_heading)
 
-        # Show reading text content
+        # Show instruction form
         self.form_content_label = QLabel(" ".join(self.instruction_form.get("text")))
         self.form_content_label.setWordWrap(True)
         self.form_content_widget.setWidget(self.form_content_label)
 
+        # Set layout
         self.screen_layout.addWidget(self.form_content_widget)
-
-        # Add reading material widget to screen layout
         self.setLayout(self.screen_layout)

@@ -4,7 +4,7 @@ from pathlib import Path
 import random
 from PyQt5.Qt import *
 
-from Controller import emotional_analysis, eye_tracker
+from Controller import eye_tracker
 from Controller.data_router import read_yaml
 from Controller.data_router import show_confirmation
 from View.Pages.PostSurvey.finish_widget import FinishWidget
@@ -18,13 +18,14 @@ file_path = os.path.join(os.path.dirname(__file__), "../..", "quiz_data", "respo
 
 
 class PostQuizWidget(QWidget):
-    def __init__(self):
+    def __init__(self, emotional_analysis):
         super().__init__()
         # read data
         self.reading_text_widget = None
         self.post_quiz_heading = None
-        self.eye_tracker = eye_tracker.EyeTracker()
-        self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
+        # self.eye_tracker = eye_tracker.EyeTracker()
+        self.eye_tracker = None
+        self.emotional_analysis = emotional_analysis
         self.display_content = None
 
         # initialize layouts
@@ -289,9 +290,7 @@ class PostQuizWidget(QWidget):
             self.bottom_button_widget.disconnect_signals()
             self.bottom_button_widget.connect_signals(None, show_confirmation, self.go_to_quiz)
             self.bottom_button_widget.set_button_info(None, "Start Quiz")
-            self.video_widget.watch_video_button_signal.connect(
-                lambda: self.bottom_button_widget.set_next_button_enabled(True))
-
+            self.bottom_button_widget.set_next_button_enabled(True)
 
         except Exception as e:
             print("An error occurred in video func:", str(e))

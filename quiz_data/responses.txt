@@ -328,3 +328,8 @@ Total time taken: 00:00:10
 Total time taken: 00:00:04
 Total time taken: 00:00:27
 Total time taken: 00:00:21
+Total time taken: 00:00:08
+Total time taken: 00:00:04
+Total time taken: 00:00:09
+Total time taken: 00:00:16
+Total time taken: 00:00:16

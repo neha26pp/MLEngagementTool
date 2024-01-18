@@ -46,11 +46,10 @@ class EmotionalAnalysis(QThread):
                 )
                 Pic = ConvertToQTFormat.scaled(640, 480, Qt.KeepAspectRatio)
 
-               
                 # self.ImageUpdate.emit(Pic) # show opencv face feed
-               
 
                 self.current_time = time.time()
+
             if self.current_time - self.last_emotion_detection_time >= self.emotion_detection_interval:
                 results = DeepFace.analyze(
                     img_path=frame, actions=["emotion"], enforce_detection=False
@@ -61,8 +60,7 @@ class EmotionalAnalysis(QThread):
                     print("EMOTION DETECTED: " , emotion)
                     self.detected_emotions.append(emotion)
                 self.last_emotion_detection_time = self.current_time
-                
-               
+
 
     def stop(self):
         self.ThreadActive = False
@@ -70,10 +68,10 @@ class EmotionalAnalysis(QThread):
 
     def get_activity(self):
         return self.ThreadActive
+
+    def save_emotions(self):
+        pass
     
-
-
-
 
 # import cv2
 # import time
