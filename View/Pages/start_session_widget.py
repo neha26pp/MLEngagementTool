@@ -12,25 +12,31 @@ from View.Components.header_widget import HeaderWidget
 
 
 class StartSession(QWidget):
-    def __init__(self):
+    def __init__(self, camera):
         super().__init__()
         header = HeaderWidget("Start Session")
 
+        self.camera = camera
+
         # create label to display camera
-        self.image_label = QLabel(self)
+        self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignCenter)
 
+        #  display a recording message
+        self.message_label = QLabel("Please adjust the camera to make sure you are in the frame")
+        self.message_label.setAlignment(Qt.AlignCenter)
+        self.message_label.setFixedHeight(80)
+
+        # set layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(header)
+        main_layout.addStretch(1)
         main_layout.addWidget(self.image_label)
-
-        # set layout for the main widget
+        main_layout.addWidget(self.message_label)
+        main_layout.addStretch(1)
         self.setLayout(main_layout)
 
     def open_camera(self):
-        # open camera
-        self.camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-
         # create timer to update camera
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_camera)
@@ -55,14 +61,12 @@ class StartSession(QWidget):
             self.image_label.adjustSize()
 
     def stop_camera(self):
-        # Release the camera when closing the window
-        self.camera.release()
+        # Stop the timer
+        self.timer.stop()
 
-# if __name__ == "__main__":
+        # Release the camera
+        if self.camera.isOpened():
+            self.camera.release()
 
-#     app = QApplication(sys.argv)
-#     self.setWindowTitle("Start Recording")
-#     self.setGeometry(100, 100, 400, 200)
-#     start_page = StartPage()
-#     start_page.show()
-#     sys.exit(app.exec_())
+        # Clear the image label
+        self.image_label.clear()

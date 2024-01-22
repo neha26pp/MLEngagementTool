@@ -245,15 +245,14 @@ class EyeTracker(QThread):
             
             # Quit
             # sys.exit()
-            return None # not exit the application, insteadly, initialize the eye tracker instance with None
 
         # while (FlagConnected):
 
         #     # Quit if ESC Key is pressed
         #     if msvcrt.kbhit() and msvcrt.getch() == chr(27).encode():
         #         # Send command to Stop Data File Recording if connected
-        
-            
+
+
         # Show message
         print(f"Record Host({HostIPAddr}:{HostPortNum}) eye data into file: {FNameStr} successfully\n")
 

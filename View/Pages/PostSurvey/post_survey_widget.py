@@ -12,9 +12,9 @@ from View.Pages.PostSurvey.material_widget import MaterialWidget
 from View.Pages.PostSurvey.quiz_widget import QuizWidget
 from View.Components.bottom_button_bar import BottomButtonBar
 
-video_directory = os.path.join(os.path.dirname(__file__), "../..")
+video_directory = os.path.join(os.path.dirname(__file__), "../../..")
 sys.path.append(video_directory)
-file_path = os.path.join(os.path.dirname(__file__), "../..", "quiz_data", "responses.txt")
+file_path = os.path.join(os.path.dirname(__file__), "../../..", "quiz_data", "responses.txt")
 
 
 class PostQuizWidget(QWidget):
@@ -23,9 +23,8 @@ class PostQuizWidget(QWidget):
         # read data
         self.reading_text_widget = None
         self.post_quiz_heading = None
-        # self.eye_tracker = None
-        self.eye_tracker = eye_tracker.EyeTracker()
-
+        self.eye_tracker = None
+        # self.eye_tracker = eye_tracker.EyeTracker()
         self.emotional_analysis = emotional_analysis
         self.display_content = None
 
@@ -390,7 +389,7 @@ class VideoQuizPair:
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyleSheet(Path("../../styles.qss").read_text())
+    app.setStyleSheet(Path("../../../styles.qss").read_text())
     screen = PostQuizWidget()
     screen.show()
     sys.exit(app.exec_())
