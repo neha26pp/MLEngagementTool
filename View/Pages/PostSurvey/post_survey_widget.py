@@ -1,4 +1,5 @@
 import os
+import socket
 import sys
 from pathlib import Path
 import random
@@ -24,7 +25,7 @@ class PostQuizWidget(QWidget):
         self.reading_text_widget = None
         self.post_quiz_heading = None
         self.eye_tracker = None
-        # self.eye_tracker = eye_tracker.EyeTracker()
+        self.eye_tracker = eye_tracker.EyeTracker()
         self.emotional_analysis = emotional_analysis
         self.display_content = None
 
@@ -231,10 +232,13 @@ class PostQuizWidget(QWidget):
             if self.emotional_analysis:
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
-
-            if self.eye_tracker:
-                print("starting eyetracking before stimulus")
-                self.eye_tracker.start()
+            CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if self.eye_tracker is None:
+                self.eye_tracker = eye_tracker.EyeTracker(CmdSocket)
+               
+            
+            self.eye_tracker.start()
+            print("starting eyetracking before stimulus")
 
             # Reset the container_layout
             self.reset_content_widget()
@@ -269,9 +273,12 @@ class PostQuizWidget(QWidget):
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
 
-            if self.eye_tracker:
-                print("starting eyetracking before stimulus")
-                self.eye_tracker.start()
+            CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if self.eye_tracker is None:
+                self.eye_tracker = eye_tracker.EyeTracker(CmdSocket)
+
+            print("starting eyetracking before stimulus")
+            self.eye_tracker.start()
 
             # Reset the container_layout
             self.reset_content_widget()

@@ -37,14 +37,17 @@ import msvcrt
 import socket
 import os
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
-
+import random
 
 class EyeTracker(QThread): 
-    def __init__(self):
+    def __init__(self, socket):
         super(EyeTracker, self).__init__()
           # Create TCP socket to connect to host
+        CmdSocket = socket
         self.CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+        global FlagConnected
+        FlagConnected = True
+        
        
       #------------------------------------------------------------------------------
     # CalCheckSum:  Calculate Check Sum of Buffer
@@ -162,7 +165,7 @@ class EyeTracker(QThread):
         CMD_SET_XDAT                            =   0x0005
         CMD_SET_DATAFILE_NAME					=   0x0006
 
-
+        
       
 
        
@@ -192,8 +195,10 @@ class EyeTracker(QThread):
         # Get Eye Trackt Port Number to connect
         HostPortNum = 51000
 
+        i = random.randint(0,100)
         # Get Data File Name String
-        FNameStr = "test3eye.eyd"
+        FNameStr = "test" + str(i)+".csv"
+        i += 1
 
         # if not os.path.exists(FNameStr):
         #     open(FNameStr, 'w').close()
@@ -209,7 +214,8 @@ class EyeTracker(QThread):
         self.CmdSocket.settimeout(10.0)
 
         # Initialize Network Connected Flag
-        FlagConnected = True
+        self.FlagConnected = True
+        
 
         # Try to connect to Eye Tracker Host
         try:
@@ -219,26 +225,26 @@ class EyeTracker(QThread):
         # Failed
         except Exception as e:
             # Change Connection Flag to False if failed
-            FlagConnected = False
-
+            self.FlagConnected = False
+        print("flag connected value: " + str(self.FlagConnected))
         # Send command to Set Data File Name if connected
-        if (FlagConnected):
-            FlagConnected = self.SendETCmdStr( self.CmdSocket, CMD_SET_DATAFILE_NAME, FNameStr)
+        if (self.FlagConnected):
+            self.FlagConnected = self.SendETCmdStr( self.CmdSocket, CMD_SET_DATAFILE_NAME, FNameStr)
 
         # Send command to Open Data File if connected
-        if (FlagConnected):
-            FlagConnected = self.SendETCmd( self.CmdSocket, CMD_OPEN_DATAFILE, 0)
+        if (self.FlagConnected):
+            self.FlagConnected = self.SendETCmd( self.CmdSocket, CMD_OPEN_DATAFILE, 0)
 
         # Send command to Start Data File Recording if connected
-        if (FlagConnected):
-            FlagConnected = self.SendETCmd( self.CmdSocket, CMD_START_DATAFILE_RECORDING, 0)
+        if (self.FlagConnected):
+            self.FlagConnected = self.SendETCmd( self.CmdSocket, CMD_START_DATAFILE_RECORDING, 0)
 
         # Check result
-        if (FlagConnected):
+        if (self.FlagConnected):
             # Show message
             print(f"Start to record Host({HostIPAddr}:{HostPortNum}) eye data into file: {FNameStr}... (Press 'Esc' to stop recording and quit!)\n")
         # Quit if failed to build the connection
-        if (FlagConnected == False):
+        if (self.FlagConnected == False):
             # Show message
             print(f"Failed to connect {HostIPAddr} at port {HostPortNum}!")
             print("Please double check the IP Address and Port Number that Eye Tracker is listening!\n")
@@ -255,17 +261,20 @@ class EyeTracker(QThread):
 
         # Show message
         print(f"Record Host({HostIPAddr}:{HostPortNum}) eye data into file: {FNameStr} successfully\n")
-
+        
         # # Quit
         # sys.exit()
     
     def stop(self):
-        
-        self.SendETCmd( self.CmdSocket, 0x0002, 0)
+        # Send command to Stop Data File Recording if connected
+        if(self.FlagConnected):
+            self.SendETCmd( self.CmdSocket, 0x0002, 0)
 
-                # Send command to Close Data File if connected
-       
-        self.SendETCmd( self.CmdSocket, 0x0004, 0)
+        # Send command to Close Data File if connected
+        if(self.FlagConnected):
+            self.SendETCmd( self.CmdSocket, 0x0004, 0)
+        
+        self.FlagConnected = False
                 
         self.quit()
 

@@ -1,0 +1,10 @@
+neutral
+sad
+sad
+sad
+sad
+neutral
+fear
+sad
+angry
+happy
