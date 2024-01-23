@@ -165,7 +165,7 @@ class EyeTracker(QThread):
 
 
        
-    def run(self):
+    def run(self, stimNum):
         #------------------------------------------------------------------------------
         # Definitions
         #------------------------------------------------------------------------------
@@ -202,24 +202,14 @@ class EyeTracker(QThread):
         #     sys.exit()
 
 # if you want to do automatic comment out lines from here{
-        FNameStr = "participant.csv"
+       # FNameStr = "participant.csv"
 # to here }
 
-# if want to do manually comment out the lines from here {
-        # Read the current participant number from the file
-    #   with open('participantNum.txt', 'r') as file:
-    #      participantNum = int(file.read())
+
 
         # Get Data File Name String
-    #    FNameStr = f"participant{participantNum}.csv"
-
-        # Increment the participant number
-    #    participantNum += 1
-
-        # Write the updated participant number back to the file
-    #    with open('participantNum.txt', 'w') as file:
-    #        file.write(str(participantNum))
-# to here }
+        FNameStr = f"stimulus{stimNum}.csv"
+        print(stimNum)
                  
 
 
