@@ -40,11 +40,23 @@ from PyQt5.QtCore import Qt, pyqtSignal, QThread
 import random
 
 class EyeTracker(QThread): 
-    def __init__(self, socket):
+    # Get Eye Tracker Host IP Address to connect
+    HostIPAddr = '146.186.228.86'
+
+        # Get Eye Trackt Port Number to connect
+    HostPortNum = 51000
+    CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Set TCP_NODELAY
+    CmdSocket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+    # Set time out to 10 seconds
+    CmdSocket.settimeout(10.0)
+    CmdSocket.connect((HostIPAddr, HostPortNum))
+    
+    def __init__(self):
         super(EyeTracker, self).__init__()
           # Create TCP socket to connect to host
-        CmdSocket = socket
-        self.CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         global FlagConnected
         FlagConnected = True
         
@@ -189,16 +201,27 @@ class EyeTracker(QThread):
         #     # Quit
         #     sys.exit()
 
-        # Get Eye Tracker Host IP Address to connect
-        HostIPAddr = '146.186.228.86'
+# if you want to do automatic comment out lines from here{
+        FNameStr = "participant.csv"
+# to here }
 
-        # Get Eye Trackt Port Number to connect
-        HostPortNum = 51000
+# if want to do manually comment out the lines from here {
+        # Read the current participant number from the file
+    #   with open('participantNum.txt', 'r') as file:
+    #      participantNum = int(file.read())
 
-        i = random.randint(0,100)
         # Get Data File Name String
-        FNameStr = "test" + str(i)+".csv"
-        i += 1
+    #    FNameStr = f"participant{participantNum}.csv"
+
+        # Increment the participant number
+    #    participantNum += 1
+
+        # Write the updated participant number back to the file
+    #    with open('participantNum.txt', 'w') as file:
+    #        file.write(str(participantNum))
+# to here }
+                 
+
 
         # if not os.path.exists(FNameStr):
         #     open(FNameStr, 'w').close()
@@ -218,18 +241,18 @@ class EyeTracker(QThread):
         
 
         # Try to connect to Eye Tracker Host
-        try:
-            # Connect to host
-            self.CmdSocket.connect((HostIPAddr, HostPortNum))
+        # try:
+        #     # Connect to host
+        #     self.CmdSocket.connect((HostIPAddr, HostPortNum))
 
-        # Failed
-        except Exception as e:
-            # Change Connection Flag to False if failed
-            self.FlagConnected = False
-        print("flag connected value: " + str(self.FlagConnected))
+        # # Failed
+        # except Exception as e:
+        #     # Change Connection Flag to False if failed
+        #     self.FlagConnected = False
+        print("flag connected value: " + str(FlagConnected))
         # Send command to Set Data File Name if connected
         if (self.FlagConnected):
-            self.FlagConnected = self.SendETCmdStr( self.CmdSocket, CMD_SET_DATAFILE_NAME, FNameStr)
+           self.FlagConnected = self.SendETCmdStr(self.CmdSocket, CMD_SET_DATAFILE_NAME, FNameStr)
 
         # Send command to Open Data File if connected
         if (self.FlagConnected):
@@ -242,11 +265,11 @@ class EyeTracker(QThread):
         # Check result
         if (self.FlagConnected):
             # Show message
-            print(f"Start to record Host({HostIPAddr}:{HostPortNum}) eye data into file: {FNameStr}... (Press 'Esc' to stop recording and quit!)\n")
+            print(f"Start to record Host({self.HostIPAddr}:{self.HostPortNum}) eye data into file: {FNameStr}... (Press 'Esc' to stop recording and quit!)\n")
         # Quit if failed to build the connection
         if (self.FlagConnected == False):
             # Show message
-            print(f"Failed to connect {HostIPAddr} at port {HostPortNum}!")
+            print(f"Failed to connect {self.HostIPAddr} at port {self.HostPortNum}!")
             print("Please double check the IP Address and Port Number that Eye Tracker is listening!\n")
             
             # Quit
@@ -260,7 +283,7 @@ class EyeTracker(QThread):
 
 
         # Show message
-        print(f"Record Host({HostIPAddr}:{HostPortNum}) eye data into file: {FNameStr} successfully\n")
+        print(f"Record Host({self.HostIPAddr}:{self.HostPortNum}) eye data into file: {FNameStr} successfully\n")
         
         # # Quit
         # sys.exit()
@@ -268,13 +291,14 @@ class EyeTracker(QThread):
     def stop(self):
         # Send command to Stop Data File Recording if connected
         if(self.FlagConnected):
-            self.SendETCmd( self.CmdSocket, 0x0002, 0)
+            self.SendETCmd(self.CmdSocket, 0x0002, 0)
 
         # Send command to Close Data File if connected
         if(self.FlagConnected):
-            self.SendETCmd( self.CmdSocket, 0x0004, 0)
+            self.SendETCmd(self.CmdSocket, 0x0004, 0)
         
         self.FlagConnected = False
+        # self.CmdSocket.close()
                 
         self.quit()
 

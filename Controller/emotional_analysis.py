@@ -40,8 +40,14 @@ class EmotionalAnalysis(QThread):
                 _, _ = self.capture.read()
                 end_time = time.time()
                 elapsed_times.append(end_time - start_time)
+                # print(end_time - start_time)
 
-            self.fps = 1 / (sum(elapsed_times) / num_frames)
+            #print(sum(elapsed_times), num_frames)
+
+
+            if sum(elapsed_times) != 0:
+                self.fps = 1 / (sum(elapsed_times) / num_frames)
+            print(sum(elapsed_times))
             print(f"actual_fps: {self.fps}")
 
 
@@ -52,8 +58,8 @@ class EmotionalAnalysis(QThread):
         width = int(self.capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
         file_name = f"../quiz_data/video_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.avi"
-        # self.video_recorder = VideoRecorder(self.capture, file_name, int(self.fps), width, height)
-        # self.video_recorder.start()
+        self.video_recorder = VideoRecorder(self.capture, file_name, int(self.fps), width, height)
+        self.video_recorder.start()
 
         while self.ThreadActive:
             ret, frame = self.capture.read()
@@ -88,7 +94,8 @@ class EmotionalAnalysis(QThread):
         self.ThreadActive = False
         self.quit()
 
-        # self.video_recorder.stop()
+        if self.video_recorder is not None:
+            self.video_recorder.stop()
 
         if len(self.detected_emotions) > 1:
             self.save_emotions()
