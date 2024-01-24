@@ -25,7 +25,10 @@ class PostQuizWidget(QWidget):
         self.reading_text_widget = None
         self.post_quiz_heading = None
         self.eye_tracker = None
+        CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.eye_tracker = eye_tracker.EyeTracker()
+        self.stimNum = 1
+
         self.emotional_analysis = emotional_analysis
         self.display_content = None
 
@@ -232,13 +235,12 @@ class PostQuizWidget(QWidget):
             if self.emotional_analysis:
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
-            CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if self.eye_tracker is None:
-                self.eye_tracker = eye_tracker.EyeTracker(CmdSocket)
-               
-            
-            self.eye_tracker.start()
-            print("starting eyetracking before stimulus")
+            # CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if self.eye_tracker:
+                self.eye_tracker.run(stimNum=self.stimNum)
+                print(self.stimNum)
+                self.stimNum += 1
+                print("starting eyetracking before stimulus")
 
             # Reset the container_layout
             self.reset_content_widget()
@@ -273,12 +275,13 @@ class PostQuizWidget(QWidget):
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
 
-            CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if self.eye_tracker is None:
-                self.eye_tracker = eye_tracker.EyeTracker(CmdSocket)
+            # CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if self.eye_tracker:
+                print("starting eyetracking before stimulus")
+                self.eye_tracker.run(stimNum=self.stimNum)
+                print(self.stimNum)
 
-            print("starting eyetracking before stimulus")
-            self.eye_tracker.start()
+                self.stimNum += 1
 
             # Reset the container_layout
             self.reset_content_widget()
