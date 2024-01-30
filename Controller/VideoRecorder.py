@@ -12,13 +12,16 @@ class VideoRecorder(QThread):
         self.camera = camera
 
     def run(self):
-        print("Start recording")
-        self.is_recording = True
-        while True:
-            if self.is_recording:
-                ret, frame = self.camera.read()
-                if ret:
-                    self.record_video_writer.write(frame)
+        try:
+            print("Start recording")
+            self.is_recording = True
+            while True:
+                if self.is_recording:
+                    ret, frame = self.camera.read()
+                    if ret:
+                        self.record_video_writer.write(frame)
+        except Exception as e:
+            print("An error occurred in VideoRecorder:", str(e))
 
     def stop(self):
         print("Stop recording")

@@ -30,6 +30,7 @@ class PostQuizWidget(QWidget):
         self.stimNum = 1
 
         self.emotional_analysis = emotional_analysis
+        self.is_start_emotional_analysis = False
         self.display_content = None
 
         # initialize layouts
@@ -232,9 +233,10 @@ class PostQuizWidget(QWidget):
 
     def show_reading_material(self):
         try:
-            if self.emotional_analysis:
+            if self.emotional_analysis and self.is_start_emotional_analysis == False:
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
+                self.is_start_emotional_analysis = True
             # CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if self.eye_tracker:
                 self.eye_tracker.run(stimNum=self.stimNum)
@@ -271,9 +273,10 @@ class PostQuizWidget(QWidget):
 
     def show_video(self):
         try:
-            if self.emotional_analysis:
+            if self.emotional_analysis and self.is_start_emotional_analysis == False:
                 print("starting emotional analysis before stimulus")
                 self.emotional_analysis.start()
+                self.is_start_emotional_analysis = True
 
             # CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if self.eye_tracker:
@@ -306,9 +309,10 @@ class PostQuizWidget(QWidget):
         try:
             print("go to quiz")
 
-            if self.emotional_analysis:
+            if self.emotional_analysis and self.is_start_emotional_analysis:
                 print("stopping emotional analysis after stimulus")
                 self.emotional_analysis.stop()
+                self.is_start_emotional_analysis = False
 
             if self.eye_tracker:
                 thread_activity = self.emotional_analysis.get_activity()
@@ -337,9 +341,10 @@ class PostQuizWidget(QWidget):
     def show_completed_message(self):
         try:
             # stop recording subject and performing emotional analysis
-            if self.emotional_analysis:
+            if self.emotional_analysis and self.is_start_emotional_analysis:
                 print("stopping emotional analysis")
                 self.emotional_analysis.stop()
+                self.is_start_emotional_analysis = False
                 print("Emotions detected throughout session: ", self.emotional_analysis.detected_emotions)
 
             if self.eye_tracker:
