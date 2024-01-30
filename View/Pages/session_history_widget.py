@@ -109,7 +109,6 @@ class SessionHistoryWidget(QWidget):
             print("An error occurred in show_model_menu:", str(e))
 
     def select_model(self, student_index, select_model):
-        print(student_index, select_model)
         self.select_model_signal.emit(student_index, select_model)
 
 

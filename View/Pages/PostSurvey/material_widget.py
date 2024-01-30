@@ -101,16 +101,7 @@ class MaterialWidget(QWidget):
 
     def show_video(self):
         try:
-            # Reset layout
-            while self.screen_layout.count():
-                item = self.screen_layout.takeAt(0)
-                widget = item.widget()
-                if widget:
-                    widget.deleteLater()
-                else:
-                    del item
-
-            # Set reading text heading
+            # Set video heading
             self.material_heading = HeaderWidget("Video")
 
             # Set video url

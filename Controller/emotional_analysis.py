@@ -1,9 +1,14 @@
+from datetime import datetime
+
 import cv2
 from deepface import DeepFace
 import time
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+
+from Controller.VideoRecorder import VideoRecorder
+
 
 class EmotionalAnalysis(QThread):
     '''Facial Emotional Detection with DeepFace'''
@@ -12,29 +17,53 @@ class EmotionalAnalysis(QThread):
     # emotion_signal = pyqtSignal(str)
     detected_emotions = []
     current_time = 0
-    
 
-    def __init__(self):
+    def __init__(self, camera):
         super(EmotionalAnalysis, self).__init__()
-       
-        
         self.face_cascade = cv2.CascadeClassifier(
             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         )
-        self.capture = cv2.VideoCapture(0)
+        self.capture = camera
         self.emotion_detection_interval = 0.5
         self.last_emotion_detection_time = 0
         self.ThreadActive = False
+        self.video_recorder = None
 
+        self.fps = int(self.capture.get(cv2.CAP_PROP_FPS))
+
+        if self.fps <= 0:
+            num_frames = 120
+            elapsed_times = []
+
+            for _ in range(num_frames):
+                start_time = time.time()
+                _, _ = self.capture.read()
+                end_time = time.time()
+                elapsed_times.append(end_time - start_time)
+                # print(end_time - start_time)
+
+            #print(sum(elapsed_times), num_frames)
+
+
+            if sum(elapsed_times) != 0:
+                self.fps = 1 / (sum(elapsed_times) / num_frames)
+            print(sum(elapsed_times))
+            print(f"actual_fps: {self.fps}")
 
 
     def run(self):
-        
         '''Thread that starts face recognition and analysis'''
         self.ThreadActive = True
+
+        width = int(self.capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        file_name = f"../quiz_data/video_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.avi"
+        self.video_recorder = VideoRecorder(self.capture, file_name, int(self.fps), width, height)
+        self.video_recorder.start()
+
         while self.ThreadActive:
-            
             ret, frame = self.capture.read()
+
             if ret:
                 Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert to RGB
                 ConvertToQTFormat = QImage(
@@ -57,21 +86,30 @@ class EmotionalAnalysis(QThread):
                 for result in results:
                     emotion = result['dominant_emotion']
                     # self.emotion_signal.emit(emotion)
-                    print("EMOTION DETECTED: " , emotion)
+                    print("EMOTION DETECTED: ", emotion)
                     self.detected_emotions.append(emotion)
                 self.last_emotion_detection_time = self.current_time
-
 
     def stop(self):
         self.ThreadActive = False
         self.quit()
 
+        if self.video_recorder is not None:
+            self.video_recorder.stop()
+
+        if len(self.detected_emotions) > 1:
+            self.save_emotions()
+
     def get_activity(self):
         return self.ThreadActive
 
     def save_emotions(self):
-        pass
-    
+        # Get the current date and time
+        current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # Save emotion list as file
+        with open(f"../quiz_data/emotional_analysis/emotional_analysis_{current_datetime}.txt", 'w') as file:
+            for emotion in self.detected_emotions:
+                file.write("%s\n" % emotion)
 
 # import cv2
 # import time
@@ -129,4 +167,3 @@ class EmotionalAnalysis(QThread):
 #     def stop(self):
 #         self.ThreadActive = False
 #         self.quit()
-

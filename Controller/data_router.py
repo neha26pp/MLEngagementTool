@@ -1,5 +1,6 @@
 import os
 import sys
+import cv2
 import yaml
 
 from pathlib import Path
@@ -9,13 +10,13 @@ video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
-from Controller import emotional_analysis, eye_tracker
+from Controller import emotional_analysis
 import View.Pages.dashboard_widget as dashboard_widget
 import View.Pages.instructions_widget as instructions_widget
 import View.Pages.consent_form_widget as consent_form_widget
 import View.Pages.presurvey_widget as pre_survey_widget
 import View.Pages.start_session_widget as start_session_widget
-import View.Pages.post_survey_widget as post_survey_widget
+import View.Pages.PostSurvey.post_survey_widget as post_survey_widget
 import View.Pages.session_history_widget as session_history_widget
 import View.Pages.engagement_report_widget as engagement_report_widget
 import View.Components.bottom_button_bar as bottom_button_bar
@@ -53,15 +54,18 @@ class QuizApp(QWidget):
         self.student_data = None
         self.select_model = None
 
+        # Initialize camera
+        self.camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
         # Initialize emotional analysis
-        self.emotional_analysis = emotional_analysis.EmotionalAnalysis()
+        self.emotional_analysis = emotional_analysis.EmotionalAnalysis(self.camera)
 
         self.initUI()
 
     def initUI(self):
         try:
             self.setWindowTitle("Quiz Application")
-            self.setGeometry(100, 100, 1600, 1200)
+            self.setGeometry(100, 40, 1200, 960)
             self.setLayout(self.screen_layout)
 
             # Read instructions data from YAML
@@ -75,13 +79,13 @@ class QuizApp(QWidget):
 
             # create an instance of StartPageWidget
             self.dashboard_widget = dashboard_widget.Dashboard()
-            # create an instance of StartSession
-            self.start_session_widget = start_session_widget.StartSession()
             # create an instance of InstructionsWidget
             self.instructions_widget = instructions_widget.InstructionsWidget(instructions)
             # create an instance of ConsentFormWidget
             self.consent_form_widget = consent_form_widget.ConsentFormWidget(consent_form)
             self.consent_form_widget.connect_signals(self.update_start_pre_survey_button)
+            # create an instance of StartSession
+            self.start_session_widget = start_session_widget.StartSession(self.camera)
 
             # create an instance of PreSurveyWidget
             self.pre_survey_widget = pre_survey_widget.PreSurveyWidget(pre_survey)
@@ -204,9 +208,13 @@ class QuizApp(QWidget):
                 else:
                     self.bottom_button_bar_widget.set_next_button_enabled(True)
 
+                # if going to start survey
+                if current_index == self.collect_data_stacked_widget.count() - 2:
+                    self.start_session_widget.open_camera()
+
                 # if going to post survey
                 if current_index == self.collect_data_stacked_widget.count() - 1:
-                    self.start_session_widget.stop_camera()
+                    # self.start_session_widget.stop_camera()
                     self.bottom_button_bar_widget.hide()
                     self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.emotional_analysis)
                     self.post_quiz_widget.finish_widget.go_to_dashboard_button.clicked.connect(
