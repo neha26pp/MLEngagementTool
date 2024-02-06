@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from Controller.VideoRecorder import VideoRecorder
+from Controller.video_recorder import VideoRecorder
 
 
 class EmotionalAnalysis(QThread):
