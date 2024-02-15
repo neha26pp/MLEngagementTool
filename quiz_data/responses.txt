@@ -398,8 +398,24 @@ Total time taken: 00:00:02
 Total time taken: 00:00:02
 Total time taken: 00:00:03
 Total time taken: 00:00:15
+<<<<<<< HEAD
 Total time taken: 00:19:42
 Total time taken: 00:10:18
 Total time taken: 00:07:41
 Total time taken: 00:15:11
 Total time taken: 00:07:20
+=======
+Total time taken: 01:01:05
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+Total time taken: 00:00:10
+Total time taken: 00:00:15
+Total time taken: 00:00:06
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+Total time taken: 00:00:00
+>>>>>>> e750d129b9d020bbde43d3a17567df2526d8c391
