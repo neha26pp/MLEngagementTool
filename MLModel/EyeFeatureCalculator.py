@@ -315,5 +315,6 @@ def run():
     # Print the entire 2D array after it's completely populated
     for i, feature in enumerate(features_2d):
         print(f"Feature set {i + 1}: {feature}")
+    return features_2d
     
 run()
