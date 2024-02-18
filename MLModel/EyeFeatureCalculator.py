@@ -1,7 +1,6 @@
 import csv
 import math
 import os
-import glob
 
 def getAvgGazeLAOI(csv_data):
     SumLAOI = 0
@@ -296,14 +295,13 @@ def calculateFeatures(csv_data):
     features = [AvgGazeLAOI, AvgBlinkLatency_L, MeanPupilSize_L, MeanPupilSize_R, FixationDuration, fixationRate, AvgSaccadeSize, AvgSaccadeSpeed]
     return features
 
-def run():
+def run(eye_data_folder):
     features_2d = []
-    eye_data_folder = "EyeData"  # Adjust this path as necessary
     
     # Use os.walk to navigate the directory structure
     for subdir, _, files in os.walk(eye_data_folder):
         # Sort files if needed to ensure they are processed in a specific order
-        for file in files:
+        for file in sorted(files):  # Ensuring a consistent order
             # Check if file is a CSV by its extension
             if file.endswith('.csv'):
                 csv_file_path = os.path.join(subdir, file)
@@ -311,10 +309,4 @@ def run():
                     csv_reader = list(csv.reader(f))[1:]  # Skip header
                     features = calculateFeatures(csv_reader)
                     features_2d.append(features)
-
-    # Print the entire 2D array after it's completely populated
-    for i, feature in enumerate(features_2d):
-        print(f"Feature set {i + 1}: {feature}")
     return features_2d
-    
-run()
