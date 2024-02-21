@@ -11,7 +11,7 @@ def read_and_process_emotions(file_path):
         'sad': 0.6,
         'happy': 0.4,
         'disgust': 0.2,
-        'fearf': 0.1
+        'fear': 0.1
     }
 
     # Read the emotions from the text file, one emotion per line
