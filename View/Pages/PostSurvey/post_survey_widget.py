@@ -5,7 +5,7 @@ from pathlib import Path
 import random
 from PyQt5.Qt import *
 
-from Controller import eye_tracker
+# from Controller import eye_tracker
 from Controller.helper import show_confirmation
 from Controller.helper import read_yaml
 from View.Pages.PostSurvey.finish_widget import FinishWidget
@@ -29,7 +29,7 @@ class PostQuizWidget(QWidget):
         self.post_quiz_heading = None
         self.eye_tracker = None
         CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.eye_tracker = eye_tracker.EyeTracker()
+        # self.eye_tracker = eye_tracker.EyeTracker()
         self.stimNum = 1
 
         self.emotional_analysis = emotional_analysis

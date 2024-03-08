@@ -91,10 +91,10 @@ class SessionHistoryWidget(QWidget):
             emotion_action = QAction('SVR Emotion', self)
             fusion_action = QAction('SVR Fusion', self)
 
-            # Connect functions
-            eye_action.triggered.connect(lambda: self.select_model(student_index, 'SVR Eye'))
-            emotion_action.triggered.connect(lambda: self.select_model(student_index, 'SVR Emotion'))
-            fusion_action.triggered.connect(lambda: self.select_model(student_index, 'SVR Fusion'))
+            # Connect signals and emit signals
+            eye_action.triggered.connect(lambda: self.select_model_signal.emit(student_index, 'SVR Eye'))
+            emotion_action.triggered.connect(lambda: self.select_model_signal.emit(student_index, 'SVR Emotion'))
+            fusion_action.triggered.connect(lambda: self.select_model_signal.emit(student_index, 'SVR Fusion'))
 
             # Add actions to menu
             menu.addSection("Select Model")
@@ -107,10 +107,6 @@ class SessionHistoryWidget(QWidget):
             menu.exec_(pos)
         except Exception as e:
             print("An error occurred in show_model_menu:", str(e))
-
-    def select_model(self, student_index, select_model):
-        self.select_model_signal.emit(student_index, select_model)
-
 
 if __name__ == "__main__":
     try:

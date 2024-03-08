@@ -418,4 +418,14 @@ Total time taken: 00:00:00
 Total time taken: 00:00:00
 Total time taken: 00:00:00
 Total time taken: 00:00:00
+<<<<<<< HEAD
 >>>>>>> e750d129b9d020bbde43d3a17567df2526d8c391
+=======
+Total time taken: 01:01:01
+Total time taken: 01:01:01
+Total time taken: 00:01:26
+Total time taken: 00:02:02
+Total time taken: 00:00:10
+Total time taken: 00:01:47
+Total time taken: 00:00:05
+>>>>>>> 94854d6 (unit testing finished)

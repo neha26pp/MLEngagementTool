@@ -5,7 +5,6 @@ from View.Components.header_widget import HeaderWidget
 
 
 class FinishWidget(QWidget):
-    go_to_dashboard_button_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -29,7 +28,6 @@ class FinishWidget(QWidget):
             self.completed_label.setObjectName("completeMessage")
 
             # Set go to dashboard button
-            self.go_to_dashboard_button_signal.emit()
             self.go_to_dashboard_button.setFixedSize(500, 200)
             self.go_to_dashboard_button.setObjectName("goToDashboardButton")
 

@@ -34,12 +34,12 @@ class TestQuizApp(unittest.TestCase):
         self.quiz_app.bottom_button_bar_widget.hide.assert_called()
 
     def test_switch_to_branch_enable_next_button(self):
-        # it should set next bottom enabled
-        self.quiz_app.switch_to_branch(0)
+        # it should set next bottom enabled on the branch Collect Data
+        self.quiz_app.switch_to_branch(1)
         self.quiz_app.bottom_button_bar_widget.set_next_button_enabled.assert_called_once_with(True)
 
     def test_switch_to_branch_disable_next_button(self):
-        # it should disable the next button on the branch Data Analyze
+        # it should disable the next button on the branch Analyze Data
         self.quiz_app.switch_to_branch(2)
         self.quiz_app.bottom_button_bar_widget.set_next_button_enabled.assert_called_once_with(False)
 
