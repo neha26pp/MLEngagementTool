@@ -62,8 +62,7 @@ class QuizApp(QWidget):
             consent_form = read_yaml("../quiz_data/consent_form.yaml")
             # Read pre survey data from YAML
             pre_survey = read_yaml("../quiz_data/pre_survey.yaml")
-            # Read student data from YAML
-            self.session_history = read_yaml("../quiz_data/session_history.yaml")
+            
 
             # create an instance of StartPageWidget
             self.dashboard_widget = dashboard_widget.Dashboard()
@@ -97,7 +96,7 @@ class QuizApp(QWidget):
             # analyze data branch
             # create an instance of SessionHistory Widget
             self.session_history_widget = (
-                session_history_widget.SessionHistoryWidget(session_history=self.session_history))
+                session_history_widget.SessionHistoryWidget())
             # create an instance of EngagementReport Widget
             self.engagement_report_widget = engagement_report_widget.EngagementReportWidget()
             # manage different screen in a Analyze Data stacked widget
@@ -230,7 +229,7 @@ class QuizApp(QWidget):
         else:
             self.bottom_button_bar_widget.set_next_button_enabled(False)
 
-    def handle_view_report_clicked(self, index, model):
+    def handle_view_report_clicked(self, student_session_data, model):
         try:
             # Update data on Engagement report screen
             current_index = self.analyze_data_stacked_widget.currentIndex()
@@ -240,7 +239,7 @@ class QuizApp(QWidget):
                 self.analyze_data_screen_list[current_index + 1], None
             )
 
-            self.student_data = self.session_history[index]
+            self.student_data = student_session_data
             self.select_model = model
             # Set different radio buttons based on select_model
             if self.select_model == 'SVR Eye':
