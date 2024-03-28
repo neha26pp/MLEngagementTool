@@ -1,6 +1,6 @@
 import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from PyQt5.QtWidgets import QApplication
 
@@ -56,18 +56,20 @@ class TestPostQuizWidget(unittest.TestCase):
     def test_go_to_next_material(self):
         # it should increase the material index by 1
         post_quiz_widget = PostQuizWidget(None)
-        self.assertEqual(post_quiz_widget.current_material, 1)
+        self.assertEqual(post_quiz_widget.current_material, 0)
         post_quiz_widget.go_to_next_material()
-        self.assertEqual(post_quiz_widget.current_material, 2)
+        self.assertEqual(post_quiz_widget.current_material, 1)
 
     def test_show_reading_material(self):
+        # it should set reading text widget
         post_quiz_widget = PostQuizWidget(None)
         post_quiz_widget.reading_text = {"topic": "Test", "text": ["Hello World!", ""]}
         post_quiz_widget.show_reading_material()
 
-        self.assertIsNotNone(post_quiz_widget.post_quiz)
+        self.assertIsNotNone(post_quiz_widget.reading_text_widget )
 
     def test_show_video(self):
+        # it should set video widget
         post_quiz_widget = PostQuizWidget(None)
         post_quiz_widget.display_content = []
         post_quiz_widget.show_video()
@@ -75,6 +77,7 @@ class TestPostQuizWidget(unittest.TestCase):
         self.assertIsNotNone(post_quiz_widget.video_widget)
 
     def test_go_to_quiz(self):
+        # it should set quiz widget
         post_quiz_widget = PostQuizWidget(None)
         post_quiz_widget.go_to_quiz()
         self.assertIsNotNone(post_quiz_widget.quiz_widget)

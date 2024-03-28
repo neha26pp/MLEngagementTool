@@ -29,6 +29,7 @@ class ConsentFormWidget(QWidget):
         # Add reading material widget to screen layout
         self.setLayout(self.screen_layout)
 
+    # consent form widget
     def connect_signals(self, update_next_button_func):
         self.agree_checkbox.stateChanged.connect(update_next_button_func)
 
