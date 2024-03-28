@@ -1,13 +1,15 @@
+import os
 from datetime import datetime
 
 import cv2
 from deepface import DeepFace
 import time
-from PyQt5.QtWidgets import *
+
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from Controller.VideoRecorder import VideoRecorder
+video_directory = os.path.join(os.path.dirname(__file__), "..")
+from Controller.video_recorder import VideoRecorder
 
 
 class EmotionalAnalysis(QThread):
@@ -106,8 +108,14 @@ class EmotionalAnalysis(QThread):
     def save_emotions(self):
         # Get the current date and time
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        # Directory to save emotional analysis files
+        directory = "../quiz_data/emotional_analysis"
+        os.makedirs(directory, exist_ok=True)  # Create directory if it doesn't exist
+
         # Save emotion list as file
-        with open(f"../quiz_data/emotional_analysis/emotional_analysis_{current_datetime}.txt", 'w') as file:
+        file_path = os.path.join(directory, f"emotional_analysis_{current_datetime}.txt")
+        with open(file_path, 'w') as file:
             for emotion in self.detected_emotions:
                 file.write("%s\n" % emotion)
 

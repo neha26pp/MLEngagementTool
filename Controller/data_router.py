@@ -1,7 +1,7 @@
 import os
 import sys
 import cv2
-import yaml
+
 
 from pathlib import Path
 from PyQt5.QtWidgets import *
@@ -11,6 +11,8 @@ sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
 
 from Controller import emotional_analysis
+from Controller.helper import show_confirmation
+from Controller.helper import read_yaml
 import View.Pages.dashboard_widget as dashboard_widget
 import View.Pages.instructions_widget as instructions_widget
 import View.Pages.consent_form_widget as consent_form_widget
@@ -20,22 +22,6 @@ import View.Pages.PostSurvey.post_survey_widget as post_survey_widget
 import View.Pages.session_history_widget as session_history_widget
 import View.Pages.engagement_report_widget as engagement_report_widget
 import View.Components.bottom_button_bar as bottom_button_bar
-
-
-def read_yaml(file_path):
-    with open(file_path, "r", encoding="utf-8") as yaml_file:
-        return yaml.load(yaml_file, Loader=yaml.FullLoader)
-
-
-def show_confirmation():
-    # create message box
-    reply = QMessageBox.question(QMessageBox(), 'Confirmation', 'Are you sure you want to exit?',
-                                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-    # process confirmation
-    if reply == QMessageBox.Yes:
-        sys.exit()  # if yes, exit the system
-    else:
-        pass  # if no, cancel exit
 
 
 class QuizApp(QWidget):
@@ -50,6 +36,8 @@ class QuizApp(QWidget):
         self.main_stack_widget = QStackedWidget(self)
         self.collect_data_stacked_widget = QStackedWidget(self)
         self.analyze_data_stacked_widget = QStackedWidget(self)
+        self.post_quiz_widget = None
+
         self.bottom_button_bar_widget = QWidget()
         self.student_data = None
         self.select_model = None

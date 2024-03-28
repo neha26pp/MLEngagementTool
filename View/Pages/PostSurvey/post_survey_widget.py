@@ -6,8 +6,8 @@ import random
 from PyQt5.Qt import *
 
 from Controller import eye_tracker
-from Controller.data_router import read_yaml
-from Controller.data_router import show_confirmation
+from Controller.helper import show_confirmation
+from Controller.helper import read_yaml
 from View.Pages.PostSurvey.finish_widget import FinishWidget
 from View.Pages.PostSurvey.material_widget import MaterialWidget
 from View.Pages.PostSurvey.quiz_widget import QuizWidget
@@ -19,7 +19,10 @@ file_path = os.path.join(os.path.dirname(__file__), "../../..", "quiz_data", "re
 
 
 class PostQuizWidget(QWidget):
+
     def __init__(self, emotional_analysis):
+
+
         super().__init__()
         # read data
         self.reading_text_widget = None
