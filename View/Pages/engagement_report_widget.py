@@ -2,8 +2,11 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
-from View.Components.header_widget import HeaderWidget
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
+from View.Components.header_widget import HeaderWidget
+from View.Components.bar_chart_widget import BarChartWidget
 
 class EngagementReportWidget(QWidget):
 
@@ -74,27 +77,32 @@ class EngagementReportWidget(QWidget):
                 name = student_data.get("name")
                 stimulus1 = student_data.get("stimulus1")
                 stimulus2 = student_data.get("stimulus2")
-                score = student_data.get(select_model)
+                # score = student_data.get(select_model)
 
                 name_label = QLabel("Name: " + name)
                 stimulus1_label = QLabel("stimulus 1: " + stimulus1)
                 stimulus2_label = QLabel("stimulus 2: " + stimulus2)
-                score_label = QLabel(select_model + " Score: " + str(score) + "%")
-                score_label.setObjectName("score")
-                score_label.setAlignment(Qt.AlignCenter)
+                # score_label = QLabel(select_model + " Score: " + str(score) + "%")
+                # score_label.setObjectName("score")
+                # score_label.setAlignment(Qt.AlignCenter)
 
-                # curve chart
-                image_label = QLabel()
+                # Curve chart
+                # image_label = QLabel()
 
                 # Load the image from the file path
-                pixmap = QPixmap("../quiz_data/score_curve_simple.jpg")
+                # pixmap = QPixmap("../quiz_data/score_curve_simple.jpg")
 
-                if pixmap.isNull():
-                    image_label.setText("no image available")
-                else:
-                    # Set the pixmap to the QLabel
-                    image_label.setPixmap(pixmap)
-                    image_label.setAlignment(Qt.AlignCenter)
+                # if pixmap.isNull():
+                #     image_label.setText("no image available")
+                # else:
+                #     # Set the pixmap to the QLabel
+                #     image_label.setPixmap(pixmap)
+                #     image_label.setAlignment(Qt.AlignCenter)
+
+                # Bar chart
+                categories = ['SVR Eye', 'SVR Emotion', 'SVR Fusion']
+                scores = [student_data.get(c) for c in categories]
+                bar_chart_widget = BarChartWidget(categories, scores)
 
                 # Set stimulus data to QLabel
                 stimulus_layout = QVBoxLayout()
@@ -104,8 +112,8 @@ class EngagementReportWidget(QWidget):
                 stimulus_layout.addStretch(1)
 
                 score_layout = QVBoxLayout()
-                score_layout.addWidget(score_label)
-                score_layout.addWidget(image_label)
+                # score_layout.addWidget(score_label)
+                score_layout.addWidget(bar_chart_widget)
                 score_layout.addStretch(1)
 
                 self.report_HLayout.addStretch(1)
