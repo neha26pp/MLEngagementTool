@@ -4,14 +4,24 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 from View.Components.header_widget import HeaderWidget
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+from datetime import datetime
 
+# Initialize Firebase Admin SDK
+cred = credentials.Certificate('C:/Users/Public/MLEngagementTool/View/Pages/firebase.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 class SessionHistoryWidget(QWidget):
-    select_model_signal = pyqtSignal(int, str)
+    select_model_signal = pyqtSignal(dict, str)  # dict for student data, str for the model type
 
-    def __init__(self, session_history):
+    
+
+    def __init__(self):
         super().__init__()
-        self.student_data = session_history
+        
         # create header
         header = HeaderWidget("Analyze Data")
 
@@ -33,7 +43,7 @@ class SessionHistoryWidget(QWidget):
         self.table.setColumnWidth(len(self.table_header_list) - 1, 200)  # Set width for the last Column
 
         # Populate table with student data
-        self.populate_table(session_history)
+        self.populate_table()
 
         table_layout = QHBoxLayout()
         table_layout.addStretch(1)
@@ -51,33 +61,32 @@ class SessionHistoryWidget(QWidget):
 
         self.setLayout(main_layout)
 
-    def populate_table(self, session_history):
+    def populate_table(self):
         try:
-            data_key_list = ['name', 'date', 'stimulus1', 'stimulus2',
-                             'SVR Eye', 'SVR Emotion', 'SVR Fusion']
-            for row, data in enumerate(session_history):
-                self.table.insertRow(row)
-                for col, key in enumerate(data_key_list):
-                    value = data[key]
-                    item = QTableWidgetItem(str(value))
-                    if col in range(4, 7):  # engagement score
-                        item.setTextAlignment(Qt.AlignRight)
-                        self.table.setColumnWidth(col, 180)
+            # Fetch data from Firestore
+            session_history_ref = db.collection('test_collection')
+            session_history_docs = session_history_ref.get()
 
-                    # Set font size for text inside the cells
-                    font = QFont()
-                    font.setPointSize(12)  # Adjust the font size as needed
-                    item.setFont(font)
+            # Populate table with Firestore data
+            for doc in session_history_docs:
+                data = doc.to_dict()
+                date_str = data['date'].strftime('%m/%d/%Y')
+                self.table.insertRow(self.table.rowCount())
+                self.table.setItem(self.table.rowCount() - 1, 0, QTableWidgetItem(str(doc.id)))
+                self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem(date_str))
+                self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(str(data['stimulus1'])))
+                self.table.setItem(self.table.rowCount() - 1, 3, QTableWidgetItem(str(data['stimulus2'])))
+                self.table.setItem(self.table.rowCount() - 1, 4, QTableWidgetItem(str(data['eyeScore'])))
+                self.table.setItem(self.table.rowCount() - 1, 5, QTableWidgetItem(str(data['emotionScore'])))
+                self.table.setItem(self.table.rowCount() - 1, 6, QTableWidgetItem(str(data['fusionScore'])))
 
-                    self.table.setItem(row, col, item)
-
-                # Create a button in the last column
-                self.view_report_button = QPushButton("View Report", self)
-                self.view_report_button.clicked.connect(lambda checked,
-                                                        student_index=row,
-                                                        button=self.view_report_button:
-                                                        self.show_model_menu(student_index, button))
-                self.table.setCellWidget(row, len(data_key_list), self.view_report_button)
+               # Create a button in the last column
+                view_report_button = QPushButton("View Report", self)
+                view_report_button.clicked.connect(
+                    lambda checked, student_index=self.table.rowCount() - 1, button=view_report_button:
+                    self.show_model_menu(student_index, button)
+                )
+                self.table.setCellWidget(self.table.rowCount() - 1, 7, view_report_button)
         except Exception as e:
             print("An error occurred in populate_table:", str(e))
 
@@ -91,10 +100,11 @@ class SessionHistoryWidget(QWidget):
             emotion_action = QAction('SVR Emotion', self)
             fusion_action = QAction('SVR Fusion', self)
 
-            # Connect functions
-            eye_action.triggered.connect(lambda: self.select_model(student_index, 'SVR Eye'))
-            emotion_action.triggered.connect(lambda: self.select_model(student_index, 'SVR Emotion'))
-            fusion_action.triggered.connect(lambda: self.select_model(student_index, 'SVR Fusion'))
+            # Connect signals and emit signals
+            eye_action.triggered.connect(lambda: self.emit_signal_with_data(student_index, 'SVR Eye'))
+            emotion_action.triggered.connect(lambda: self.emit_signal_with_data(student_index, 'SVR Emotion'))
+            fusion_action.triggered.connect(lambda: self.emit_signal_with_data(student_index, 'SVR Fusion'))
+
 
             # Add actions to menu
             menu.addSection("Select Model")
@@ -108,22 +118,32 @@ class SessionHistoryWidget(QWidget):
         except Exception as e:
             print("An error occurred in show_model_menu:", str(e))
 
-    def select_model(self, student_index, select_model):
-        self.select_model_signal.emit(student_index, select_model)
+    def emit_signal_with_data(self, student_index, model_type):
+        # Assuming you have a method to fetch student data by index
+        print(model_type)
+        student_data = self.get_student_data_by_index(student_index, model_type)
+        self.select_model_signal.emit(student_data, model_type)
+
+    def get_student_data_by_index(self, index, model_type):
+        student_data = {}
+        # Assuming column indexes match the order you've added them in self.table_header_list
+        student_data['name'] = self.table.item(index, 0).text()
+        student_data['date'] = self.table.item(index, 1).text()
+        student_data['stimulus1'] = self.table.item(index, 2).text()
+        student_data['stimulus2'] = self.table.item(index, 3).text()
+        student_data['eyeScore'] = self.table.item(index, 4).text()
+        student_data['emotionScore'] = self.table.item(index, 5).text()
+        student_data['fusionScore'] = self.table.item(index, 6).text()
+        if model_type == 'SVR Eye':
+            student_data['Model'] = 'SVR Eye'
+        elif model_type == 'SVR Emotion':
+            student_data['Model'] = 'SVR Emotion'
+        elif model_type == 'SVR Fusion':
+            student_data['Model'] = 'SVR Fusion'
+        return student_data
 
 
 if __name__ == "__main__":
-    try:
-        with open("../../quiz_data/session_history.yaml", "r", encoding="utf-8") as yaml_file:
-            session_history = yaml.load(yaml_file, Loader=yaml.FullLoader)
-            if session_history is None:
-                raise ValueError("No valid YAML data found in the file.")
-    except FileNotFoundError:
-        print("YAML file not found.")
-        sys.exit(1)
-    except Exception as e:
-        print(f"Error loading YAML data: {e}")
-        sys.exit(1)
 
     app = QApplication(sys.argv)
     print(session_history)

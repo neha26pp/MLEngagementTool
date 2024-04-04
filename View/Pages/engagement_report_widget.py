@@ -59,11 +59,11 @@ class EngagementReportWidget(QWidget):
 
         self.setLayout(self.screen_layout)
 
-    def update_student_data(self, student_data=None, select_model="SVR Eye"):
+    def update_student_data(self, student_data, select_model):
         try:
+
             self.student_data = student_data
             self.select_model = select_model
-
             # Clear existing report widget
             self.screen_layout.removeWidget(self.report_widget)
             self.report_widget.deleteLater()
@@ -71,37 +71,22 @@ class EngagementReportWidget(QWidget):
             # Create new report widget
             self.report_HLayout = QHBoxLayout()
             self.report_widget = QWidget()
+            print(self.student_data)
 
             if self.student_data is not None:
                 # student info
                 name = student_data.get("name")
                 stimulus1 = student_data.get("stimulus1")
                 stimulus2 = student_data.get("stimulus2")
-                # score = student_data.get(select_model)
 
                 name_label = QLabel("Name: " + name)
                 stimulus1_label = QLabel("stimulus 1: " + stimulus1)
                 stimulus2_label = QLabel("stimulus 2: " + stimulus2)
-                # score_label = QLabel(select_model + " Score: " + str(score) + "%")
-                # score_label.setObjectName("score")
-                # score_label.setAlignment(Qt.AlignCenter)
-
-                # Curve chart
-                # image_label = QLabel()
-
-                # Load the image from the file path
-                # pixmap = QPixmap("../quiz_data/score_curve_simple.jpg")
-
-                # if pixmap.isNull():
-                #     image_label.setText("no image available")
-                # else:
-                #     # Set the pixmap to the QLabel
-                #     image_label.setPixmap(pixmap)
-                #     image_label.setAlignment(Qt.AlignCenter)
 
                 # Bar chart
-                categories = ['SVR Eye', 'SVR Emotion', 'SVR Fusion']
-                scores = [student_data.get(c) for c in categories]
+                categories = ['Eye Score', 'Emotion Score', 'Fusion Score']
+                scores = [ student_data.get("eyeScore"), student_data.get("emotionScore"), student_data.get("fusionScore")]
+
                 bar_chart_widget = BarChartWidget(categories, scores)
 
                 # Set stimulus data to QLabel
