@@ -10,7 +10,7 @@ from firebase_admin import firestore
 from datetime import datetime
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('C:/Users/Public/MLEngagementTool/View/Pages/firebase.json')
+cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\View\\Pages\\firebase.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -64,16 +64,16 @@ class SessionHistoryWidget(QWidget):
     def populate_table(self):
         try:
             # Fetch data from Firestore
-            session_history_ref = db.collection('test_collection')
+            session_history_ref = db.collection('sessions')
             session_history_docs = session_history_ref.get()
 
             # Populate table with Firestore data
             for doc in session_history_docs:
                 data = doc.to_dict()
-                date_str = data['date'].strftime('%m/%d/%Y')
+                # date_str = data['date'].strftime('%m/%d/%Y')
                 self.table.insertRow(self.table.rowCount())
                 self.table.setItem(self.table.rowCount() - 1, 0, QTableWidgetItem(str(doc.id)))
-                self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem(date_str))
+                self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem("TBD"))
                 self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(str(data['stimulus1'])))
                 self.table.setItem(self.table.rowCount() - 1, 3, QTableWidgetItem(str(data['stimulus2'])))
                 self.table.setItem(self.table.rowCount() - 1, 4, QTableWidgetItem(str(data['eyeScore'])))
