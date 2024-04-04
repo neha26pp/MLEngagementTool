@@ -41,7 +41,7 @@ import random
 
 class EyeTracker(QThread): 
     # Get Eye Tracker Host IP Address to connect
-    HostIPAddr = '146.186.228.86'
+    HostIPAddr = '192.168.152.31'
 
         # Get Eye Trackt Port Number to connect
     HostPortNum = 51000

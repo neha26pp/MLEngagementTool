@@ -10,7 +10,7 @@ from firebase_admin import firestore
 from datetime import datetime
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\View\\Pages\\firebase.json')
+cred = credentials.Certificate('C:/Users/Public/MLEngagementTool/View/Pages/firebase.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
