@@ -62,7 +62,6 @@ class QuizApp(QWidget):
             consent_form = read_yaml("../quiz_data/consent_form.yaml")
             # Read pre survey data from YAML
             pre_survey = read_yaml("../quiz_data/pre_survey.yaml")
-            print(type(pre_survey))
 
             # create an instance of StartPageWidget
             self.dashboard_widget = dashboard_widget.Dashboard()

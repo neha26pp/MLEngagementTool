@@ -66,6 +66,7 @@ class BarChartWidget(QWidget):
 
             # Adjust layout to prevent overlapping
             self.figure.tight_layout()
+            self.figure.legend()
 
             # Draw plot
             self.canvas.draw()

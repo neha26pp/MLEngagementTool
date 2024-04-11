@@ -41,7 +41,7 @@ class EngagementReportWidget(Page):
             # Create new report widget
             self.report_HLayout = QHBoxLayout()
             self.report_widget = QWidget()
-            print(self.student_data)
+            # print(self.student_data)
 
             if self.student_data is not None:
                 # student info
