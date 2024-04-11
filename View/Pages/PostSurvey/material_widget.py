@@ -1,49 +1,47 @@
 from PyQt5.QtCore import QUrl, pyqtSignal
-from PyQt5.QtGui import QTextDocument, QTextCursor
+from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
 
 from View.Components.header_widget import HeaderWidget
+from View.Pages.page import Page
 
 
-class MaterialWidget(QWidget):
+class MaterialWidget(Page):
     watch_video_button_signal = pyqtSignal()
     reading_material_finished_signal = pyqtSignal()
     reading_material_not_finished_signal = pyqtSignal()
 
     def __init__(self, material_type, material_content):
-        super().__init__()
+        super().__init__(heading_text="")
         self.material_type = material_type
         self.material_content = material_content
-        self.screen_layout = QVBoxLayout()
+        self.main_layout = QVBoxLayout()
         self.page_index = 0
 
-        self.initUI()
-
-    def initUI(self):
         if self.material_type == "text":
             self.show_reading_text()
         else:
             self.show_video()
 
-        self.setLayout(self.screen_layout)
+        self.setLayout(self.main_layout)
 
     def show_reading_text(self):
         print(self.material_content)
 
         # Initialize reading text widget
-        self.text_browser = QTextBrowser()
+        self.text_browser = QTextBrowser(parent=None)
 
         # Set reading text heading
-        self.material_heading = HeaderWidget("Reading Text")
+        self.header = HeaderWidget("Reading Material")
         self.reading_topic = QLabel(self.material_content.get("topic"))
 
         # Show reading text content
         self.show_current_reading_text_page()
 
         # Set layout
-        self.screen_layout.addWidget(self.material_heading)
-        self.screen_layout.addWidget(self.text_browser)
+        self.main_layout.addWidget(self.header)
+        self.main_layout.addWidget(self.text_browser)
 
         # Set page button
         if len(self.material_content.get("text")) > 1:
@@ -65,7 +63,7 @@ class MaterialWidget(QWidget):
             page_button_layout.addWidget(self.prev_page_button)
             page_button_layout.addWidget(self.next_page_button)
 
-            self.screen_layout.addLayout(page_button_layout)
+            self.main_layout.addLayout(page_button_layout)
 
     def show_current_reading_text_page(self):
         start_index = self.page_index
@@ -102,15 +100,15 @@ class MaterialWidget(QWidget):
     def show_video(self):
         try:
             # Set video heading
-            self.material_heading = HeaderWidget("Video")
+            self.header = HeaderWidget("Video")
 
             # Set video url
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.material_content))
 
             # Set layout
-            self.screen_layout.addWidget(self.material_heading)
-            self.screen_layout.addWidget(self.webview, 1)
+            self.main_layout.addWidget(self.header)
+            self.main_layout.addWidget(self.webview, 1)
 
         except Exception as e:
             print("An error occurred in show_video func in MaterialWidget:", str(e))

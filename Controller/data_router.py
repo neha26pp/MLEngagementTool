@@ -62,7 +62,7 @@ class QuizApp(QWidget):
             consent_form = read_yaml("../quiz_data/consent_form.yaml")
             # Read pre survey data from YAML
             pre_survey = read_yaml("../quiz_data/pre_survey.yaml")
-            
+            print(type(pre_survey))
 
             # create an instance of StartPageWidget
             self.dashboard_widget = dashboard_widget.Dashboard()
@@ -119,7 +119,7 @@ class QuizApp(QWidget):
             self.dashboard_widget.analyze_data_clicked.connect(lambda: self.switch_to_branch(2))
 
             # connect button in session history widget
-            self.session_history_widget.select_model_signal.connect(self.handle_view_report_clicked)
+            self.session_history_widget.select_student_signal.connect(self.handle_view_report_clicked)
 
         except Exception as e:
             print("An error occurred in Quiz App:", str(e))
@@ -229,7 +229,7 @@ class QuizApp(QWidget):
         else:
             self.bottom_button_bar_widget.set_next_button_enabled(False)
 
-    def handle_view_report_clicked(self, student_session_data, model):
+    def handle_view_report_clicked(self, student_session_data):
         try:
             # Update data on Engagement report screen
             current_index = self.analyze_data_stacked_widget.currentIndex()
@@ -240,15 +240,7 @@ class QuizApp(QWidget):
             )
 
             self.student_data = student_session_data
-            self.select_model = model
-            # Set different radio buttons based on select_model
-            if self.select_model == 'SVR Eye':
-                self.engagement_report_widget.radio_svr_eye.setChecked(True)
-            elif self.select_model == 'SVR Emotion':
-                self.engagement_report_widget.radio_svr_emotion.setChecked(True)
-            elif self.select_model == 'SVR Fusion':
-                self.engagement_report_widget.radio_svr_fusion.setChecked(True)
-            self.engagement_report_widget.update_student_data(self.student_data, self.select_model)
+            self.engagement_report_widget.update_student_data(self.student_data)
 
         except Exception as e:
             print("An error occurred in handle_view_report_clicked:", str(e))

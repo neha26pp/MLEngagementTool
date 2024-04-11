@@ -5,17 +5,15 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import *
 import os
 
+from View.Pages.page import Page
+
 video_directory = os.path.join(os.path.dirname(__file__), "../..")
 sys.path.append(video_directory)
 
-from View.Components.header_widget import HeaderWidget
 
-
-class StartSession(QWidget):
+class StartSession(Page):
     def __init__(self, camera):
-        super().__init__()
-        header = HeaderWidget("Start Session")
-
+        super().__init__(heading_text="Start Session")
         self.camera = camera
 
         # create label to display camera
@@ -28,13 +26,11 @@ class StartSession(QWidget):
         self.message_label.setFixedHeight(80)
 
         # set layout
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(header)
-        main_layout.addStretch(1)
-        main_layout.addWidget(self.image_label)
-        main_layout.addWidget(self.message_label)
-        main_layout.addStretch(1)
-        self.setLayout(main_layout)
+        self.main_layout.addWidget(self.header)
+        self.main_layout.addStretch(1)
+        self.main_layout.addWidget(self.image_label)
+        self.main_layout.addWidget(self.message_label)
+        self.main_layout.addStretch(1)
 
     def open_camera(self):
         # create timer to update camera
