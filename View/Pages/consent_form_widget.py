@@ -3,19 +3,16 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
 
 from View.Components.header_widget import HeaderWidget
+from View.Pages.page import Page
 
 
-class ConsentFormWidget(QWidget):
-    def __init__(self, consent_form, parent=None):
-        super().__init__(parent)
-        self.screen_layout = QVBoxLayout()
+class ConsentFormWidget(Page):
+    def __init__(self, consent_form, heading_text="Consent Form"):
+        super().__init__(heading_text)
         self.consent_form = consent_form
-        self.initUI()
-    
-    def initUI(self):
+
         # Create a label for "Consent Form" heading
-        consent_form_heading = HeaderWidget("Consent Form")
-        self.screen_layout.addWidget(consent_form_heading)
+        self.main_layout.addWidget(self.header)
         self.webview = QWebEngineView()
         self.webview.setUrl(QUrl("https://pennstate.qualtrics.com/jfe/form/SV_3yqNWDKN5PxuPoW"))
 
@@ -23,11 +20,8 @@ class ConsentFormWidget(QWidget):
         self.agree_checkbox = QCheckBox("I agree to the terms and conditions")
 
         # Set up screen layout
-        self.screen_layout.addWidget(self.webview)
-        self.screen_layout.addWidget(self.agree_checkbox)
-
-        # Add reading material widget to screen layout
-        self.setLayout(self.screen_layout)
+        self.main_layout.addWidget(self.webview)
+        self.main_layout.addWidget(self.agree_checkbox)
 
     # consent form widget
     def connect_signals(self, update_next_button_func):

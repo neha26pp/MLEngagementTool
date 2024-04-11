@@ -2,18 +2,14 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-from View.Components.header_widget import HeaderWidget
 from View.Components.bar_chart_widget import BarChartWidget
+from View.Pages.page import Page
 
 
-class EngagementReportWidget(QWidget):
+class EngagementReportWidget(Page):
     def __init__(self):
-        super().__init__()
+        super().__init__(heading_text="Analyze Data")
         self.student_data = None
-        self.select_model = None
-
-        # create header
-        header = HeaderWidget("Analyze Data")
 
         # create title label
         title_label = QLabel("Engagement Report")
@@ -31,19 +27,15 @@ class EngagementReportWidget(QWidget):
         self.report_widget.setLayout(self.report_HLayout)
 
         # Set up main layout
-        self.screen_layout = QVBoxLayout()
-        self.screen_layout.setAlignment(Qt.AlignCenter)
-        self.screen_layout.addWidget(header)
-        self.screen_layout.addWidget(title_label)
-        self.screen_layout.addWidget(self.report_widget)
-
-        self.setLayout(self.screen_layout)
+        self.main_layout.addWidget(self.header)
+        self.main_layout.addWidget(title_label)
+        self.main_layout.addWidget(self.report_widget)
 
     def update_student_data(self, student_data):
         try:
             self.student_data = student_data
             # Clear existing report widget
-            self.screen_layout.removeWidget(self.report_widget)
+            self.main_layout.removeWidget(self.report_widget)
             self.report_widget.deleteLater()
 
             # Create new report widget
@@ -68,7 +60,7 @@ class EngagementReportWidget(QWidget):
                 scores = [student_data.get("SVREye_stimulus1"), student_data.get("SVREmotion_stimulus1"),
                           student_data.get("SVRFusion_stimulus1"), student_data.get("LSTM_stimulus1"),
                           student_data.get("SVREye_stimulus2"), student_data.get("SVREmotion_stimulus2"),
-                          student_data.get("SVRFusion_stimulus2"), student_data.get("LSTM_stimulus2"),]
+                          student_data.get("SVRFusion_stimulus2"), student_data.get("LSTM_stimulus2")]
 
                 bar_chart_widget = BarChartWidget(categories, scores)
 
@@ -95,7 +87,7 @@ class EngagementReportWidget(QWidget):
 
             self.report_widget.setLayout(self.report_HLayout)
             self.report_HLayout.addStretch(1)
-            self.screen_layout.addWidget(self.report_widget)
+            self.main_layout.addWidget(self.report_widget)
         except Exception as e:
             print("An error occurred in update_student_data:", str(e))
 

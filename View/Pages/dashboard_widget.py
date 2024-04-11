@@ -1,17 +1,14 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import *
-from View.Components.header_widget import HeaderWidget
+from View.Pages.page import Page
 
 
-class Dashboard(QWidget):
+class Dashboard(Page):
     collect_data_clicked = pyqtSignal()
     analyze_data_clicked = pyqtSignal()
 
     def __init__(self):
-        super().__init__()
-        # create header
-        header = HeaderWidget("")
-
+        super().__init__(heading_text="")
         # create title label
         title_label = QLabel("Student Engagement Tool")
         title_label.setObjectName("dashboardTitle")
@@ -31,23 +28,18 @@ class Dashboard(QWidget):
         analyze_data_button.clicked.connect(self.analyze_data_clicked.emit)
 
         # set layout
-        main_layout = QVBoxLayout()
         button_layout = QHBoxLayout()
-        
-        main_layout.addWidget(header)
-
-        main_layout.addWidget(title_label)
-        main_layout.addSpacing(80)
+        self.main_layout.addWidget(self.header)
+        self.main_layout.addWidget(title_label)
+        self.main_layout.addSpacing(80)
         button_layout.addWidget(collect_data_button)
         button_layout.addWidget(analyze_data_button)
 
         button_layout_widget = QWidget()
         button_layout_widget.setLayout(button_layout)
 
-        main_layout.addWidget(button_layout_widget)
-        main_layout.addStretch(1)
-
-        self.setLayout(main_layout)
+        self.main_layout.addWidget(button_layout_widget)
+        self.main_layout.addStretch(1)
 
 
 # if __name__ == "__main__":

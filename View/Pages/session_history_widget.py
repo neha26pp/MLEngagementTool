@@ -9,32 +9,30 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from datetime import datetime
 
+from View.Pages.page import Page
+
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate('C:\\Users\Admin\Documents\Github\MLEngagementTool\View\Pages\\firebase.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-class SessionHistoryWidget(QWidget):
+class SessionHistoryWidget(Page):
     select_student_signal = pyqtSignal(dict)  # dict for student data
 
     def __init__(self):
-        super().__init__()
-
-        # create header
-        header = HeaderWidget("Analyze Data")
-
+        super().__init__(heading_text="Analyze Data")
         # create title label
         title_label = QLabel("Session History")
         title_label.setObjectName("analyzeDataTitle")
-        title_label.setFixedHeight(200)
+        title_label.setFixedHeight(180)
         title_label.setAlignment(Qt.AlignCenter)
 
         # Create table
         self.table = QTableWidget(self)
-        self.table.setFixedWidth(1500)
+        self.table.setMinimumWidth(1500)
         self.table.setMinimumHeight(500)
-        self.table.setColumnCount(12)
+        self.table.setColumnCount(13)
         self.table_header_list = ["Student Name", "Date", "Stimulus 1", "Stimulus 2",
                                   "SVREye S1", "SVREmotion S1", "SVRFusion S1", "LSTM S1",
                                   "SVREye S2", "SVREmotion S2", "SVRFusion S2", "LSTM S2", ""]
@@ -51,15 +49,12 @@ class SessionHistoryWidget(QWidget):
         table_layout.addStretch(1)
 
         # Set layout
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(header)
-        main_layout.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(title_label)
-        main_layout.addStretch(1)
-        main_layout.addLayout(table_layout)
-        main_layout.addStretch(1)
+        self.main_layout.addWidget(self.header)
+        self.main_layout.addWidget(title_label)
+        self.main_layout.addStretch(1)
+        self.main_layout.addLayout(table_layout)
+        self.main_layout.addStretch(1)
 
-        self.setLayout(main_layout)
 
     def populate_table(self):
         try:
