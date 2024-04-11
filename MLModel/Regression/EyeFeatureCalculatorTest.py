@@ -1,6 +1,6 @@
 import unittest
-import EyeFeatureCalculator
-from EyeFeatureCalculator import getAvgGazeLAOI, getMeanPupilSize_L, calculateFeatures, getAvgBlinkLatency_L, getMeanPupilSize_R, getAvgFixationDuration, getFixationRate, getAvgSaccadeSize, getAvgSaccadeSpeed
+import MLModel.Regression.EyeFeatureCalculator as EyeFeatureCalculator
+from MLModel.Regression.EyeFeatureCalculator import getAvgGazeLAOI, getMeanPupilSize_L, calculateFeatures, getAvgBlinkLatency_L, getMeanPupilSize_R, getAvgFixationDuration, getFixationRate, getAvgSaccadeSize, getAvgSaccadeSpeed
 import os
 import csv
 
