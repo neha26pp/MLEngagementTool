@@ -5,31 +5,27 @@ from pathlib import Path
 import random
 from PyQt5.Qt import *
 
-from Controller import eye_tracker
+# from Controller import eye_tracker
 from Controller.helper import show_confirmation
 from Controller.helper import read_yaml
 from View.Pages.PostSurvey.finish_widget import FinishWidget
 from View.Pages.PostSurvey.material_widget import MaterialWidget
 from View.Pages.PostSurvey.quiz_widget import QuizWidget
 from View.Components.bottom_button_bar import BottomButtonBar
+from View.Pages.page import Page
 
 video_directory = os.path.join(os.path.dirname(__file__), "../../..")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "../../..", "quiz_data", "responses.txt")
 
 
-class PostQuizWidget(QWidget):
-
+class PostQuizWidget(Page):
     def __init__(self, emotional_analysis):
-
-
-        super().__init__()
+        super().__init__(heading_text="")
         # read data
-        self.reading_text_widget = None
-        self.post_quiz_heading = None
         self.eye_tracker = None
         CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.eye_tracker = eye_tracker.EyeTracker()
+        # self.eye_tracker = eye_tracker.EyeTracker()
         self.stimNum = 1
 
         self.emotional_analysis = emotional_analysis
@@ -37,8 +33,7 @@ class PostQuizWidget(QWidget):
         self.display_content = None
 
         # initialize layouts
-        self.screen_layout = QVBoxLayout()
-        self.screen_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.container_layout = QVBoxLayout()
         self.container_layout.setContentsMargins(0, 0, 0, 0)
         self.content_widget = QWidget()
@@ -66,11 +61,10 @@ class PostQuizWidget(QWidget):
         self.timer_label.setAlignment(Qt.AlignRight)
         self.timer_label.setStyleSheet("font-size: 36px; margin-right: 4px")
 
+        self.reading_text_widget = None
         self.media_player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.video_widget = QVideoWidget(self)
         self.media_player.setVideoOutput(self.video_widget)
-
-        self.webview = None
 
         self.bottom_button_widget = BottomButtonBar()
         self.finish_widget = FinishWidget()
@@ -83,11 +77,10 @@ class PostQuizWidget(QWidget):
 
             # Set up layout
             self.container_layout.addWidget(self.content_widget)
-            self.screen_layout.addLayout(self.container_layout)
-            self.screen_layout.addWidget(self.timer_label)
-            self.screen_layout.addWidget(self.bottom_button_widget)
+            self.main_layout.addLayout(self.container_layout)
+            self.main_layout.addWidget(self.timer_label)
+            self.main_layout.addWidget(self.bottom_button_widget)
             self.bottom_button_widget.show()
-            self.setLayout(self.screen_layout)
 
             self.go_to_next_material()
 

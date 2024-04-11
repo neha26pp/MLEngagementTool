@@ -62,15 +62,16 @@ class QuizApp(QWidget):
             consent_form = read_yaml("../quiz_data/consent_form.yaml")
             # Read pre survey data from YAML
             pre_survey = read_yaml("../quiz_data/pre_survey.yaml")
-            # Read student data from YAML
-            self.session_history = read_yaml("../quiz_data/session_history.yaml")
+            print(type(pre_survey))
 
             # create an instance of StartPageWidget
             self.dashboard_widget = dashboard_widget.Dashboard()
             # create an instance of InstructionsWidget
             self.instructions_widget = instructions_widget.InstructionsWidget(instructions)
+            # main.py
             # create an instance of ConsentFormWidget
             self.consent_form_widget = consent_form_widget.ConsentFormWidget(consent_form)
+            # connect signal to the method
             self.consent_form_widget.connect_signals(self.update_start_pre_survey_button)
             # create an instance of StartSession
             self.start_session_widget = start_session_widget.StartSession(self.camera)
@@ -95,7 +96,7 @@ class QuizApp(QWidget):
             # analyze data branch
             # create an instance of SessionHistory Widget
             self.session_history_widget = (
-                session_history_widget.SessionHistoryWidget(session_history=self.session_history))
+                session_history_widget.SessionHistoryWidget())
             # create an instance of EngagementReport Widget
             self.engagement_report_widget = engagement_report_widget.EngagementReportWidget()
             # manage different screen in a Analyze Data stacked widget
@@ -118,7 +119,7 @@ class QuizApp(QWidget):
             self.dashboard_widget.analyze_data_clicked.connect(lambda: self.switch_to_branch(2))
 
             # connect button in session history widget
-            self.session_history_widget.select_model_signal.connect(self.handle_view_report_clicked)
+            self.session_history_widget.select_student_signal.connect(self.handle_view_report_clicked)
 
         except Exception as e:
             print("An error occurred in Quiz App:", str(e))
@@ -221,13 +222,14 @@ class QuizApp(QWidget):
         except Exception as e:
             print("An error occurred in next_button_clicked:", str(e))
 
+    # main.py
     def update_start_pre_survey_button(self):
         if self.consent_form_widget.get_checked():
             self.bottom_button_bar_widget.set_next_button_enabled(True)
         else:
             self.bottom_button_bar_widget.set_next_button_enabled(False)
 
-    def handle_view_report_clicked(self, row, model):
+    def handle_view_report_clicked(self, student_session_data):
         try:
             # Update data on Engagement report screen
             current_index = self.analyze_data_stacked_widget.currentIndex()
@@ -237,16 +239,8 @@ class QuizApp(QWidget):
                 self.analyze_data_screen_list[current_index + 1], None
             )
 
-            self.student_data = self.session_history[row]
-            self.select_model = model
-            # Set different radio buttons based on select_model
-            if self.select_model == 'SVR Eye':
-                self.engagement_report_widget.radio_svr_eye.setChecked(True)
-            elif self.select_model == 'SVR Emotion':
-                self.engagement_report_widget.radio_svr_emotion.setChecked(True)
-            elif self.select_model == 'SVR Fusion':
-                self.engagement_report_widget.radio_svr_fusion.setChecked(True)
-            self.engagement_report_widget.update_student_data(self.student_data, self.select_model)
+            self.student_data = student_session_data
+            self.engagement_report_widget.update_student_data(self.student_data)
 
         except Exception as e:
             print("An error occurred in handle_view_report_clicked:", str(e))
