@@ -11,11 +11,13 @@ import joblib
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from MLModel.Regression import EyeFeatureCalculator
+from MLModel.Regression import SlidingWindow
 
 # Assuming EyeFeatureCalculator and the dataset preparation steps are defined elsewhere
 # Load your dataset
 trainingFolder = "EyeData"
-features = EyeFeatureCalculator.run(trainingFolder)
+#features = EyeFeatureCalculator.run(trainingFolder)
+features = SlidingWindow.run(trainingFolder)
 features = np.array(features)
 
 LabelFolder = "Scripts/MyQualtricsDownload/QuizScores"

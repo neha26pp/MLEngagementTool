@@ -11,14 +11,15 @@ import sys
 # Update the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-# Assuming EyeFeatureCalculator is correctly set up
 from MLModel.Regression import EyeFeatureCalculator
+from MLModel.Regression import SlidingWindow
 
 print("Current working directory:", os.getcwd())
 
 # Load and prepare data
 trainingFolder = "EyeData"
-features = EyeFeatureCalculator.run(trainingFolder)
+# features = EyeFeatureCalculator.run(trainingFolder)
+features = SlidingWindow.run(trainingFolder)
 features = np.array(features)
 
 LabelFolder = "Scripts/MyQualtricsDownload/QuizScores"

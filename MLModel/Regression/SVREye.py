@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..', '..')))
 from MLModel.Regression import EyeFeatureCalculator
+from MLModel.Regression import SlidingWindow
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
@@ -18,7 +19,8 @@ print("Current working directory:", os.getcwd())
 
 # create a 2d array
 trainingFolder = "EyeData"
-features = EyeFeatureCalculator.run(trainingFolder)
+# features = EyeFeatureCalculator.run(trainingFolder)
+features = SlidingWindow.run(trainingFolder)
 features = np.array(features)
 
 LabelFolder = "Scripts/MyQualtricsDownload/QuizScores"  # Adjust this path as necessary
