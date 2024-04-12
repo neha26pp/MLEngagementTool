@@ -8,7 +8,7 @@ from View.Pages.page import Page
 class FinishWidget(Page):
 
     def __init__(self):
-        super().__init__(heading_text="Finish")
+        super().__init__(heading_text="do not show")
         self.screen_HLayout = QHBoxLayout()
         self.go_to_dashboard_button = QPushButton("Go back to Dashboard")
 

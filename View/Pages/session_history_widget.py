@@ -12,7 +12,7 @@ from datetime import datetime
 from View.Pages.page import Page
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\View\\Pages\\firebase.json')
+cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\firebase.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 

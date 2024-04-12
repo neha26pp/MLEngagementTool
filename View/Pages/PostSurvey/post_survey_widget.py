@@ -20,8 +20,8 @@ file_path = os.path.join(os.path.dirname(__file__), "../../..", "quiz_data", "re
 
 
 class PostQuizWidget(Page):
-    def __init__(self, emotional_analysis):
-        super().__init__(heading_text="")
+    def __init__(self, emotional_analysis, heading_text=""):
+        super().__init__(heading_text=heading_text)
         # read data
         self.eye_tracker = None
         CmdSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,9 +31,12 @@ class PostQuizWidget(Page):
         self.emotional_analysis = emotional_analysis
         self.is_start_emotional_analysis = False
         self.display_content = None
+        self.bottom_button_widget = BottomButtonBar()
 
         # initialize layouts
         self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.header)
+        
         self.container_layout = QVBoxLayout()
         self.container_layout.setContentsMargins(0, 0, 0, 0)
         self.content_widget = QWidget()
@@ -66,7 +69,7 @@ class PostQuizWidget(Page):
         self.video_widget = QVideoWidget(self)
         self.media_player.setVideoOutput(self.video_widget)
 
-        self.bottom_button_widget = BottomButtonBar()
+        self.header.update_text("Session Complete")  
         self.finish_widget = FinishWidget()
 
         self.initUI()
@@ -203,18 +206,24 @@ class PostQuizWidget(Page):
             if self.current_material < len(self.display_content):
                 # display content has either [video, text] or [text, video]
                 if self.display_content[self.current_material].text is True:
+                    
                     self.reading_text = self.display_content[self.current_material].material.get("reading-text")
+                    self.topic = self.reading_text.get("topic")
+                    self.header.update_text("Reading Material: " + self.topic)  # Update header text
                     self.text = self.reading_text.get("text")
+                    
                     self.post_quiz = self.reading_text.get("text_quiz")
 
                     self.show_reading_material()
 
                 else:
                     self.reading_text = self.display_content[self.current_material].material.get("reading-text")
+                    self.topic = self.reading_text.get("topic")
+                    self.header.update_text("Reading Material: " + self.topic)
                     self.video_url = self.reading_text.get("video")
                     self.post_quiz = self.reading_text.get("video_quiz")
                     self.bottom_button_widget.set_next_button_enabled(False)
-
+                    
                     self.show_video()
 
                 self.current_material += 1
@@ -244,7 +253,7 @@ class PostQuizWidget(Page):
             self.reset_content_widget()
 
             # create an instance of MaterialWidget
-            self.reading_text_widget = MaterialWidget("text", self.reading_text)
+            self.reading_text_widget = MaterialWidget("text", self.reading_text, self.topic)
 
             # Add reading material widget to screen layout
             self.content_layout.addWidget(self.reading_text_widget)
@@ -286,7 +295,7 @@ class PostQuizWidget(Page):
             self.reset_content_widget()
 
             # create an instance of MaterialWidget
-            self.video_widget = MaterialWidget("video", self.video_url)
+            self.video_widget = MaterialWidget("video", self.video_url, self.topic)
             self.content_layout.addWidget(self.video_widget)
 
             if not self.timer.isActive():
@@ -319,6 +328,7 @@ class PostQuizWidget(Page):
             self.reset_content_widget()
 
             # create an instance of QuizWidget
+            self.header.update_text("Post Quiz")  # Update header text
             self.quiz_widget = QuizWidget(post_quiz=self.post_quiz)
             self.content_layout.addWidget(self.quiz_widget, 1)
 
@@ -363,6 +373,7 @@ class PostQuizWidget(Page):
             self.hide_recording_message()
 
             # Set the instance of FinishWidget
+            self.header.update_text("Session Complete")  # Update header text
             self.content_layout.addWidget(self.finish_widget)
 
         except Exception as e:

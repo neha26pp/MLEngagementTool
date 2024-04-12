@@ -7,8 +7,8 @@ from View.Pages.page import Page
 
 
 class QuizWidget(Page):
-    def __init__(self, post_quiz):
-        super().__init__(heading_text="Post Quiz")
+    def __init__(self, post_quiz, heading_text="do not show"):
+        super().__init__(heading_text=heading_text)
         self.post_quiz = post_quiz
 
         try:
