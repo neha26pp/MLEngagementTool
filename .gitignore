@@ -6,6 +6,8 @@ __pycache__/
 
 # C extensions
 *.so
+*.mp4
+*.txt
 
 
 # Distribution / packaging
