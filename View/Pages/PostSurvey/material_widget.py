@@ -12,35 +12,37 @@ class MaterialWidget(Page):
     reading_material_finished_signal = pyqtSignal()
     reading_material_not_finished_signal = pyqtSignal()
 
-    def __init__(self, material_type, material_content):
-        super().__init__(heading_text="")
+    def __init__(self, material_type, material_content, topic):
+        super().__init__(heading_text="do not show")
         self.material_type = material_type
         self.material_content = material_content
-        self.main_layout = QVBoxLayout()
+        # self.main_layout = QVBoxLayout()
         self.page_index = 0
 
+      
         if self.material_type == "text":
+            
             self.show_reading_text()
         else:
+            
             self.show_video()
 
-        self.setLayout(self.main_layout)
+        # self.setLayout(self.main_layout)
 
     def show_reading_text(self):
+        print("IN SHOW READING TEXT: ------")
         print(self.material_content)
 
         # Initialize reading text widget
         self.text_browser = QTextBrowser(parent=None)
 
-        # Set reading text heading
-        self.header = HeaderWidget("Reading Material")
-        self.reading_topic = QLabel(self.material_content.get("topic"))
+     
 
         # Show reading text content
         self.show_current_reading_text_page()
 
         # Set layout
-        self.main_layout.addWidget(self.header)
+        
         self.main_layout.addWidget(self.text_browser)
 
         # Set page button
@@ -100,14 +102,14 @@ class MaterialWidget(Page):
     def show_video(self):
         try:
             # Set video heading
-            self.header = HeaderWidget("Video")
+            # self.header = HeaderWidget("Video")
 
             # Set video url
             self.webview = QWebEngineView()
             self.webview.setUrl(QUrl(self.material_content))
 
             # Set layout
-            self.main_layout.addWidget(self.header)
+            # self.main_layout.addWidget(self.header)
             self.main_layout.addWidget(self.webview, 1)
 
         except Exception as e:

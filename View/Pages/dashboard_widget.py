@@ -7,8 +7,8 @@ class Dashboard(Page):
     collect_data_clicked = pyqtSignal()
     analyze_data_clicked = pyqtSignal()
 
-    def __init__(self):
-        super().__init__(heading_text="")
+    def __init__(self, heading_text=""):
+        super().__init__(heading_text=heading_text)
         # create title label
         title_label = QLabel("Student Engagement Tool")
         title_label.setObjectName("dashboardTitle")
