@@ -67,6 +67,13 @@ QPushButton#dashboardButton, QPushButton#goToDashboardButton {
     font-size: 36px;
 }
 
+QPushButton#storeDataButton, QPushButton#storeDataButtonButton {
+    background-color: #050375;
+    color: white;
+    font-size: 36px;
+}
+
+
 QLabel#score {
     font-size: 32px;
     color: #050375;

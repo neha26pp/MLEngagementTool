@@ -6,7 +6,7 @@ import sys
 import zipfile
 import requests
 from dotenv import load_dotenv
-
+from Scripts.qualtrics_cleanup import process_files
 
 def exportSurvey(apiToken, surveyId, dataCenter, fileFormat):
     surveyId = surveyId
@@ -49,44 +49,51 @@ def exportSurvey(apiToken, surveyId, dataCenter, fileFormat):
     requestDownload = requests.request("GET", requestDownloadUrl, headers=headers, stream=True)
 
     # Step 4: Unzipping the file
-    zipfile.ZipFile(io.BytesIO(requestDownload.content)).extractall("MyQualtricsDownload")
+    extract_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Scripts', 'QualtricsDownload'))
+    zipfile.ZipFile(io.BytesIO(requestDownload.content)).extractall(extract_path)
     print('Complete')
+   
 
 
-def main():
+def fetchSurveys():
     try:
-        # Get env vars from .env
-        load_dotenv()
-        apiToken = os.getenv('APIKEY')
-        dataCenter = os.getenv('DATACENTER')
+        file_paths = []
+       
+        # Set export file format
+        fileFormat = "csv"
+
+        # Read survey ids
+        post_surveys = {}
+        
+        with open('.env', 'r') as file:
+            for line in file:
+                line = line.strip()  # remove whitespaces
+                if line.startswith('A'):
+                    print("here")
+                    api_key_var, api_key = line.split('=', 1)
+                   
+                if line.startswith('D'):
+                    data_center_var, data_center = line.split('=',1)
+                    
+                if line.startswith('P'):  # if not line break or comment
+                    survey_name, survey_id = line.split('=', 1)  # split key and value
+
+                    # Check servey id format
+                    regex = re.compile('^SV_.*')
+                    match = regex.match(survey_id)
+                    if not match:
+                        print(f"survey Id must match ^SV_.*: {survey_name}={survey_id}")
+                        sys.exit(2)
+                    post_surveys[survey_name] = survey_id
+            
+
+        # Export post surveys
+        for surveyName, surveyId in post_surveys.items():
+            print(f'{surveyName}: {surveyId}')
+            exportSurvey(api_key, surveyId, data_center, fileFormat)
+            
+        process_files()
     except KeyError:
-        print("set environment variables APIKEY and DATACENTER")
+        print(KeyError)
         sys.exit(2)
 
-    # Set export file format
-    fileFormat = "csv"
-
-    # Read survey ids
-    post_surveys = {}
-    with open('.env', 'r') as file:
-        for line in file:
-            line = line.strip()  # remove whitespaces
-            if line.startswith('P'):  # if not line break or comment
-                survey_name, survey_id = line.split('=', 1)  # split key and value
-
-                # Check servey id format
-                regex = re.compile('^SV_.*')
-                match = regex.match(survey_id)
-                if not match:
-                    print(f"survey Id must match ^SV_.*: {survey_name}={survey_id}")
-                    sys.exit(2)
-                post_surveys[survey_name] = survey_id
-
-    # Export post surveys
-    for surveyName, surveyId in post_surveys.items():
-        print(f'{surveyName}: {surveyId}')
-        exportSurvey(apiToken, surveyId, dataCenter, fileFormat)
-
-
-if __name__ == "__main__":
-    main()
