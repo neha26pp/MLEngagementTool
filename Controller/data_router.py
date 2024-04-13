@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import *
 video_directory = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(video_directory)
 file_path = os.path.join(os.path.dirname(__file__), "..", "quiz_data", "responses.txt")
-
+from Scripts.qualtrics_survey import fetchSurveys
 from Controller import emotional_analysis
 from Controller.helper import show_confirmation
 from Controller.helper import read_yaml
@@ -22,7 +22,9 @@ import View.Pages.PostSurvey.post_survey_widget as post_survey_widget
 import View.Pages.session_history_widget as session_history_widget
 import View.Pages.engagement_report_widget as engagement_report_widget
 import View.Components.bottom_button_bar as bottom_button_bar
-
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 class QuizApp(QWidget):
     def __init__(self):
@@ -135,6 +137,9 @@ class QuizApp(QWidget):
                 )
             if branch_index == 2:
                 self.bottom_button_bar_widget.set_next_button_enabled(False)
+                if not firebase_admin._apps:
+                    cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\firebase.json')
+                    firebase_admin.initialize_app(cred)
                 self.bottom_button_bar_widget.set_button_info(
                     self.analyze_data_screen_list[0], None
                 )
@@ -208,6 +213,9 @@ class QuizApp(QWidget):
                     self.post_quiz_widget = post_survey_widget.PostQuizWidget(self.emotional_analysis)
                     self.post_quiz_widget.finish_widget.go_to_dashboard_button.clicked.connect(
                         self.on_go_to_dashboard_clicked)
+                    self.post_quiz_widget.finish_widget.store_data_button.clicked.connect(
+                        self.store_data_button_clicked
+                    )
                     self.collect_data_stacked_widget.addWidget(self.post_quiz_widget)
 
                     self.collect_data_stacked_widget.setCurrentIndex(current_index + 1)
@@ -253,7 +261,12 @@ class QuizApp(QWidget):
         # Remove post quiz widget
         self.collect_data_stacked_widget.removeWidget(self.post_quiz_widget)
         self.post_quiz_widget.deleteLater()
+        
 
+    def store_data_button_clicked(self):
+        print("store data clicked")
+        QApplication.processEvents()
+        fetchSurveys()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

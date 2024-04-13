@@ -11,10 +11,10 @@ from datetime import datetime
 
 from View.Pages.page import Page
 
-# Initialize Firebase Admin SDK
-cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\firebase.json')
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+# # Initialize Firebase Admin SDK
+# cred = credentials.Certificate('C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\firebase.json')
+# firebase_admin.initialize_app(cred)
+
 
 
 class SessionHistoryWidget(Page):
@@ -59,6 +59,7 @@ class SessionHistoryWidget(Page):
     def populate_table(self):
         try:
             # Fetch data from Firestore
+            db = firestore.client()
             session_history_ref = db.collection('sessions')
             session_history_docs = session_history_ref.get()
 

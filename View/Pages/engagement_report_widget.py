@@ -54,8 +54,7 @@ class EngagementReportWidget(Page):
                 stimulus2_label = QLabel("stimulus 2: " + stimulus2)
 
                 # Bar chart
-                categories = ["SVREye S1", "SVREmotion S1", "SVRFusion S1", "LSTM S1",
-                              "SVREye S2", "SVREmotion S2", "SVRFusion S2", "LSTM S2"]
+                categories = ["SVREye", "SVREmotion", "SVRFusion", "LSTM"]
 
                 scores = [student_data.get("SVREye_stimulus1"), student_data.get("SVREmotion_stimulus1"),
                           student_data.get("SVRFusion_stimulus1"), student_data.get("LSTM_stimulus1"),
