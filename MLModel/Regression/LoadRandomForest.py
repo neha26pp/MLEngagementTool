@@ -35,6 +35,18 @@ y_pred = model.predict(X_test)
 r2 = r2_score(y_test, y_pred)
 print(f'R^2 score: {r2}')
 
+label_directory = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\Scripts\\MyQualtricsDownload\\QuizScores'
+print("Predicted Scores:")
+index = 0  # Start an index at 0
+for file_name in os.listdir(label_directory):
+    if file_name.endswith(".txt"):
+        file_path = os.path.join(label_directory, file_name)
+        with open(file_path, 'r') as file:
+            for line in file:
+                if index < len(y_pred):  # Check to prevent index out of range
+                    print(f'{file_name}: {y_pred[index]}')
+                    index += 1  # Increment the index
+
 # Plot actual vs predicted values
 plt.figure(figsize=(10, 6))
 plt.scatter(range(len(y_test)), y_test, color='blue', label='Actual Values')
