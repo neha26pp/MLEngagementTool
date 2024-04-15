@@ -80,3 +80,7 @@ wrapt==1.14.0
 zipp==3.17.0
 
 matplotlib~=3.8.3
+joblib~=1.4.0
+scikit-learn~=1.4.2
+scipy~=1.13.0
+seaborn~=0.13.2
