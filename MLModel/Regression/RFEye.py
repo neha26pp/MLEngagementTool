@@ -1,23 +1,24 @@
 import os
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import random
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import r2_score
 import joblib
+import random
 
 # Assuming EyeFeatureCalculator and SlidingWindow are defined in the imported modules
 import EyeFeatureCalculator
+import SlidingWindow
 
 print("Current working directory:", os.getcwd())
 
 save_directory = "MLModel/Regression"
+if not os.path.exists(save_directory):
+    os.makedirs(save_directory)
 
 # Load and prepare the data
 trainingFolder = "EyeData"
-features = EyeFeatureCalculator.run(trainingFolder)  # Example function call, replace with actual data loading if necessary
+features = EyeFeatureCalculator.run(trainingFolder)
 features = np.array(features)
 
 labelFolder = "Scripts/MyQualtricsDownload/QuizScores"
@@ -34,50 +35,51 @@ def random_params():
         'n_estimators': random.choice([10, 100, 1000]),
         'max_depth': random.choice([None, 10, 100]),
         'min_samples_split': random.choice([2, 5, 10]),
-        'min_samples_leaf': random.choice([1, 2, 8]),
+        'min_samples_leaf': random.choice([1, 2, 4]),
         'max_features': random.choice(['log2', 'sqrt']),
         'bootstrap': random.choice([True, False]),
     }
 
-attempt = 0
-r2 = -np.inf
+target_r2 = 0.2  # For example, 0.8
 
-# Change the loop condition to stop when R^2 is at least 0.7
-while r2 < 0.3:
+best_r2 = -np.inf
+best_model = None
+best_params = {}
+
+attempt = 0
+found = False  # Flag to check if satisfactory model is found
+
+# Run the training loop
+while attempt < 100000:  # Set a maximum number of attempts to avoid infinite loop
     attempt += 1
     params = random_params()
     model = RandomForestRegressor(random_state=42, **params)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     r2 = r2_score(y_test, y_pred)
+    
     print(f"Attempt {attempt}: R^2 = {r2:.3f} with params {params}")
-    # Removed the unnecessary condition check for R^2 >= 0.2
+    
+    if r2 > best_r2:
+        best_r2 = r2
+        best_model = model
+        best_params = params
+        
+        # Check if current model meets the target R^2 score
+        if best_r2 >= target_r2:
+            found = True
+            print(f"Target R^2 score of {target_r2} reached.")
+            break  # Stop the loop as we've reached the target score
 
-# Check if the loop ended with a satisfying R^2 score and print results
-if r2 >= 0.2:
-    print("Achieved R^2 >= 0.2")
-    print(f"Parameters: {params}")
-    print(f"R^2 score: {r2}")
-
-    # Save using joblib
-    params_joblib_filename = os.path.join(save_directory, 'model_parameters.joblib')
-    joblib.dump({'params': params, 'r2_score': r2}, params_joblib_filename)
+# Save the best model and parameters
+if found:
+    print(f"Best R^2 score: {best_r2}")
+    print(f"Best parameters: {best_params}")
+    
+    params_joblib_filename = os.path.join(save_directory, 'best_model_parameters.joblib')
+    joblib.dump({'params': best_params, 'r2_score': best_r2}, params_joblib_filename)
+    
+    model_filename = os.path.join(save_directory, 'best_random_forest_model.pkl')
+    joblib.dump(best_model, model_filename)
 else:
-    print("Failed to achieve R^2 >= 0.2 after {attempt} attempts.")
-
-# Visualization of model performance
-plt.figure(figsize=(10, 6))
-plt.scatter(X_test[:, 0], y_test, color='blue', label='Actual Values')
-plt.scatter(X_test[:, 0], y_pred, color='red', label='Predicted Values')
-plt.title('Actual vs. Predicted Values')
-plt.xlabel('Feature Value')
-plt.ylabel('Target Value')
-plt.legend()
-plt.show()
-
-# Optionally save the model
-
-if not os.path.exists(save_directory):
-    os.makedirs(save_directory)
-model_filename = os.path.join(save_directory, 'random_forest_model.pkl')
-joblib.dump(model, model_filename)
+    print(f"Failed to find a satisfactory model after {attempt} attempts.")
