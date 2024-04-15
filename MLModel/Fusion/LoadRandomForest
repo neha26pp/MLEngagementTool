@@ -1,8 +1,10 @@
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import joblib
-import EyeFeatureCalculator
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from MLModel.Regression import EyeFeatureCalculator
 from sklearn.metrics import r2_score
 
 # Define a function to load labels from txt files
@@ -21,12 +23,14 @@ label_directory = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\Scripts
 y_test = load_labels_from_txt(label_directory)
 
 # Load the model
-model_directory = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\MLModel\\Regression'
+model_directory = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\MLModel\\Fusion'
 model_filename = os.path.join(model_directory, 'random_forest_model.pkl')
 model = joblib.load(model_filename)
 
+
+
 # Assuming that the features for the test set are available in the same format as the training set
-X_test = EyeFeatureCalculator.run('C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\EyeData')  # Replace with actual feature loading
+X_test = EyeFeatureCalculator.run('C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\EyeData') 
 
 # Run the model on the test data
 y_pred = model.predict(X_test)

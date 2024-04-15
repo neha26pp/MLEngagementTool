@@ -41,7 +41,7 @@ def random_params():
         'bootstrap': random.choice([True, False]),
     }
 
-target_r2 = 0.2  # For example, 0.8
+target_r2 = 0.2 
 
 best_r2 = -np.inf
 best_model = None

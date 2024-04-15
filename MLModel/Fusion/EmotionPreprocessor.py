@@ -11,13 +11,13 @@ def EmotionPreprocess(base_path):
 
     # Define the emotions dictionary template
     emotions_template = {
-        'happy': 0,
-        'sad': 0,
-        'angry': 0,
-        'fear': 0,
-        'surprise': 0,
-        'disgust': 0,
-        'neutral': 0
+        'surprise': 0.9,
+        'angry': 0.8,
+        'neutral': 0.7,
+        'sad': 0.6,
+        'happy': 0.4,
+        'disgust': 0.2,
+        'fearf': 0.1
     }
 
     if not os.path.isdir(base_path):
