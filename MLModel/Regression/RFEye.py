@@ -1,4 +1,5 @@
 import os
+from matplotlib import pyplot as plt
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -83,3 +84,13 @@ if found:
     joblib.dump(best_model, model_filename)
 else:
     print(f"Failed to find a satisfactory model after {attempt} attempts.")
+    
+# Plot actual vs predicted values
+plt.figure(figsize=(10, 6))
+plt.scatter(range(len(y_test)), y_test, color='blue', label='Actual Values')
+plt.scatter(range(len(y_test)), y_pred, color='red', label='Predicted Values')
+plt.title('Actual vs. Predicted Values')
+plt.xlabel('Sample index')
+plt.ylabel('Engagement Percentage')
+plt.legend()
+plt.show()
