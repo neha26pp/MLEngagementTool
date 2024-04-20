@@ -19,8 +19,8 @@ print("Current working directory:", os.getcwd())
 
 # create a 2d array
 trainingFolder = "EyeData"
-# features = EyeFeatureCalculator.run(trainingFolder)
-features = SlidingWindow.run(trainingFolder)
+features = EyeFeatureCalculator.run(trainingFolder)
+# features = SlidingWindow.run(trainingFolder)
 features = np.array(features)
 
 LabelFolder = "Scripts/MyQualtricsDownload/QuizScores"  # Adjust this path as necessary

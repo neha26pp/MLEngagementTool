@@ -94,3 +94,13 @@ plt.xlabel('Sample index')
 plt.ylabel('Engagement Percentage')
 plt.legend()
 plt.show()
+<<<<<<< Updated upstream
+=======
+
+# Optionally save the model
+
+if not os.path.exists(save_directory):
+    os.makedirs(save_directory)
+model_filename = os.path.join(save_directory, 'random_forest_model.pkl')
+joblib.dump(model, model_filename)
+>>>>>>> Stashed changes

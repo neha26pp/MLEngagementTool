@@ -36,6 +36,8 @@ def read_and_calculate_engagement_percentages(csv_file_path):
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader)  # Skip the header row
+        next(reader)  # Skip the header row
+        next(reader)  # Skip the header row
         for row in reader:
             first_name = row[17]  # Adjusting for zero-based indexing
             last_name = row[18]
@@ -47,11 +49,11 @@ def read_and_calculate_engagement_percentages(csv_file_path):
             print(f"Student: {first_name} {last_name}, Engagement Percentage: {engagement_percentage:.2f}%")
 
 # Replace 'path/to/your/survey_data.csv' with the actual path to your CSV file
-# print("TOPIC 1 TEXT\n")
-# topic1_text_path = 'C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\MyQualtricsDownload\\topic 1 text.csv'
-# read_and_calculate_engagement_percentages(topic1_text_path)
+print("TOPIC 1 TEXT\n")
+topic1_text_path = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\MyQualtricsDownload\\Post Survey_Engagement Project - Text - Topic 1.csv'
+read_and_calculate_engagement_percentages(topic1_text_path)
 print("\nTOPIC 1 VIDEO\n")
-topic1_video_path = 'C:\\Users\\NEHA\\Downloads\\MLEngagementTool\\MyQualtricsDownload\\topic 1 video1.csv'
+topic1_video_path = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\MyQualtricsDownload\\Post Survey_Engagement Project - Video - Topic 1.csv'
 read_and_calculate_engagement_percentages(topic1_video_path)
 
 
