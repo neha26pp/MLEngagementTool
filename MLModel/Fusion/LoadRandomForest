@@ -63,4 +63,3 @@ plt.xlabel('Sample index')
 plt.ylabel('Engagement Percentage')
 plt.legend()
 plt.show()
-
