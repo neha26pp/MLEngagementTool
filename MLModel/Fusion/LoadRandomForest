@@ -42,7 +42,7 @@ print(f'R^2 score: {r2}')
 
 # print predicted scores with name of file label is from
 label_directory = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\Scripts\\MyQualtricsDownload\\QuizScores'
-label_directory = 'C:\\Users\\Anthraxlemonaid\\VSCode\\MLEngagementTool\\Scripts\\MyQualtricsDownload\\QuizScores'
+
 print("Predicted Scores:")
 index = 0  # Start an index at 0
 for file_name in os.listdir(label_directory):
@@ -63,4 +63,3 @@ plt.xlabel('Sample index')
 plt.ylabel('Engagement Percentage')
 plt.legend()
 plt.show()
-
