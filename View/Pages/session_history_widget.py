@@ -34,8 +34,8 @@ class SessionHistoryWidget(Page):
         self.table.setMinimumHeight(500)
         self.table.setColumnCount(13)
         self.table_header_list = ["Student Name", "Date", "Stimulus 1", "Stimulus 2",
-                                  "SVREye S1", "SVREmotion S1", "SVRFusion S1", "LSTM S1",
-                                  "SVREye S2", "SVREmotion S2", "SVRFusion S2", "LSTM S2", ""]
+                                  "SVREye S1", "GBEmotion S1", "RFEye S1", "RFFusion S1",
+                                  "SVREye S2", "GBEmotion S2", "RFEye S2", "RFFusion S2", ""]
         self.table.setHorizontalHeaderLabels(self.table_header_list)
         self.table.setContentsMargins(5, 5, 5, 5)
         self.table.setColumnWidth(len(self.table_header_list) - 1, 200)  # Set width for the last Column
@@ -62,27 +62,31 @@ class SessionHistoryWidget(Page):
             db = firestore.client()
             session_history_ref = db.collection('sessions')
             session_history_docs = session_history_ref.get()
+            
 
             # Populate table with Firestore data
             for doc in session_history_docs:
                 data = doc.to_dict()
-                # date_str = data['date'].strftime('%m/%d/%Y')
+                date_obj = data.get('date')
+                if date_obj:
+                    # Extract date components
+                    date_str = date_obj.strftime('%B %d, %Y at %I:%M:%S %p %Z')
+                else:
+                    date_str = ''
+
                 self.table.insertRow(self.table.rowCount())
                 self.table.setItem(self.table.rowCount() - 1, 0, QTableWidgetItem(str(doc.id)))
-                self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem("DATE"))
-                self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(str(data['stimulus1'])))
-                self.table.setItem(self.table.rowCount() - 1, 3, QTableWidgetItem(str(data['stimulus2'])))
-                # self.table.setItem(self.table.rowCount() - 1, 4, QTableWidgetItem(str(data['eyeScore'])))
-                # self.table.setItem(self.table.rowCount() - 1, 5, QTableWidgetItem(str(data['emotionScore'])))
-                # self.table.setItem(self.table.rowCount() - 1, 6, QTableWidgetItem(str(data['fusionScore'])))
-                self.table.setItem(self.table.rowCount() - 1, 4, QTableWidgetItem(str(data['SVREye_stimulus1'])))
-                self.table.setItem(self.table.rowCount() - 1, 5, QTableWidgetItem(str(data['SVREmotion_stimulus1'])))
-                self.table.setItem(self.table.rowCount() - 1, 6, QTableWidgetItem(str(data['SVRFusion_stimulus1'])))
-                self.table.setItem(self.table.rowCount() - 1, 7, QTableWidgetItem(str(data['LSTM_stimulus1'])))
-                self.table.setItem(self.table.rowCount() - 1, 8, QTableWidgetItem(str(data['SVREye_stimulus2'])))
-                self.table.setItem(self.table.rowCount() - 1, 9, QTableWidgetItem(str(data['SVREmotion_stimulus2'])))
-                self.table.setItem(self.table.rowCount() - 1, 10, QTableWidgetItem(str(data['SVRFusion_stimulus2'])))
-                self.table.setItem(self.table.rowCount() - 1, 11, QTableWidgetItem(str(data['LSTM_stimulus2'])))
+                self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem(date_str))
+                self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(str(data.get('stimulus1', ''))))
+                self.table.setItem(self.table.rowCount() - 1, 3, QTableWidgetItem(str(data.get('stimulus2', ''))))
+                self.table.setItem(self.table.rowCount() - 1, 4, QTableWidgetItem(str(data.get('SVREye_stimulus1', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 5, QTableWidgetItem(str(data.get('GBEmotion_stimulus1', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 6, QTableWidgetItem(str(data.get('RFEye_stimulus1', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 7, QTableWidgetItem(str(data.get('RFFusion_stimulus1', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 8, QTableWidgetItem(str(data.get('SVREye_stimulus2', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 9, QTableWidgetItem(str(data.get('GBEmotion_stimulus2', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 10, QTableWidgetItem(str(data.get('RFEye_stimulus2', 0))))
+                self.table.setItem(self.table.rowCount() - 1, 11, QTableWidgetItem(str(data.get('RFFusion_stimulus2', 0))))
 
                 # Create a button in the last column
                 view_report_button = QPushButton("View Report", self)
@@ -94,6 +98,7 @@ class SessionHistoryWidget(Page):
         except Exception as e:
             print("An error occurred in populate_table:", str(e))
 
+
     def get_student_data_by_index(self, index):
         student_data = {}
         # Assuming column indexes match the order you've added them in self.table_header_list
@@ -102,11 +107,11 @@ class SessionHistoryWidget(Page):
         student_data['stimulus1'] = self.table.item(index, 2).text()
         student_data['stimulus2'] = self.table.item(index, 3).text()
         student_data['SVREye_stimulus1'] = self.table.item(index, 4).text()
-        student_data['SVREmotion_stimulus1'] = self.table.item(index, 5).text()
-        student_data['SVRFusion_stimulus1'] = self.table.item(index, 6).text()
-        student_data['LSTM_stimulus1'] = self.table.item(index, 7).text()
+        student_data['GBEmotion_stimulus1'] = self.table.item(index, 5).text()
+        student_data['RFEye_stimulus1'] = self.table.item(index, 6).text()
+        student_data['RFFusion_stimulus1'] = self.table.item(index, 7).text()
         student_data['SVREye_stimulus2'] = self.table.item(index, 8).text()
-        student_data['SVREmotion_stimulus2'] = self.table.item(index, 9).text()
-        student_data['SVRFusion_stimulus2'] = self.table.item(index, 10).text()
-        student_data['LSTM_stimulus2'] = self.table.item(index, 11).text()
+        student_data['GBEmotion_stimulus2'] = self.table.item(index, 9).text()
+        student_data['RFEye_stimulus2'] = self.table.item(index, 10).text()
+        student_data['RFFusion_stimulus2'] = self.table.item(index, 11).text()
         return student_data
