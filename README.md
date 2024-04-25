@@ -7,7 +7,7 @@ You'll need Python version 3.9
 
 Run your terminal or IDE as an administrator. 
 `pip install -r requirements`
-If required, install `deepface` and `opencv-python` separately
+If required, install `deepface` and `opencv-python`, `python-dotenv`, `firebase-admin` and `optuna` separately
 
 
 To start the application, navigate to the controller directory `cd controller` and then
