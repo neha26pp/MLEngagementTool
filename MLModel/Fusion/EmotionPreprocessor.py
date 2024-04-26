@@ -32,10 +32,8 @@ def EmotionPreprocess(base_path):
                 if file_path.endswith('.txt'):
                     try:
                         with open(file_path, 'r') as f:
-                            # Reset emotions_count for each file
                             emotions_count = emotions_template.copy()
                             total_emotions = 0
-                            
                             content = f.read()
                             emotions = content.replace('\n', ' ').split()
                             for emotion in emotions:
@@ -43,10 +41,13 @@ def EmotionPreprocess(base_path):
                                     emotions_count[emotion.lower()] += 1
                                     total_emotions += 1
                             
-                            # Normalize the emotions for this file and add to the 2D array
                             normalized_emotions_array = normalize_emotions(emotions_count, total_emotions)
                             all_normalized_emotions.append(normalized_emotions_array)
                     except IOError as e:
                         print(f"Could not read file {file_path}: {e}")
 
+    # Print the shape of the output array for confirmation
+    print(f"Processed {len(all_normalized_emotions)} files.")
+    if all_normalized_emotions:
+        print(f"Each file has {len(all_normalized_emotions[0])} emotion features.")
     return all_normalized_emotions

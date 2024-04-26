@@ -85,7 +85,7 @@ if __name__ == "__main__":
     layout = QVBoxLayout(window)
 
     # Data
-    categories = ["SVREye", "SVREmotion", "SVRFusion", "LSTM"]
+    categories = ["SVREye", "GBEmotion", "RFEye", "RFFusion"]
     scores = [80, 90, 70, 66, 55, 87, 92, 82]
 
     bar_chart_widget = BarChartWidget(categories, scores)
