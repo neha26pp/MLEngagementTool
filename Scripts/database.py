@@ -26,14 +26,12 @@ def add_to_sessions(name, stimulus1, stimulus2):
             'stimulus2': stimulus2,
             'stimulus1Score': 0,  # Assuming default score is 0
             'stimulus2Score': 0,  # Assuming default score is 0
-            'SVREye_stimulus1': 0,
-            'SVREmotion_stimulus1': 0,
-            'SVRFusion_stimulus1': 0,
-            'LSTM_stimulus1': 0,
-            'SVREye_stimulus2': 0,
-            'SVREmotion_stimulus2': 0,
-            'SVRFusion_stimulus2': 0,
-            'LSTM_stimulus2': 0,
+            'RFEye_stimulus1': 0,
+            'GBEmotion_stimulus1': 0,
+            'RFFusion_stimulus1': 0,
+            'RFEye_stimulus2': 0,
+            'GBEmotion_stimulus2': 0,
+            'RFFusion_stimulus2': 0,
         }
         doc_ref.set(document_data)
         print(f"Document with the name '{name}' has been successfully created.")

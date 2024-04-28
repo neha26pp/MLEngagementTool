@@ -62,10 +62,9 @@ class SessionHistoryWidget(Page):
             db = firestore.client()
             session_history_ref = db.collection('sessions')
             session_history_docs = session_history_ref.get()
-            
 
             # Populate table with Firestore data
-            for doc in session_history_docs:
+            for i, doc in enumerate(session_history_docs, start=1):
                 data = doc.to_dict()
                 date_obj = data.get('date')
                 if date_obj:
@@ -74,8 +73,11 @@ class SessionHistoryWidget(Page):
                 else:
                     date_str = ''
 
+                # Format participant ID
+                participant_id = f'participant{i:02d}'
+
                 self.table.insertRow(self.table.rowCount())
-                self.table.setItem(self.table.rowCount() - 1, 0, QTableWidgetItem(str(doc.id)))
+                self.table.setItem(self.table.rowCount() - 1, 0, QTableWidgetItem(participant_id))
                 self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem(date_str))
                 self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(str(data.get('stimulus1', ''))))
                 self.table.setItem(self.table.rowCount() - 1, 3, QTableWidgetItem(str(data.get('stimulus2', ''))))
@@ -97,6 +99,7 @@ class SessionHistoryWidget(Page):
                 self.table.setCellWidget(self.table.rowCount() - 1, 12, view_report_button)
         except Exception as e:
             print("An error occurred in populate_table:", str(e))
+
 
 
     def get_student_data_by_index(self, index):
