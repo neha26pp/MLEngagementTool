@@ -1,8 +1,11 @@
 import unittest
-import MLModel.Regression.EyeFeatureCalculator as EyeFeatureCalculator
-from MLModel.Regression.EyeFeatureCalculator import getAvgGazeLAOI, getMeanPupilSize_L, calculateFeatures, getAvgBlinkLatency_L, getMeanPupilSize_R, getAvgFixationDuration, getFixationRate, getAvgSaccadeSize, getAvgSaccadeSpeed
 import os
 import csv
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from MLModel.Regression import EyeFeatureCalculator
+from MLModel.Regression.EyeFeatureCalculator import getAvgGazeLAOI, getAvgBlinkLatency_L, getMeanPupilSize_L, getMeanPupilSize_R, getAvgFixationDuration, getFixationRate, getAvgSaccadeSize, getAvgSaccadeSpeed, calculateFeatures
 
 class TestEyeFeatureCalculator(unittest.TestCase):
     def setUp(self):
